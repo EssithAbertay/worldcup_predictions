@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Upcoming Games</h1>
+<form action="" method="post">
+    {{ form.hidden_tag() }}
+    <p>{{ form.submit() }}</p>
+
+    <h3>Still to Predict</h3>
+    {% for id in unpredicted_games %}
+        {% set prediction = form.predictions[id] %}
+            {% include '_to_predict.html' %} 
+    {% endfor %}
+
+    <hr>
+
+    <h3>Already Predicted</h3>
+    {% for id in predicted_games %}
+        {% set prediction = form.predictions[id] %}
+            {% include '_to_predict.html' %} 
+    {% endfor %}
+</form>
+
+<script>
+document.querySelectorAll('.prediction-row').forEach(row => {
+    const home = row.querySelector('.home_score');
+    const away = row.querySelectorAll('.away_score'); // second score input
+    const penalty = row.querySelector('.penalty');
+    if (!home || !away || !penalty) return;
+
+    const toggle = () => {
+        const h = parseInt(home.value);
+        const a = parseInt(away.value);
+        penalty.style.display = (!isNaN(h) && !isNaN(a) && h === a) ? 'block' : 'none';
+    };
+
+    home.addEventListener('input', toggle);
+    away.addEventListener('input', toggle);
+
+    toggle(); // initial check
+});
+</script>
+{% endblock %}

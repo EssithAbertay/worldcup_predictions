@@ -1,0 +1,14 @@
+<div class="prediction-row">
+    {{ prediction.game_id(type="hidden") }}
+    {{ prediction.home_team }} vs {{ prediction.away_team }}</br>
+    {{ prediction.kickoff_time }} </br>
+    {{ prediction.home_score(size=2, class="home_score") }} - {{ prediction.away_score(size=2, class="away_score") }}
+
+    {% if prediction.penalties_required %}
+        <small>Penalties required if scores are tied.</small><br>
+        <div class="penalty" style="display:none;">
+            Penalty Winner: {{ prediction.penalty_winner }}
+        </div>
+    {% endif %}
+</div>
+<br>
