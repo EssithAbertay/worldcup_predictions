@@ -6,17 +6,37 @@
     {{ form.hidden_tag() }}
     <p>{{ form.submit() }}</p>
 
-    <h3>Still to Predict</h3>
+    <h3>Still to Predict</h3> 
+
+    {% set ns = namespace(curr_date=None) %}
+        
     {% for id in unpredicted_games %}
         {% set prediction = form.predictions[id] %}
-            {% include '_to_predict.html' %} 
+        
+        {% if ns.curr_date != prediction.kickoff_time.date() %}
+            {% set ns.curr_date = prediction.kickoff_time.date() %}
+            <hr>
+            <h4>{{ns.curr_date}}</h4> 
+        {% endif %}  
+        
+        {% include '_to_predict.html' %} 
     {% endfor %}
 
     <hr>
 
+    {% set ns.curr_date = None %}
+
     <h3>Already Predicted</h3>
     {% for id in predicted_games %}
         {% set prediction = form.predictions[id] %}
+
+        {% if ns.curr_date != prediction.kickoff_time.date() %}
+            {% set ns.curr_date = prediction.kickoff_time.date() %}
+            <hr>
+            <h4>{{ns.curr_date}}</h4> 
+        {% endif %}  
+
+
             {% include '_to_predict.html' %} 
     {% endfor %}
 </form>
