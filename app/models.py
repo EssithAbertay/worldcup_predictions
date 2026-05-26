@@ -10,7 +10,7 @@ from hashlib import md5
 class User(UserMixin, db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
     username: so.Mapped[str] = so.mapped_column(sa.String(64), index=True, unique=True)
-    email: so.Mapped[str] = so.mapped_column(sa.String(120), index=True, unique=True)
+    #email: so.Mapped[str] = so.mapped_column(sa.String(120), index=True, unique=True)
     password_hash: so.Mapped[Optional[str]] = so.mapped_column(sa.String(256))
     points: so.Mapped[int] = so.mapped_column(default=0)
     ranking: so.Mapped[int] = so.mapped_column(nullable=True)
@@ -30,7 +30,7 @@ class User(UserMixin, db.Model):
         return check_password_hash(self.password_hash, password)    
     
     def avatar(self, size):
-        digest = md5(self.email.lower().encode('utf-8')).hexdigest()
+        digest = md5(self.username.lower().encode('utf-8')).hexdigest()
         return f'https://www.gravatar.com/avatar/{digest}?d=identicon&s={size}'
     
     def calculate_points(self):
@@ -84,13 +84,6 @@ class User(UserMixin, db.Model):
                 prediction.points_awarded = 0
                 self.points += 0
 
-
-
-
-
-
-
-        
 
 class Game(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)

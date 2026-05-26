@@ -1,9 +1,12 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, DateTimeLocalField, FieldList, FormField, RadioField, IntegerField, Form
-from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, NumberRange, Optional, InputRequired
+from wtforms.validators import ValidationError, DataRequired, EqualTo, NumberRange, Optional, InputRequired
 import sqlalchemy as sa
 from app import db
 from app.models import User
+import os
+#from wtforms.validators import Email
+
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
@@ -13,9 +16,10 @@ class LoginForm(FlaskForm):
 
 class RegistrationForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
-    email = StringField('Email', validators=[DataRequired(), Email()])
+    #email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
     password2 = PasswordField('Repeat Password', validators=[DataRequired(), EqualTo('password')])
+    pin = StringField('Pin', validators=[DataRequired()])
     submit = SubmitField('Register')
 
     def validate_username(self, username):
@@ -23,10 +27,16 @@ class RegistrationForm(FlaskForm):
         if user is not None:
             raise ValidationError('Already in use! Please use a different username.')
         
-    def validate_email(self, email):
-        user = db.session.scalar(sa.select(User).where(User.email == email.data))
-        if user is not None:
-            raise ValidationError('Already in use! Please use a different email.')
+    def validate_pin(self, pin):
+        valid = os.environ.get('PIN') == pin.data
+        if not valid:
+            raise ValidationError('Incorrect Pin')
+    
+
+    #def validate_email(self, email):
+    #   user = db.session.scalar(sa.select(User).where(User.email == email.data))
+    #    if user is not None:
+    #        raise ValidationError('Already in use! Please use a different email.')
         
 class EditProfileForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
@@ -41,7 +51,7 @@ class EditProfileForm(FlaskForm):
             user = db.session.scalar(sa.select(User).where(
                 User.username == username.data))
             if user is not None:
-                raise ValidationError('Please use a different username.')
+                raise ValidationError('Already in use! Please use a different username.')
       
 class SinglePredictionForm(Form):
     penalties_required = False
