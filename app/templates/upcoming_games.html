@@ -35,8 +35,6 @@
             <hr>
             <h4>{{ns.curr_date}}</h4> 
         {% endif %}  
-
-
             {% include '_to_predict.html' %} 
     {% endfor %}
 </form>
@@ -44,7 +42,7 @@
 <script>
 document.querySelectorAll('.prediction-row').forEach(row => {
     const home = row.querySelector('.home_score');
-    const away = row.querySelectorAll('.away_score'); // second score input
+    const away = row.querySelector('.away_score'); // second score input
     const penalty = row.querySelector('.penalty');
     if (!home || !away || !penalty) return;
 

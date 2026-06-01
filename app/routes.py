@@ -128,7 +128,7 @@ def upcoming_games():
 
             if home_score is None:
                 home_score = 0
-                
+
             if away_score is None:
                 away_score = 0
 
@@ -226,7 +226,7 @@ def leaderboard():
     users = db.session.scalars(query).all()
     return render_template('leaderboard.html', title='Leaderboard', users=users)
 
-@app.route('/rules')
-def rules():
-    return render_template('rules.html', title='Rules')
+@app.route('/faq')
+def faq():
+    return render_template('faq.html', title='FAQ')
 
