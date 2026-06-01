@@ -125,9 +125,11 @@ def upcoming_games():
 
             if home_score is None and away_score is None:
                 continue
-            elif home_score is None:
+
+            if home_score is None:
                 home_score = 0
-            else:
+                
+            if away_score is None:
                 away_score = 0
 
             existing_prediction = prediction_map.get(field.game_id.data)
