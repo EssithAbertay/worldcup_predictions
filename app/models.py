@@ -34,18 +34,15 @@ class User(UserMixin, db.Model):
         return f'https://www.gravatar.com/avatar/{digest}?d=identicon&s={size}'
     
     def calculate_points(self):
-        flash("calculating points")
         # for each prediction, check it against its game then assign points
         # for now its just working off of scores, will add penalties later
         # also have to make it skip games that have already been worked out
 
-        predictions = db.session.execute(self.predictions.select().where(Prediction.points_awarded == None)).scalars()
+        predictions = db.session.execute(self.predictions.select().where(Prediction.points_awarded == 0)).scalars()
 
         for prediction in predictions:
-            flash("prediction from user func")
             # if this is a penalty game then do this 
             if prediction.match.penalty_game: # not finished
-                flash("penalty match")
                 if prediction.match.penalty_winner != 'na': # check that the game required penalties
                     if prediction.penalty_winner_predicted == prediction.match.penalty_winner:
                         prediction.points_awarded = 3
@@ -54,7 +51,6 @@ class User(UserMixin, db.Model):
                         prediction.points_awarded = 0
                         self.points += 0
             else: # when it's not a penalty game
-                flash("non-penalty game being checked")
 
                 draw = bool(prediction.match.home_score == prediction.match.away_score)
                 pred_draw = bool(prediction.home_score_predicted == prediction.away_score_predicted)
