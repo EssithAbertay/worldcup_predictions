@@ -34,7 +34,7 @@ class User(UserMixin, db.Model):
         return f'https://www.gravatar.com/avatar/{digest}?d=identicon&s={size}'
     
     def calculate_points(self):
-        flash("calculating points for {self.username}")
+        flash("calculating points")
         # for each prediction, check it against its game then assign points
         # for now its just working off of scores, will add penalties later
         # also have to make it skip games that have already been worked out
