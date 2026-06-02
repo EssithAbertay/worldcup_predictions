@@ -37,10 +37,15 @@ class User(UserMixin, db.Model):
         # for each prediction, check it against its game then assign points
         # for now its just working off of scores, will add penalties later
         # also have to make it skip games that have already been worked out
-
+        self.points = 0
         predictions = db.session.execute(self.predictions.select().where(Prediction.points_awarded == 0)).scalars()
 
         for prediction in predictions:
+
+            #first skip games that haven't happened yet
+            if prediction.match.home_score is None or prediction.match.away_score is None:
+                continue 
+
             # if this is a penalty game then do this 
             if prediction.match.penalty_game: # not finished
                 if prediction.match.penalty_winner != 'na': # check that the game required penalties
