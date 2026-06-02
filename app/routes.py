@@ -193,6 +193,8 @@ def admin_panel():
 
         if add_result_form.submit_results.data and add_result_form.validate():
             print('adding games')
+            flash('registering')
+
             for field in add_result_form.results:
                 g = db.session.get(Game, field.game_id.data)
 
