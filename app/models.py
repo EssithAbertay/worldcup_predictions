@@ -42,9 +42,10 @@ class User(UserMixin, db.Model):
         predictions = db.session.execute(self.predictions.select().where(Prediction.points_awarded == None)).scalars()
 
         for prediction in predictions:
-
+            flash("prediction from user func")
             # if this is a penalty game then do this 
             if prediction.match.penalty_game: # not finished
+                flash("penalty match")
                 if prediction.match.penalty_winner != 'na': # check that the game required penalties
                     if prediction.penalty_winner_predicted == prediction.match.penalty_winner:
                         prediction.points_awarded = 3
