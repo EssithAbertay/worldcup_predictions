@@ -219,6 +219,7 @@ def admin_panel():
             flash('got users')
 
             for user in users:
+                flash('attempting to update user scores')
                 user.calculate_points()
                 flash('updated scores for user')
 
