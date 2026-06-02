@@ -202,7 +202,8 @@ def admin_panel():
                 g.home_score = field.home_score.data
                 g.away_score = field.away_score.data
                 g.penalty_winner = field.penalty_winner.data
-            
+                flash('registered result')
+
             db.session.commit()
             return redirect(url_for('admin_panel'))
         else:
