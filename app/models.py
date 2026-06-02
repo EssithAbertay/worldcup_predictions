@@ -53,7 +53,7 @@ class User(UserMixin, db.Model):
                         prediction.points_awarded = 0
                         self.points += 0
             else: # when it's not a penalty game
-
+                flash("non-penalty game being checked")
 
                 draw = bool(prediction.match.home_score == prediction.match.away_score)
                 pred_draw = bool(prediction.home_score_predicted == prediction.away_score_predicted)
