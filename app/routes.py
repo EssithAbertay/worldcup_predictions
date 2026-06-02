@@ -196,6 +196,9 @@ def admin_panel():
             for field in add_result_form.results:
                 g = db.session.get(Game, field.game_id.data)
 
+                if g.home_score is None and g.away_score is None:
+                    continue
+
                 g.home_score = field.home_score.data
                 g.away_score = field.away_score.data
                 g.penalty_winner = field.penalty_winner.data

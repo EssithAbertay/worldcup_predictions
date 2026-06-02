@@ -74,8 +74,8 @@ class AdminGameSubmission(FlaskForm):
 class AdminSingleResult(Form):
 
     game_id = IntegerField(validators=[DataRequired()])
-    home_score = IntegerField('Home Team', validators=[InputRequired(), NumberRange(min=0, max=99)])
-    away_score = IntegerField('Away Team', validators=[InputRequired(), NumberRange(min=0, max=99)])
+    home_score = IntegerField('Home Team', validators=[Optional(), NumberRange(min=0, max=99)])
+    away_score = IntegerField('Away Team', validators=[Optional(), NumberRange(min=0, max=99)])
     penalty_winner = RadioField('Penalty Winner', choices=[('home','Home Team'),('away','Away Team'),('na','N/A')], default='na')
 
 class AdminResultForm(FlaskForm):
