@@ -213,10 +213,14 @@ def admin_panel():
 
         if recalculate_points.recalculate_points.data and recalculate_points.validate():
             query = sa.select(User).order_by(User.points.desc())
+            flash('got query')
+            flash('attempting to getusers')
             users = db.session.scalars(query).all()
+            flash('got users')
 
             for user in users:
                 user.calculate_points()
+                flash('updated scores for user')
 
             db.session.commit()
 
