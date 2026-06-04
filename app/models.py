@@ -92,7 +92,7 @@ class User(UserMixin, db.Model):
                         self.points += 1
 
                 # nothing correct at all
-                prediction.points_awarded = 0
+                prediction.points_awarded += 0
                 self.points += 0
 
 class Game(db.Model):
