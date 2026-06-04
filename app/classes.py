@@ -1,7 +1,7 @@
 from dataclasses import dataclass
-from typing import List
+from typing import List, Any
 
 @dataclass
 class TopUser:
-    user: User
+    user: Any
     predictions: List
