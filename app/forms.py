@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, DateTimeLocalField, FieldList, FormField, RadioField, IntegerField, Form
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, DateTimeLocalField, FieldList, FormField, RadioField, IntegerField, Form, SelectField
 from wtforms.validators import ValidationError, DataRequired, EqualTo, NumberRange, Optional, InputRequired, Length
 import sqlalchemy as sa
 from app import db
@@ -64,9 +64,19 @@ class PredictionForm(FlaskForm):
     predictions = FieldList(FormField(SinglePredictionForm), min_entries=0)
     submit = SubmitField('Submit Predictions')
 
+
+class AdminTeamSubmission(FlaskForm):
+    team = StringField('Team', validators=[DataRequired()])
+    fifa_code = StringField('FIFA Code', validators=[DataRequired()])
+    flag_code = StringField('Flag Code', validators=[DataRequired()])
+    group = StringField('Group', validators=[DataRequired()])
+    submit = SubmitField('Add Team')
+
+
 class AdminGameSubmission(FlaskForm):
-    home_team = StringField('Home Team', validators=[DataRequired()])
-    away_team = StringField('Away Team', validators=[DataRequired()])
+    home_team = SelectField('Home Team', validators=[DataRequired()], coerce=int)
+    away_team = SelectField('Away Team', validators=[DataRequired()], coerce=int)
+
     kickoff = DateTimeLocalField('Kickoff DateTime',  format='%Y-%m-%dT%H:%M', validators=[DataRequired()])
     is_penalty_game = BooleanField('Can go to penalties?')
     submit_game = SubmitField('Add Game')

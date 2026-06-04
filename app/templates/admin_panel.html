@@ -2,20 +2,58 @@
 {% block content %}
     <h1>Admin Panel</h1>
     <hr>
+    
+    <h3>Register Team</h3>
+
+    <form action="" method="post">
+        {{add_team_form.hidden_tag()}}
+        <p>
+            {{ add_team_form.team.label }}<br>
+            {{ add_team_form.team(size=32) }}<br>
+            {% for error in add_team_form.team.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ add_team_form.fifa_code.label }}<br>
+            {{ add_team_form.fifa_code(size=10) }}<br>
+            {% for error in add_team_form.fifa_code.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p> 
+        </p> 
+        <p>
+            {{ add_team_form.flag_code.label }}<br>
+            {{ add_team_form.flag_code(size=10) }}<br>
+            {% for error in add_team_form.flag_code.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ add_team_form.group.label }}<br>
+            {{ add_team_form.group(size=10) }}<br>
+            {% for error in add_team_form.group.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>{{ add_team_form.submit() }}</p>
+    </form>
+
+    <hr>
     <h3>Register Game</h3>
 
     <form action="" method="post">
         {{add_game_form.hidden_tag()}}
         <p>
             {{ add_game_form.home_team.label }}<br>
-            {{ add_game_form.home_team(size=32) }}<br>
+            {{ add_game_form.home_team() }}<br>
             {% for error in add_game_form.home_team.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
         <p>
             {{ add_game_form.away_team.label }}<br>
-            {{ add_game_form.away_team(size=32) }}<br>
+            {{ add_game_form.away_team() }}<br>
             {% for error in add_game_form.away_team.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
@@ -57,7 +95,6 @@
     <hr>
 
     <h3>Calculate Points</h3>
-
 
     <form action="" method="post">
         {{recalculate_points.hidden_tag()}}

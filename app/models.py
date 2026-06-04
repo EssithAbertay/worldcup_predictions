@@ -95,10 +95,29 @@ class User(UserMixin, db.Model):
                 prediction.points_awarded += 0
                 self.points += 0
 
+class Team(db.Model):
+    id: so.Mapped[int] = so.mapped_column(primary_key=True)
+
+    name: so.Mapped[str] = so.mapped_column(sa.String(64))
+    fifa_code: so.Mapped[str] = so.mapped_column(sa.String(10))
+    flag_code: so.Mapped[str] = so.mapped_column(sa.String(10))
+    group:  so.Mapped[str] = so.mapped_column(sa.String(1))
+
+    def __repr__(self):
+        return '<Team ID={} Name={} FIFA code={} Flag code={} Group={}>'.format(
+            self.id,
+            self.name,
+            self.fifa_code,
+            self.flag_code,
+            self.group
+    )
+
 class Game(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
-    home_team: so.Mapped[str] = so.mapped_column(sa.String(64), index=True)
-    away_team: so.Mapped[str] = so.mapped_column(sa.String(64), index=True)
+
+    home_team_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Team.id))
+    away_team_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Team.id))
+
     home_score: so.Mapped[Optional[int]] = so.mapped_column()
     away_score: so.Mapped[Optional[int]] = so.mapped_column()
     penalty_game: so.Mapped[bool] = so.mapped_column(default=False)
@@ -106,6 +125,15 @@ class Game(db.Model):
     kickoff: so.Mapped[datetime] = so.mapped_column(index=True)
 
     predictions: so.WriteOnlyMapped['Prediction'] = so.relationship(back_populates='match')
+
+    home_team: so.Mapped["Team"] = so.relationship(
+        foreign_keys=[home_team_id]
+    )
+
+    away_team: so.Mapped["Team"] = so.relationship(
+        foreign_keys=[away_team_id]
+    )
+
 
     def __repr__(self):
         return '<Game {} vs {} @ {} Penalties: {}>'.format(
@@ -134,6 +162,7 @@ class Prediction(db.Model):
             self.home_score_predicted,
             self.away_score_predicted
     )
+
 
 @login.user_loader
 def load_user(id):

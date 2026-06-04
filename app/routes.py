@@ -1,12 +1,12 @@
 from flask import render_template, flash, redirect, url_for, request, abort
 from urllib.parse import urlsplit
 from app import app
-from app.forms import LoginForm, RegistrationForm, AdminGameSubmission, EditProfileForm, PredictionForm, AdminResultForm, AdminRecalculatePoints
+from app.forms import LoginForm, RegistrationForm, AdminGameSubmission, EditProfileForm, PredictionForm, AdminResultForm, AdminRecalculatePoints, AdminTeamSubmission
 
 from flask_login import current_user, login_user, logout_user, login_required
 import sqlalchemy as sa
 from app import db
-from app.models import User, Game, Prediction
+from app.models import User, Game, Prediction, Team
 from datetime import datetime, date, timedelta
 from sqlalchemy import func
 from app.classes import TopUser
@@ -175,11 +175,19 @@ def admin_panel():
     if not current_user.is_admin:
         abort(403)
 
+    # adding teams
+    add_team_form = AdminTeamSubmission()
+
+
     # adding games
     add_game_form = AdminGameSubmission()
+    teams = db.session.scalars(sa.select(Team).order_by(Team.name)).all()
+
+    # populate dropdown choices
+    add_game_form.home_team.choices = [(t.id, t.name) for t in teams]
+    add_game_form.away_team.choices = [(t.id, t.name) for t in teams]
 
     # adding results to games
-
     add_result_form = AdminResultForm() 
 
     query = sa.select(Game).filter(Game.home_score == None)
@@ -194,13 +202,22 @@ def admin_panel():
             print(game)
             entry = add_result_form.results.append_entry()
             entry.game_id.data = game.id
-            entry.home_team = game.home_team
-            entry.away_team = game.away_team    
+            entry.home_team = game.home_team.name
+            entry.away_team = game.away_team.name
             entry.penalty_game = game.penalty_game
 
     if request.method == 'POST':
+        if add_team_form.submit.data and add_team_form.validate():
+            team = Team(name=add_team_form.team.data, fifa_code=add_team_form.fifa_code.data, flag_code=add_team_form.flag_code.data, group=add_team_form.group.data)
+            db.session.add(team)
+            db.session.commit()
+            flash('Registered Team')
+            return redirect(url_for('admin_panel'))
+        else:
+            print(add_team_form.errors)
+
         if add_game_form.submit_game.data and add_game_form.validate():
-            game = Game(home_team=add_game_form.home_team.data, away_team=add_game_form.away_team.data, kickoff=add_game_form.kickoff.data, penalty_game=add_game_form.is_penalty_game.data)
+            game = Game(home_team_id=add_game_form.home_team.data, away_team_id=add_game_form.away_team.data, kickoff=add_game_form.kickoff.data, penalty_game=add_game_form.is_penalty_game.data)
             db.session.add(game)
             db.session.commit()
             return redirect(url_for('admin_panel'))
@@ -243,7 +260,7 @@ def admin_panel():
 
             return redirect(url_for('admin_panel'))
 
-    return render_template('admin_panel.html', title='Admin Panel', add_game_form=add_game_form, add_result_form=add_result_form, recalculate_points = recalculate_points)
+    return render_template('admin_panel.html', title='Admin Panel', add_game_form=add_game_form, add_result_form=add_result_form, recalculate_points = recalculate_points, add_team_form=add_team_form)
 
 @app.route('/leaderboard', methods=['GET'])
 def leaderboard():
