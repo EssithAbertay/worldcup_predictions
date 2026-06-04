@@ -1,10 +1,42 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Hello, {{ current_user.username }}</h1>
-    <h2>This page is currently under construction!<br>Please come back soon for more</h2>
+    <div class="container text-center"> 
+        <h3>Todays Games</h3>
+        <p>Go to  <a href="{{url_for('upcoming_games')}}">Upcoming Games</a> to predict</p>
+        
+        {% for game in games %}
+         <div class = "row">
+            <div class="col">
+                {% include '_upcoming_game.html' %} 
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div class="container text-center"> 
+        <h3>Top 5 and Upcoming Predictions</h3>
 
-    <h3>Todays Games</h3>
-    <h3>Current Leaders</h3>
-    <h3>Recent Predictions</h3>
+            <div class = "row">
+            {%for item in leaderboard%}
+
+                <div class="col">
+
+                    <p>{{ loop.index }}. <img src="{{ item.user.avatar(24) }}" alt="User Avatar">   <a href="{{ url_for('user', username=item.user.username) }}">{{item.user.username}}</a> - {{item.user.points}}</p>
+
+
+                    {%for prediction in item.predictions%}
+
+                        <p>
+                        {{ prediction.match.home_team}} {{ prediction.home_score_predicted}}- {{ prediction.away_score_predicted}} {{ prediction.match.away_team}}
+                        </p>
+
+                    {%endfor%}
+                    
+                </div>
+        
+        
+            {%endfor%} 
+        </div>
+    </div>
 {% endblock %}

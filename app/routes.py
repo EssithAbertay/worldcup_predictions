@@ -7,13 +7,27 @@ from flask_login import current_user, login_user, logout_user, login_required
 import sqlalchemy as sa
 from app import db
 from app.models import User, Game, Prediction
-from datetime import datetime
+from datetime import datetime, date
+from sqlalchemy import func
+from app.classes import TopUser
+
 
 @app.route('/')
 @app.route('/index')
 @login_required
 def index():
-    return render_template('index.html', title='Home')
+    games = db.session.scalars(sa.select(Game).where(func.date(Game.kickoff) == date.today())).all()
+    users = db.session.scalars(sa.select(User).order_by(User.points.desc()).limit(5)).all()
+
+    leaderboard = []
+
+    for user in users:
+        query = sa.select(Prediction).join(Prediction.match).where(Game.kickoff >= date.today()).limit(4)
+        predictions = db.session.scalars(query).all()
+
+        leaderboard.append(TopUser(user=user,predictions=predictions))
+
+    return render_template('index.html', title='Home', games=games, leaderboard=leaderboard)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
