@@ -8,7 +8,7 @@
     <h3>Still to Predict</h3> 
 
     {% set ns = namespace(curr_date=None) %}
-        
+    <div class="container text-center"> 
     {% for id in unpredicted_games %}
         {% set prediction = form.predictions[id] %}
         
@@ -20,7 +20,7 @@
         
         {% include '_to_predict.html' %} 
     {% endfor %}
-
+    </div>
     <hr>
 
     {% set ns.curr_date = None %}
