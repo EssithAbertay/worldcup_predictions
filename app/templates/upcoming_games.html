@@ -1,47 +1,54 @@
 {% extends "base.html" %}
 
-{% block content %}
-<h1>Upcoming Games</h1>
-<form action="" method="post">
-    {{ form.hidden_tag() }}
+{% block content %} 
 
-    <h3>Still to Predict</h3> 
-
-    {% set ns = namespace(curr_date=None) %}
-    <div class="container text-center"> 
-    {% for id in unpredicted_games %}
-        {% set prediction = form.predictions[id] %}
-        
-        {% if ns.curr_date != prediction.kickoff_time.date() %}
-            {% set ns.curr_date = prediction.kickoff_time.date() %}
-            <hr>
-            <h4>{{ns.curr_date}}</h4> 
-        {% endif %}  
-        
-        {% include '_to_predict.html' %} 
-    {% endfor %}
-    </div>
+<div class="container text-center min-vh-100"> 
+    <h1><u>Upcoming Games</u></h1>
     <hr>
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+    
+        <h3>Still to Predict</h3> 
 
-    {% set ns.curr_date = None %}
+        {% set ns = namespace(curr_date=None) %}
+        
+        {% for id in unpredicted_games %}
+            {% set prediction = form.predictions[id] %}
+            
+            {% if ns.curr_date != prediction.kickoff_time.date() %}
+                {% set ns.curr_date = prediction.kickoff_time.date() %}
+                <hr>
+                <h4>{{ns.curr_date}}</h4> 
 
-    <h3>Already Predicted</h3>
-    {% for id in predicted_games %}
-        {% set prediction = form.predictions[id] %}
-
-        {% if ns.curr_date != prediction.kickoff_time.date() %}
-            {% set ns.curr_date = prediction.kickoff_time.date() %}
-            <hr>
-            <h4>{{ns.curr_date}}</h4> 
-        {% endif %}  
+                {% if ns.curr_date == today %}
+                <h5 class="text-danger">Due Today!</h5> 
+                {% endif %}
+            {% endif %}  
+            
             {% include '_to_predict.html' %} 
-    {% endfor %}
+        {% endfor %}
+        
+        <hr>
 
-    <div class="fixed-bottom p-3 bg-white border-top text-end">
-    {{ form.submit(class="btn btn-primary") }}
-    </div>
-</form>
+        {% set ns.curr_date = None %}
 
+        <h3>Already Predicted</h3>
+        {% for id in predicted_games %}
+            {% set prediction = form.predictions[id] %}
+
+            {% if ns.curr_date != prediction.kickoff_time.date() %}
+                {% set ns.curr_date = prediction.kickoff_time.date() %}
+                <hr>
+                <h4>{{ns.curr_date}}</h4> 
+            {% endif %}  
+                {% include '_to_predict.html' %} 
+        {% endfor %}
+
+        <div class="fixed-bottom p-3 bg-white border-top text-center">
+            {{ form.submit(class="btn btn-primary fs-3") }}
+        </div>
+    </form>
+</div>
 <script>
 document.querySelectorAll('.prediction-row').forEach(row => {
     const home = row.querySelector('.home_score');

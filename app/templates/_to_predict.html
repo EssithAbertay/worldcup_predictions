@@ -1,6 +1,6 @@
 <div class="prediction-row">
     <div class="row">
-        <div class="col">
+        <div class="col fs-5">
             {{ prediction.game_id(type="hidden") }}
             {{ prediction.home_team.name }} vs {{ prediction.away_team.name }}
         </div>
@@ -12,20 +12,20 @@
 
     {{ prediction.home_score(size=2, class="home_score form-control text-center", style="width: 80px;") }}
 
-    <span class="align-self-center fs-4">-</span>
-
+    <i class="bi bi-x-diamond-fill"></i>
+    
     {{ prediction.away_score(size=2, class="away_score form-control text-center", style="width: 80px;") }}
 
     <span class="fi fi-{{ prediction.away_team.flag_code }} align-self-center fs-1 border"></span>
 
 </div>
+
     <div class="row">
         {% if prediction.penalties_required %}
-            <small>Penalties required if scores are tied.</small><br>
+            <small>Penalties required if scores are tied.</small>
             <div class="penalty" style="display:none;">
                 Penalty Winner: {{ prediction.penalty_winner }}
             </div>
         {% endif %}
     </div>
 </div>
-<br>

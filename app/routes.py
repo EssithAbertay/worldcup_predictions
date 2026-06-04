@@ -167,7 +167,7 @@ def upcoming_games():
     else:
         print(form.errors)
 
-    return render_template('upcoming_games.html', title='Upcoming Games', form = form, predicted_games = predicted_games, unpredicted_games = unpredicted_games)
+    return render_template('upcoming_games.html', title='Upcoming Games', form = form, predicted_games = predicted_games, unpredicted_games = unpredicted_games, today=date.today())
 
 @app.route('/admin_panel', methods=['GET','POST'])
 @login_required
