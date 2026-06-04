@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Results</h1>
+
+    {% set ns = namespace(curr_date=None) %}
+        
+    {% for result in results %}
+
+        {% if ns.curr_date != result.kickoff.date() %}
+            {% set ns.curr_date = result.kickoff.date() %}
+            <hr>
+            <h4>{{ns.curr_date}}</h4> 
+        {% endif %}  
+        
+        {{result.home_team}} {{result.home_score}} - {{result.away_score}} {{result.away_team }}
+        <br>
+    {% endfor %}
+
+{% endblock %}

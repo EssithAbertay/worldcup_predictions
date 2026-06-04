@@ -7,7 +7,7 @@ from flask_login import current_user, login_user, logout_user, login_required
 import sqlalchemy as sa
 from app import db
 from app.models import User, Game, Prediction
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from sqlalchemy import func
 from app.classes import TopUser
 
@@ -16,18 +16,20 @@ from app.classes import TopUser
 @app.route('/index')
 @login_required
 def index():
-    games = db.session.scalars(sa.select(Game).where(func.date(Game.kickoff) == date.today())).all()
+    todays = db.session.scalars(sa.select(Game).where(func.date(Game.kickoff) == date.today()).order_by(Game.kickoff.asc())).all()
+    yesterdays = db.session.scalars(sa.select(Game).where(func.date(Game.kickoff) == (date.today() - timedelta(days=1))).order_by(Game.kickoff.asc())).all()
+
     users = db.session.scalars(sa.select(User).order_by(User.points.desc()).limit(5)).all()
 
     leaderboard = []
 
     for user in users:
-        query = sa.select(Prediction).join(Prediction.match).where(Game.kickoff >= date.today()).limit(4)
+        query = sa.select(Prediction).join(Prediction.match).where(Game.kickoff >= datetime.now(),Prediction.user_id == user.id).order_by(Game.kickoff.asc()).limit(4)
         predictions = db.session.scalars(query).all()
 
         leaderboard.append(TopUser(user=user,predictions=predictions))
 
-    return render_template('index.html', title='Home', games=games, leaderboard=leaderboard)
+    return render_template('index.html', title='Home', todays=todays, yesterdays=yesterdays, leaderboard=leaderboard)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -243,8 +245,6 @@ def admin_panel():
 
     return render_template('admin_panel.html', title='Admin Panel', add_game_form=add_game_form, add_result_form=add_result_form, recalculate_points = recalculate_points)
 
-
-
 @app.route('/leaderboard', methods=['GET'])
 def leaderboard():
     query = sa.select(User).order_by(User.points.desc())
@@ -254,4 +254,17 @@ def leaderboard():
 @app.route('/faq')
 def faq():
     return render_template('faq.html', title='FAQ')
+
+@app.route('/results')
+def results():
+    games = db.session.scalars(sa.select(Game).where(Game.kickoff <= datetime.now())).all() # get all games that have started already, just to cut down on costs, rathter than all games as we know future ones dont have scores yet
+
+    results = []
+
+    for game in games:
+        if(game.home_score is not None):
+            results.append(game)
+
+    return render_template('results.html', title='Results', results=results)
+
 

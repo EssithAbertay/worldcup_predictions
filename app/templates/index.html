@@ -2,21 +2,44 @@
 
 {% block content %}
     <div class="container text-center"> 
-        <h3>Todays Games</h3>
-        <p>Go to  <a href="{{url_for('upcoming_games')}}">Upcoming Games</a> to predict</p>
-        
-        {% for game in games %}
-         <div class = "row">
+        <div class = "row">    
             <div class="col">
-                {% include '_upcoming_game.html' %} 
+                <h3>Todays Games</h3> <p>Go to <a href="{{url_for('upcoming_games')}}">Upcoming Games</a> to predict</p>
+            </div>
+            <div class="col">
+                <h3>Yesterdays Results</h3> <p>Go to <a href="{{url_for('results')}}">Results</a> to view all</p>
             </div>
         </div>
-        {% endfor %}
+        <hr>
+        <div class = "row">   
+            <div class="col">
+
+                <div class="container text-center"> 
+                    
+                    {% for game in todays %}
+                        <div class="row">
+                            <div class="col"> <p>{{game.kickoff.time()}}</p> </div>
+                            <div class="col"> <p>{{game.home_team}} - {{game.away_team}} </p> </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div> 
+            
+            <div class="col">
+                {% for game in yesterdays %}
+                    <div class = "row">
+                        <p>{{game.home_team}} {{game.home_score}} - {{game.away_score}} {{game.away_team }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>  
     </div>
-    
+
+    <hr>
     <div class="container text-center"> 
         <h3>Top 5 and Upcoming Predictions</h3>
-
+        <p>Go to <a href="{{url_for('leaderboard')}}">Leaderbaord</a> to view full details</p>
+    <hr>
             <div class = "row">
             {%for item in leaderboard%}
 

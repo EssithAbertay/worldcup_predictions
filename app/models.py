@@ -38,10 +38,10 @@ class User(UserMixin, db.Model):
         # for now its just working off of scores, will add penalties later
         # also have to make it skip games that have already been worked out
         self.points = 0
-        predictions = db.session.execute(self.predictions.select().where(Prediction.points_awarded == 0)).scalars()
+       # predictions = db.session.execute(self.predictions.select().where(Prediction.points_awarded == None)).scalars() # this ver should only get games that havent been set yet
+        predictions = db.session.execute(self.predictions.select()).scalars() # gets all games
 
         for prediction in predictions:
-
             #first skip games that haven't happened yet
             if prediction.match.home_score is None or prediction.match.away_score is None:
                 continue 
@@ -67,8 +67,6 @@ class User(UserMixin, db.Model):
                 home_correct = bool(prediction.home_score_predicted == prediction.match.home_score)
                 away_correct = bool(prediction.away_score_predicted == prediction.match.away_score)
                 
-                
-                
                 if(home_correct and away_correct): # correct score + results
                     prediction.points_awarded = 5
                     self.points += 5
@@ -85,7 +83,6 @@ class User(UserMixin, db.Model):
 
                 prediction.points_awarded = 0
                 self.points += 0
-
 
 class Game(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)

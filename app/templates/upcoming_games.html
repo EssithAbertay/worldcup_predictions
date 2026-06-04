@@ -4,7 +4,6 @@
 <h1>Upcoming Games</h1>
 <form action="" method="post">
     {{ form.hidden_tag() }}
-    <p>{{ form.submit() }}</p>
 
     <h3>Still to Predict</h3> 
 
@@ -37,6 +36,10 @@
         {% endif %}  
             {% include '_to_predict.html' %} 
     {% endfor %}
+
+    <div class="fixed-bottom p-3 bg-white border-top text-end">
+    {{ form.submit(class="btn btn-primary") }}
+    </div>
 </form>
 
 <script>
