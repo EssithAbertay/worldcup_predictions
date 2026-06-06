@@ -9,17 +9,17 @@
      
     <div class="d-flex justify-content-center align-items-center mb-3 gap-2">
 
-    <span class="fi fi-{{ prediction.home_team.flag_code }} align-self-center fs-1 border"></span>
+        <span class="fi fi-{{ prediction.home_team.flag_code }} align-self-center fs-1 border"></span>
 
-    {{ prediction.home_score(size=2, class="home_score form-control text-center", style="width: 80px;") }}
+        {{ prediction.home_score(size=2, class="home_score form-control text-center", style="width: 80px;") }}
 
-    <i class="bi bi-x-diamond-fill"></i>
-    
-    {{ prediction.away_score(size=2, class="away_score form-control text-center", style="width: 80px;") }}
+        <i class="bi bi-x-diamond-fill"></i>
+        
+        {{ prediction.away_score(size=2, class="away_score form-control text-center", style="width: 80px;") }}
 
-    <span class="fi fi-{{ prediction.away_team.flag_code }} align-self-center fs-1 border"></span>
+        <span class="fi fi-{{ prediction.away_team.flag_code }} align-self-center fs-1 border"></span>
 
-</div>
+    </div>
 
     <div class="row">
         {% if prediction.penalties_required %}
