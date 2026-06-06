@@ -42,7 +42,7 @@
                     </div>
                     
                     <div class="card-text podium podium-second rounded-bottom">
-                        <h3>2</h3>
+                        <h3>🥈</h3>
                     </div>
                 </div>
             </div>
@@ -56,7 +56,7 @@
                     </div>
                 
                     <div class="card-text podium podium-first rounded-bottom">
-                        <h2>1</h2>
+                        <h2>🥇</h2>
                     </div>
                 </div>
             </div>
@@ -70,7 +70,7 @@
                     </div>
                 
                     <div class="card-text podium podium-third rounded-bottom">
-                        <h3>3</h3>
+                        <h3>🥉</h3>
                     </div>
                 </div>
             </div>
@@ -80,8 +80,16 @@
     {% for user in rest %}
     <div class="row border-top g-0 py-2">
         <div class="col d-flex justify-content-center">
+
+        {% if loop.last %}
+             <p class="m-0 fs-5">🥄. <a href="{{ url_for('user', username=user.username) }}"> {{user.username}}</a> - {{user.points}} points</p>
+      
+        {% else %}
             <p class="m-0 fs-5">{{ loop.index + 3 }}. <a href="{{ url_for('user', username=user.username) }}"> {{user.username}}</a> - {{user.points}} points</p>
+       {%endif%}
         </div>
+
+
     </div>
     {% endfor %}
 

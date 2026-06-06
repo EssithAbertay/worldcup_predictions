@@ -1,22 +1,91 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div style="display: flex; align-items: flex-start;">
-        <img src="{{ user.avatar(128) }}" alt="User Avatar">
-        <div style="display: flex; flex-direction: column;">
-            <h1>User: {{ user.username }}</h1>
-            <h3>Points: {{user.points}} </h3>
+<div class="container text-start min-vh-100 mb-100" style="padding-bottom: 120px;"> 
+    
+    <div class="container text-center"> 
+    <div class="row">
+        <div class="col-6">
+            <h1>{{ user.username }}</h1>
+            <h3>{{user.points}} points</h3>   
+            
+            {% if user == current_user %}
+            <p><a href="{{ url_for('edit_profile') }}">Edit Username</a></p>
+            {% endif %}
+        </div>
+        <div class="col-6">
+            <img class="border border-secondary rounded" src="{{ user.avatar(128) }}" alt="User Avatar">
+         
         </div>
     </div>
-
-    {% if user == current_user %}
-    <p><a href="{{ url_for('edit_profile') }}">Edit profile</a></p>
-    {% endif %}
+    </div>
 
     <hr>
-    <h2>Predictions</h2>
-    {% for prediction in predictions %}
-        {% include '_prediction.html' %} 
-    {% endfor %}
 
+    <div class="container text-center fs-5 bold"> 
+        <h2>Games</h2>
+        <div class="row text-center">
+            <div class="col-4 text-center">
+                Prediction
+            </div>
+            <div class="col-2 text-center">
+                Result
+            </div>
+            <div class="col-2 text-center">
+                Score
+            </div>
+            <div class="col-2 text-center">
+                Bonus
+            </div>
+            <div class="col-2 text-center">
+                Total
+            </div>
+            
+        </div>
+
+        <hr>
+
+        {% for prediction in predictions %}
+            <div class="row">
+                <div class="col-4">
+                    {% include '_prediction.html' %} 
+                </div>
+
+                <div class="col-2">
+                    {% if prediction.points_awarded == 5 %}
+                    5
+                    {% else %}
+                    0
+                    {% endif %}
+                </div>
+
+                <div class="col-2">                 
+                    {% if prediction.points_awarded == 5 %}
+                    N/A
+                    {% elif prediction.points_awarded == 2 %}
+                    2
+                    {% else %}
+                    0
+                    {% endif %}
+                </div>
+
+                <div class="col-2">
+                    {% if prediction.points_awarded == 5 %}
+                    N/A
+                    {% elif prediction.points_awarded == 3 %}
+                    1
+                    {% else %}
+                    0
+                    {% endif %}
+                </div>
+
+                <div class="col-2">
+                    {{prediction.points_awarded}}
+                </div>
+            </div>
+
+            <hr>
+        {% endfor %}
+    </div>
+</div>
 {% endblock %}

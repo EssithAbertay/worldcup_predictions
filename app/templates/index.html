@@ -66,19 +66,7 @@
 
                     {%for prediction in item.predictions%}
 
-                        <div class="d-flex justify-content-center align-items-center mb-3 gap-2 fs-5">
-
-                            <span class="fi fi-{{ prediction.match.home_team.flag_code }} align-self-center fs-1 border"></span>
-
-                            {{ prediction.home_score_predicted }}
-
-                            <i class="bi bi-x-diamond-fill"></i>
-                            
-                            {{ prediction.away_score_predicted }}
-
-                            <span class="fi fi-{{ prediction.match.away_team.flag_code }} align-self-center fs-1 border"></span>
-
-                        </div>
+                        {% include '_prediction.html' %}
 
                     {%endfor%}
                     
