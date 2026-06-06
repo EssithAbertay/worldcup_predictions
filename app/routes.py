@@ -266,7 +266,11 @@ def admin_panel():
 def leaderboard():
     query = sa.select(User).order_by(User.points.desc())
     users = db.session.scalars(query).all()
-    return render_template('leaderboard.html', title='Leaderboard', users=users)
+
+    podium = users[:3]
+    rest = users[3:]
+
+    return render_template('leaderboard.html', title='Leaderboard', podium=podium, rest=rest)
 
 @app.route('/faq')
 def faq():
