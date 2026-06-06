@@ -15,7 +15,13 @@
             <div class="col">
 
                 <div class="container text-center"> 
-                    
+                          
+                    {% if not todays %}
+                      <div class="row">
+                            <div class="col"> <p>No games today!</p> 
+                            </div>
+                        </div>
+                    {%endif%}
                     {% for game in todays %}
                         <div class="row">
                             <div class="col"> <p>{{game.kickoff.time()}}</p> </div>
@@ -26,6 +32,13 @@
             </div> 
             
             <div class="col">
+                 {% if not yesterdays %}
+                    <div class="row">
+                        <div class="col"> <p>No games yesterday!</p> 
+                        </div>
+                    </div>
+                {%endif%}
+
                 {% for game in yesterdays %}
                     <div class = "row">
                         <p>{{game.home_team}} {{game.home_score}} - {{game.away_score}} {{game.away_team }}</p>
@@ -33,6 +46,7 @@
                 {% endfor %}
             </div>
         </div> 
+        
         <hr> 
     </div>
 
