@@ -36,7 +36,7 @@
             <div class="col-4 col-md-3">
                 <div class="card podium-card">
                     <div class="card-body">
-                        <img src="{{ podium[1].avatar(48) }}" alt="User Avatar" class="m-0 border border-secondary rounded">
+                        <img src="{{ podium[1].avatar(48) }}" alt="User Avatar" class="m-0 border border-secondary rounded" style="width: 48px; height: 48px;">
                         <a href="{{ url_for('user', username=podium[1].username) }}"><h5 class="m-0">{{ podium[1].username }}</h5></a>
                         <p class="m-0">{{ podium[1].points }} pts</p>
                     </div>
@@ -50,7 +50,7 @@
             <div class="col-4 col-md-3">
                 <div class="card podium-card border-warning">
                     <div class="card-body">
-                        <img src="{{ podium[0].avatar(48) }}" alt="User Avatar" class="m-0 border border-secondary rounded">
+                        <img src="{{ podium[0].avatar(48) }}" alt="User Avatar" class="m-0 border border-secondary rounded" style="width: 48px; height: 48px;">
                         <a href="{{ url_for('user', username=podium[0].username) }}"><h5 class="m-0">{{ podium[0].username }}</h5></a>
                         <p class="m-0">{{ podium[0].points }} pts</p>
                     </div>
@@ -64,7 +64,7 @@
             <div class="col-4 col-md-3">
                 <div class="card podium-card ">
                     <div class="card-body">
-                        <img src="{{ podium[2].avatar(48) }}" alt="User Avatar" class="m-0 border border-secondary rounded">
+                        <img src="{{ podium[2].avatar(48) }}" alt="User Avatar" class="m-0 border border-secondary rounded" style="width: 48px; height: 48px;">
                         <a href="{{ url_for('user', username=podium[2].username) }}"><h5 class="m-0">{{ podium[2].username }}</h5></a>
                         <p class="m-0">{{ podium[2].points }} pts</p>
                     </div>
