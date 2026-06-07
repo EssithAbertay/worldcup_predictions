@@ -164,13 +164,13 @@
      <div class="accordion-item">
         <h3 class="accordion-header">
             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSix" aria-expanded="false" aria-controls="collapseSix">
-            I want to change my username/password, how can I?
+            I want to change my username or profile picture, how can I?
             </button>
         </h3>
         <div id="collapseSix" class="accordion-collapse collapse" data-bs-parent="#FAQaccordion">
             <div class="accordion-body">
                 <p>
-                Usernames can be changed under the "edit username" button on your                         
+                Both can be edited under the "Edit Username or Profile Picture" link on your                         
 
                 {% if current_user.is_anonymous %}
                     profile.
@@ -178,21 +178,33 @@
                         <a href="{{ url_for('user', username=current_user.username) }}">profile</a>.
                 {% endif %}
 
-                As your profile picture is tied to your username, this will also be changed as a result.
-                <br>
-                Passwords cannot be changed, unless you <i>really</i> need to, if so let me know.
+                If you haven't set a profile picture it is generated based on your username, and so changing your username will also cahneg your profile pic.
                 </p>
             </div>
         </div>
     </div>
-
     <div class="accordion-item">
         <h3 class="accordion-header">
             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSeven" aria-expanded="false" aria-controls="collapseSeven">
-            I've forgotten my username/password, what do I do!?
+            I want to change my password, how can I?
             </button>
         </h3>
         <div id="collapseSeven" class="accordion-collapse collapse" data-bs-parent="#FAQaccordion">
+            <div class="accordion-body">
+                <p>
+                Passwords cannot be changed, unless you <i>really</i> need to, if so let me know.
+                </p>
+            </div>
+        </div>
+    </div>  
+  
+    <div class="accordion-item">
+        <h3 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEight" aria-expanded="false" aria-controls="collapseEight">
+            I've forgotten my username/password, what do I do!?
+            </button>
+        </h3>
+        <div id="collapseEight" class="accordion-collapse collapse" data-bs-parent="#FAQaccordion">
             <div class="accordion-body">
                 <p>
                 Let me know, I'll get you sorted.
