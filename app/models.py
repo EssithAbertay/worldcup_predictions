@@ -6,6 +6,7 @@ from app import db, login
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from hashlib import md5
+from flask import url_for
 
 class User(UserMixin, db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
@@ -15,6 +16,7 @@ class User(UserMixin, db.Model):
     points: so.Mapped[int] = so.mapped_column(default=0)
     ranking: so.Mapped[int] = so.mapped_column(nullable=True)
     is_admin: so.Mapped[bool] = so.mapped_column(default=False)
+    profile_pic_file: so.Mapped[str] = so.mapped_column(sa.String(64), default='none')
 
     predictions: so.WriteOnlyMapped['Prediction'] = so.relationship(back_populates='author')
 
@@ -30,9 +32,14 @@ class User(UserMixin, db.Model):
         return check_password_hash(self.password_hash, password)    
     
     def avatar(self, size):
-        digest = md5(self.username.lower().encode('utf-8')).hexdigest()
-        return f'https://www.gravatar.com/avatar/{digest}?d=identicon&s={size}'
+        if(self.profile_pic_file == 'none'):
+            digest = md5(self.username.lower().encode('utf-8')).hexdigest()
+            return f'https://www.gravatar.com/avatar/{digest}?d=identicon&s={size}'
+        else:
+          return url_for('static',filename=f'profile_pics/{self.profile_pic_file}')
+
     
+
     def calculate_points(self):
         # for each prediction, check it against its game then assign points
         # for now its just working off of scores, will add penalties later

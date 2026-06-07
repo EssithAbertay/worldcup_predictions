@@ -4,8 +4,11 @@ from wtforms.validators import ValidationError, DataRequired, EqualTo, NumberRan
 import sqlalchemy as sa
 from app import db
 from app.models import User
+from flask_wtf.file import FileField, FileAllowed
 import os
 #from wtforms.validators import Email
+
+
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
@@ -37,7 +40,7 @@ class RegistrationForm(FlaskForm):
     #    if user is not None:
     #        raise ValidationError('Already in use! Please use a different email.')
         
-class EditProfileForm(FlaskForm):
+class EditUsernameForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     submit = SubmitField('Submit')
 
@@ -51,6 +54,12 @@ class EditProfileForm(FlaskForm):
                 User.username == username.data))
             if user is not None:
                 raise ValidationError('Already in use! Please use a different username.')
+
+
+class EditPicForm(FlaskForm):
+    profile = FileField('Select Profile Picture', validators=[FileAllowed(['jpg', 'jpeg', 'png'])])
+    submit = SubmitField('Submit')
+
       
 class SinglePredictionForm(Form):
     penalties_required = False

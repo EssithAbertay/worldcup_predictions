@@ -1,8 +1,7 @@
 from flask import render_template, flash, redirect, url_for, request, abort
 from urllib.parse import urlsplit
 from app import app
-from app.forms import LoginForm, RegistrationForm, AdminGameSubmission, EditProfileForm, PredictionForm, AdminResultForm, AdminRecalculatePoints, AdminTeamSubmission
-
+from app.forms import LoginForm, RegistrationForm, AdminGameSubmission, EditUsernameForm, PredictionForm, AdminResultForm, AdminRecalculatePoints, AdminTeamSubmission, EditPicForm
 from flask_login import current_user, login_user, logout_user, login_required
 import sqlalchemy as sa
 from app import db
@@ -10,6 +9,10 @@ from app.models import User, Game, Prediction, Team
 from datetime import datetime, date, timedelta
 from sqlalchemy import func
 from app.classes import TopUser
+
+from uuid import uuid4
+from pathlib import Path
+from PIL import Image
 
 
 @app.route('/')
@@ -80,15 +83,59 @@ def user(username):
 @app.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
 def edit_profile():
-    form = EditProfileForm(current_user.username)
-    if form.validate_on_submit():
-        current_user.username = form.username.data
-        db.session.commit()
-        flash('Your changes have been saved.')
-        return redirect(url_for('edit_profile'))
-    elif request.method == 'GET':
-        form.username.data = current_user.username
-    return render_template('edit_profile.html', title='Edit Profile', form=form)
+    username_form = EditUsernameForm(current_user.username)
+    profile_form = EditPicForm()
+
+    if request.method == 'GET':
+        username_form.username.data = current_user.username
+
+    if request.method == 'POST':
+
+        if username_form.submit.data and username_form.validate_on_submit():
+            current_user.username = username_form.username.data
+            db.session.commit()
+            flash('Your changes have been saved.')
+            return redirect(url_for('edit_profile'))
+    
+        if profile_form.submit.data and profile_form.validate_on_submit():
+            picture = profile_form.profile.data
+
+            if picture:
+                try:
+                    # Open and verify image
+                    img = Image.open(picture)
+                    img.verify()
+                except Exception:
+                    flash("Invalid image file")
+                    return redirect(url_for("edit_profile"))
+
+                picture.seek(0)   
+                img = Image.open(picture)
+                img.thumbnail((512, 512))
+
+                #delete old pic if it exists
+
+                if current_user.profile_pic_file != "none":
+                    old_path = Path(app.root_path) / "static" / "profile_pics" / current_user.profile_pic_file
+
+                    if old_path.exists():
+                        old_path.unlink()
+
+                ext = Path(picture.filename).suffix.lower()
+                filename = f"{uuid4().hex}{ext}"
+
+                flash(filename)
+                img.save(Path(app.root_path) / "static" / "profile_pics" / filename)
+                current_user.profile_pic_file = filename
+
+                db.session.commit()
+                flash('Your changes have been saved.')
+            else:
+                flash(' Didnt Got Data')
+            
+            return redirect(url_for('edit_profile'))
+
+    return render_template('edit_profile.html', title='Edit Profile', username_form=username_form, profile_form = profile_form )
 
 
 @app.route('/upcoming_games', methods=['GET','POST'])

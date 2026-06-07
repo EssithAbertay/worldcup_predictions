@@ -1,16 +1,36 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Edit Profile</h1>
-    <form action="" method="post">
-        {{ form.hidden_tag() }}
-        <p>
-            {{ form.username.label }}<br>
-            {{ form.username(size=32) }}<br>
-            {% for error in form.username.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
-        <p>{{ form.submit() }}</p>
-    </form>
+<div class="container text-start min-vh-100 mb-100" style="padding-bottom: 120px;"> 
+ 
+<h1>Edit Profile</h1>
+    
+<h3>Change username</h3>
+<form action="" method="post">
+    {{ username_form.hidden_tag() }}
+    <p>
+        {{ username_form.username.label }}<br>
+        {{ username_form.username(size=32, class="form-control") }}
+        {% for error in username_form.username.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>{{ username_form.submit(class="btn btn-primary") }}</p>
+</form>
+
+<h3>Change profile picture</h3>
+<form action="" method="post"  enctype="multipart/form-data">
+    {{ profile_form.hidden_tag() }}
+    <p>
+        {{ profile_form.profile.label }}<br>
+        {{ profile_form.profile(class="form-control") }}
+        {% for error in profile_form.profile.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>{{ profile_form.submit(class="btn btn-primary") }}</p>
+</form>
+
+
+</div>
 {% endblock %}

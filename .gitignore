@@ -1,7 +1,7 @@
 venv/
 __pycache__/
 instance/
-
+static/
 
 *.py[cod]
 *.env
