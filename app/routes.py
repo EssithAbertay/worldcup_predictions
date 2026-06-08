@@ -58,11 +58,24 @@ def logout():
 
 @app.route('/register', methods=['GET','POST'])
 def register():
+    print(
+        "REGISTER",
+        current_user.is_authenticated,
+        getattr(current_user, "id", None),
+        getattr(current_user, "username", None)
+    )
+
+
     if current_user.is_authenticated:
         return redirect(url_for('index'))
     form = RegistrationForm()
     if form.validate_on_submit():
         user = User(username=form.username.data)
+
+        print("NEW USER OBJECT")
+        print("id:", user.id)
+        print("username:", user.username)
+
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
@@ -93,6 +106,12 @@ def edit_profile():
 
         if username_form.submit.data and username_form.validate_on_submit():
             current_user.username = username_form.username.data
+            print(
+                "UPDATING USER username",
+                current_user.id,
+                current_user.username
+            )
+
             db.session.commit()
             flash('Your changes have been saved.')
             return redirect(url_for('edit_profile'))
@@ -127,6 +146,12 @@ def edit_profile():
                 flash(filename)
                 img.save(Path(app.root_path) / "static" / "profile_pics" / filename)
                 current_user.profile_pic_file = filename
+
+                print(
+                    "UPDATING USER profile pic",
+                    current_user.id,
+                    current_user.username
+                )
 
                 db.session.commit()
                 flash('Your changes have been saved.')
@@ -180,7 +205,7 @@ def upcoming_games():
             else:
                 unpredicted_games.append(id)
                
-    if form.validate_on_submit():
+    if request.method == 'POST' and form.validate_on_submit():
         for field in form.predictions:
             home_score = field.home_score.data
             away_score = field.away_score.data
@@ -206,6 +231,12 @@ def upcoming_games():
                 flash('Prediction didn\'t exist, adding')
                 prediction = Prediction(user_id=current_user.id ,game_id=field.game_id.data, home_score_predicted=home_score, away_score_predicted=away_score, penalty_winner_predicted=penalty_winner)
                 db.session.add(prediction)
+
+        print(
+            "UPDATING USER predictions",
+            current_user.id,
+            current_user.username
+        )
 
         db.session.commit()
 
