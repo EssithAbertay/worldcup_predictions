@@ -3,17 +3,42 @@
 {% block content %}
     <div class="container text-center"> 
         <div class = "row">    
-            <div class="col">
-                <h3>Todays Games</h3> <p>Go to <a href="{{url_for('upcoming_games')}}">Upcoming Games</a> to predict</p>
+            <div class="col-4">
+                <h3>Yesterday</h3> 
             </div>
-            <div class="col">
-                <h3>Yesterdays Results</h3> <p>Go to <a href="{{url_for('results')}}">Results</a> to view all</p>
+            <div class="col-4">
+                <h3>Today</h3>
+            </div>
+            <div class="col-4">
+                <h3>Tomorrow</h3> 
+            </div>
+        </div>
+        <div class = "row fs-6">    
+            <div class="col-4">
+                Go to <a href="{{url_for('results')}}">Results</a> to view all
+            </div>
+            <div class="col-8">
+                Go to <a href="{{url_for('upcoming_games')}}">Upcoming Games</a> to predict
             </div>
         </div>
         <hr>
         <div class = "row">   
-            <div class="col">
 
+            <div class="col-4">
+                 {% if not yesterdays %}
+                    <div class="row">
+                        <div class="col"> <p>No games yesterday!</p> 
+                        </div>
+                    </div>
+                {%endif%}
+
+                {% for game in yesterdays %}
+                    <div class="fs-6 py-0 my-0">{{ game.kickoff.strftime('%H:%M') }}</div>  
+                    {% include '_result.html'%}
+                {% endfor %}
+            </div>
+
+           <div class="col-4">
                 <div class="container text-center"> 
                           
                     {% if not todays %}
@@ -23,28 +48,28 @@
                         </div>
                     {%endif%}
                     {% for game in todays %}
-                        <div class="row">
-                            <div class="col"> <p>{{game.kickoff.time()}}</p> </div>
-                            <div class="col"> <p>{{game.home_team}} - {{game.away_team}} </p> </div>
-                        </div>
+                        <div class="fs-6 py-0 my-0">{{ game.kickoff.strftime('%H:%M') }}</div>          
+                        {% include '_upcoming.html'%}
                     {% endfor %}
                 </div>
             </div> 
             
-            <div class="col">
-                 {% if not yesterdays %}
-                    <div class="row">
-                        <div class="col"> <p>No games yesterday!</p> 
+            <div class="col-4">
+                <div class="container text-center"> 
+                          
+                    {% if not tomorrows %}
+                      <div class="row">
+                            <div class="col"> <p>No games tomorrow!</p> 
+                            </div>
                         </div>
-                    </div>
-                {%endif%}
-
-                {% for game in yesterdays %}
-                    <div class = "row">
-                        <p>{{game.home_team}} {{game.home_score}} - {{game.away_score}} {{game.away_team }}</p>
-                    </div>
-                {% endfor %}
-            </div>
+                    {%endif%}
+                    {% for game in tomorrows %}
+                        <div class="fs-6 py-0 my-0">{{ game.kickoff.strftime('%H:%M') }}</div>          
+                        {% include '_upcoming.html'%}
+                    {% endfor %}
+                </div>
+            </div> 
+           
         </div> 
         
         <hr> 
