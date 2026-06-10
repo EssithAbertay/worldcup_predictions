@@ -20,6 +20,9 @@ from PIL import Image
 @app.route('/index')
 @login_required
 def index():
+
+    today=date.today()
+
     todays =        db.session.scalars(sa.select(Game).where(func.date(func.date(Game.kickoff)) == date.today()).order_by(Game.kickoff.asc())).all()
     yesterdays =    db.session.scalars(sa.select(Game).where(func.date(func.date(Game.kickoff)) == (date.today() - timedelta(days=1))).order_by(Game.kickoff.asc())).all()
     tomorrows =     db.session.scalars(sa.select(Game).where(func.date(func.date(Game.kickoff)) == (date.today() + timedelta(days=1))).order_by(Game.kickoff.asc())).all()
@@ -34,7 +37,7 @@ def index():
 
         leaderboard.append(TopUser(user=user,predictions=predictions))
 
-    return render_template('index.html', title='Home', todays=todays, yesterdays=yesterdays, tomorrows=tomorrows, leaderboard=leaderboard, today=date.today() + timedelta(days=1))
+    return render_template('index.html', title='Home', todays=todays, yesterdays=yesterdays, tomorrows=tomorrows, leaderboard=leaderboard, today=today)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
