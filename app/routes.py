@@ -21,11 +21,11 @@ from PIL import Image
 @login_required
 def index():
 
-    today=date.today()
+    today=date.today() + timedelta(hours+1)
 
-    todays =        db.session.scalars(sa.select(Game).where(func.date(func.date(Game.kickoff)) == date.today()).order_by(Game.kickoff.asc())).all()
-    yesterdays =    db.session.scalars(sa.select(Game).where(func.date(func.date(Game.kickoff)) == (date.today() - timedelta(days=1))).order_by(Game.kickoff.asc())).all()
-    tomorrows =     db.session.scalars(sa.select(Game).where(func.date(func.date(Game.kickoff)) == (date.today() + timedelta(days=1))).order_by(Game.kickoff.asc())).all()
+    todays =        db.session.scalars(sa.select(Game).where(func.date(func.date(Game.kickoff)) == today).order_by(Game.kickoff.asc())).all()
+    yesterdays =    db.session.scalars(sa.select(Game).where(func.date(func.date(Game.kickoff)) == (today - timedelta(days=1))).order_by(Game.kickoff.asc())).all()
+    tomorrows =     db.session.scalars(sa.select(Game).where(func.date(func.date(Game.kickoff)) == (today + timedelta(days=1))).order_by(Game.kickoff.asc())).all()
 
     users = db.session.scalars(sa.select(User).order_by(User.points.desc()).limit(5)).all()
 
