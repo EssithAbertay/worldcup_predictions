@@ -18,8 +18,8 @@ class User(UserMixin, db.Model):
     is_admin: so.Mapped[bool] = so.mapped_column(default=False)
     profile_pic_file: so.Mapped[str] = so.mapped_column(sa.String(64), default='none')
 
-    predictions: so.WriteOnlyMapped['Prediction'] = so.relationship(back_populates='author')
-
+    predictions: so.Mapped[list['Prediction']] = so.relationship(back_populates='author')
+    
     def __repr__(self):
         return '<User {}>'.format(
             self.username
@@ -37,8 +37,6 @@ class User(UserMixin, db.Model):
             return f'https://www.gravatar.com/avatar/{digest}?d=identicon&s={size}'
         else:
           return url_for('static',filename=f'profile_pics/{self.profile_pic_file}')
-
-    
 
     def calculate_points(self):
         # for each prediction, check it against its game then assign points

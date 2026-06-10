@@ -9,6 +9,7 @@ from app.models import User, Game, Prediction, Team
 from datetime import datetime, date, timedelta
 from sqlalchemy import func
 from app.classes import TopUser
+from sqlalchemy.orm import selectinload
 
 from uuid import uuid4
 from pathlib import Path
@@ -40,12 +41,12 @@ def login():
         return redirect(url_for('index'))
     form = LoginForm()
     if form.validate_on_submit():
-        user = db.session.scalar(sa.select(User).where(User.username == form.username.data))
-        if user is None or not user.check_password(form.password.data):
+        logging_in_user = db.session.scalar(sa.select(User).where(User.username == form.username.data))
+        if logging_in_user is None or not logging_in_user.check_password(form.password.data):
             flash('Invalid username and/or password!')
             return redirect(url_for('login'))
-        #login_user(user, remember=form.remember_me.data)
-        login_user(user, remember=False) # removed rememebr me for now
+        #login_user(logging_in_user, remember=form.remember_me.data)
+        login_user(logging_in_user, remember=False) # removed rememebr me for now
         next_page = request.args.get('next')
         if not next_page or urlsplit(next_page).netloc != '':
             next_page = url_for('index')
@@ -71,14 +72,14 @@ def register():
         return redirect(url_for('index'))
     form = RegistrationForm()
     if form.validate_on_submit():
-        user = User(username=form.username.data)
+        new_user = User(username=form.username.data)
 
         print("NEW USER OBJECT")
-        print("id:", user.id)
-        print("username:", user.username)
+        print("id:", new_user.id)
+        print("username:", new_user.username)
 
-        user.set_password(form.password.data)
-        db.session.add(user)
+        new_user.set_password(form.password.data)
+        db.session.add(new_user)
         db.session.commit()
         flash('Congratulations, you are now a registered user!')
         return redirect(url_for('login'))
@@ -89,10 +90,7 @@ def register():
 def user(username):
     user = db.first_or_404(sa.select(User).where(User.username == username))
 
-    query = user.predictions.select()
-    predictions = db.session.scalars(query).all()
-
-    return render_template('user.html', user=user, predictions=predictions)
+    return render_template('user.html', user=user)
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
@@ -162,7 +160,6 @@ def edit_profile():
             return redirect(url_for('edit_profile'))
 
     return render_template('edit_profile.html', title='Edit Profile', username_form=username_form, profile_form = profile_form )
-
 
 @app.route('/upcoming_games', methods=['GET','POST'])
 @login_required
@@ -343,11 +340,20 @@ def admin_panel():
 
 @app.route('/leaderboard', methods=['GET'])
 def leaderboard():
-    query = sa.select(User).order_by(User.points.desc())
+    query = sa.select(User).order_by(User.points.desc()).options(selectinload(User.predictions))
     users = db.session.scalars(query).all()
 
     podium = users[:3]
     rest = users[3:]
+
+    now = datetime.utcnow()
+
+    for user in rest:
+        user.upcoming_predictions = [
+            p for p in user.predictions
+            if p.match.kickoff > now
+        ]
+
 
     return render_template('leaderboard.html', title='Leaderboard', podium=podium, rest=rest)
 

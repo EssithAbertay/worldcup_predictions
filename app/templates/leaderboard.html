@@ -37,7 +37,7 @@
                 <div class="card podium-card">
                     <div class="card-body">
                         <img src="{{ podium[1].avatar(48) }}" alt="User Avatar" class="m-0 border border-secondary rounded" style="width: 48px; height: 48px;">
-                        <a href="{{ url_for('user', username=podium[1].username) }}"><h5 class="m-0">{{ podium[1].username }}</h5></a>
+                        <a href="{{ url_for('user', username=podium[1].username) }}"><h5 class="m-0 text-nowrap">{{ podium[1].username }}</h5></a>
                         <p class="m-0">{{ podium[1].points }} pts</p>
                     </div>
                     
@@ -51,7 +51,7 @@
                 <div class="card podium-card border-warning">
                     <div class="card-body">
                         <img src="{{ podium[0].avatar(48) }}" alt="User Avatar" class="m-0 border border-secondary rounded" style="width: 48px; height: 48px;">
-                        <a href="{{ url_for('user', username=podium[0].username) }}"><h5 class="m-0">{{ podium[0].username }}</h5></a>
+                        <a href="{{ url_for('user', username=podium[0].username) }}"><h5 class="m-0 text-nowrap">{{ podium[0].username }}</h5></a>
                         <p class="m-0">{{ podium[0].points }} pts</p>
                     </div>
                 
@@ -65,7 +65,7 @@
                 <div class="card podium-card ">
                     <div class="card-body">
                         <img src="{{ podium[2].avatar(48) }}" alt="User Avatar" class="m-0 border border-secondary rounded" style="width: 48px; height: 48px;">
-                        <a href="{{ url_for('user', username=podium[2].username) }}"><h5 class="m-0">{{ podium[2].username }}</h5></a>
+                        <a href="{{ url_for('user', username=podium[2].username) }}"><h5 class="m-0 text-nowrap">{{ podium[2].username }}</h5></a>
                         <p class="m-0">{{ podium[2].points }} pts</p>
                     </div>
                 
@@ -78,19 +78,8 @@
 
 
     {% for user in rest %}
-    <div class="row border-top g-0 py-2">
-        <div class="col d-flex justify-content-center">
-
-        {% if loop.last %}
-             <p class="m-0 fs-5">🥄. <a href="{{ url_for('user', username=user.username) }}"> {{user.username}}</a> - {{user.points}} points</p>
-      
-        {% else %}
-            <p class="m-0 fs-5">{{ loop.index + 3 }}. <a href="{{ url_for('user', username=user.username) }}"> {{user.username}}</a> - {{user.points}} points</p>
-       {%endif%}
-        </div>
-
-
-    </div>
+        {% set rank = loop.index%}
+        {% include '_leaderboard_user.html'%}
     {% endfor %}
 
     </div>
