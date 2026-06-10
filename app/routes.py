@@ -21,7 +21,7 @@ from PIL import Image
 @login_required
 def index():
 
-    today=date.today() + timedelta(hours+1)
+    today=date.today() + timedelta(hours=1)
 
     todays =        db.session.scalars(sa.select(Game).where(func.date(func.date(Game.kickoff)) == today).order_by(Game.kickoff.asc())).all()
     yesterdays =    db.session.scalars(sa.select(Game).where(func.date(func.date(Game.kickoff)) == (today - timedelta(days=1))).order_by(Game.kickoff.asc())).all()
