@@ -10,7 +10,7 @@ from datetime import datetime, date, timedelta, timezone
 from sqlalchemy import func
 from app.classes import TopUser
 from sqlalchemy.orm import selectinload
-
+from zoneinfo import ZoneInfo
 from uuid import uuid4
 from pathlib import Path
 from PIL import Image
@@ -35,6 +35,11 @@ def index():
     users = db.session.scalars(sa.select(User).order_by(User.points.desc()).limit(5)).all()
 
     leaderboard = []
+
+    g = tomorrows[0]
+    print("DB time:", g.kickoff)
+    print("UTC:", g.kickoff.astimezone(timezone.utc))
+    print("UK:", g.kickoff.astimezone(ZoneInfo("Europe/London")))
 
     for user in users:
         query = sa.select(Prediction).join(Prediction.match).where(Game.kickoff >= datetime.now(),Prediction.user_id == user.id).order_by(Game.kickoff.asc()).limit(4)
