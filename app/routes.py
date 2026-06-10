@@ -6,7 +6,7 @@ from flask_login import current_user, login_user, logout_user, login_required
 import sqlalchemy as sa
 from app import db
 from app.models import User, Game, Prediction, Team
-from datetime import datetime, date, timedelta
+from datetime import datetime, date, timedelta, timezone
 from sqlalchemy import func
 from app.classes import TopUser
 from sqlalchemy.orm import selectinload
@@ -20,12 +20,17 @@ from PIL import Image
 @app.route('/index')
 @login_required
 def index():
+    
+    now_utc = datetime.now(timezone.utc)
+    today_start = now_utc.replace(hour=0, minute=0, second=0, microsecond=0)
 
-    today=date.today() + timedelta(hours=1)
-
-    todays =        db.session.scalars(sa.select(Game).where(func.date(func.date(Game.kickoff)) == today).order_by(Game.kickoff.asc())).all()
-    yesterdays =    db.session.scalars(sa.select(Game).where(func.date(func.date(Game.kickoff)) == (today - timedelta(days=1))).order_by(Game.kickoff.asc())).all()
-    tomorrows =     db.session.scalars(sa.select(Game).where(func.date(func.date(Game.kickoff)) == (today + timedelta(days=1))).order_by(Game.kickoff.asc())).all()
+    yesterday_start = today_start - timedelta(days=1)
+    tomorrow_start = today_start + timedelta(days=1)
+    day_after_tomorrow = today_start + timedelta(days=2)
+    
+    todays =        db.session.scalars(sa.select(Game).where(Game.kickoff >= today_start, Game.kickoff < tomorrow_start).order_by(Game.kickoff.asc())).all()
+    yesterdays =    db.session.scalars(sa.select(Game).where(Game.kickoff >= yesterday_start,Game.kickoff < today_start).order_by(Game.kickoff.asc())).all()
+    tomorrows =     db.session.scalars(sa.select(Game).where(Game.kickoff >= tomorrow_start,Game.kickoff < day_after_tomorrow).order_by(Game.kickoff.asc())).all()
 
     users = db.session.scalars(sa.select(User).order_by(User.points.desc()).limit(5)).all()
 
@@ -37,7 +42,7 @@ def index():
 
         leaderboard.append(TopUser(user=user,predictions=predictions))
 
-    return render_template('index.html', title='Home', todays=todays, yesterdays=yesterdays, tomorrows=tomorrows, leaderboard=leaderboard, today=today)
+    return render_template('index.html', title='Home', todays=todays, yesterdays=yesterdays, tomorrows=tomorrows, leaderboard=leaderboard)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
