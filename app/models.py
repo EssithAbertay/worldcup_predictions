@@ -129,7 +129,7 @@ class Game(db.Model):
     penalty_winner: so.Mapped[Optional[str]] = so.mapped_column(sa.String(64), default='none') # will be either home, away, or none
     kickoff: so.Mapped[datetime] = so.mapped_column(index=True)
 
-    predictions: so.WriteOnlyMapped['Prediction'] = so.relationship(back_populates='match')
+    predictions: so.Mapped[list['Prediction']] = so.relationship(back_populates='match')
 
     home_team: so.Mapped["Team"] = so.relationship(
         foreign_keys=[home_team_id]
@@ -139,7 +139,6 @@ class Game(db.Model):
         foreign_keys=[away_team_id]
     )
 
-
     def __repr__(self):
         return '<Game {} vs {} @ {} Penalties: {}>'.format(
             self.home_team,
@@ -147,6 +146,13 @@ class Game(db.Model):
             self.kickoff.isoformat(),
             self.penalty_game
     )
+
+    def get_average_home_score(self):
+        return db.session.scalar(func.avg(Prediction.home_score_predicted)).where(Prediction.match_id == self.id) or 0
+
+    def get_average_away_score(self):
+        return db.session.scalar(func.avg(Prediction.away_score_predicted)).where(Prediction.match_id == self.id) or 0
+
 
 class Prediction(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
