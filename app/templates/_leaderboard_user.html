@@ -1,12 +1,12 @@
 <div class="row border-top g-0 py-2 justify-content-center align-items-center">
-    <div class="col-1"></div>
+
     <div class="col-1">{{ rank + 3 }}.</div>
   <!--need this back<p class="m-0 fs-5">🥄. <a href="{{ url_for('user', username=user.username) }}"> {{user.username}}</a> - {{user.points}} points</p>-->
     <div class="col-1">
         {{user.points}} pts
     </div>
     
-    <div class="col-6 fs-5 text-start">
+    <div class="col-8 fs-5 text-start">
         <img class="border border-secondary rounded" src="{{ user.avatar(48) }}" alt="User Avatar" style="width: 48px; height: 48px;">
    
         <a href="{{ url_for('user', username=user.username) }}"> {{user.username}}</a>
@@ -19,8 +19,6 @@
             </button>
         </div>
     </div>
-    
-    <div class="col-1"></div>
 
     <div class="collapse " id="collapse{{rank}}">
         <div class="card card-body border-0">       
