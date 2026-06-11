@@ -16,15 +16,13 @@
                     Go to <a href="{{url_for('upcoming_games')}}">Upcoming Games</a> to predict
                 </p>
 
-                    {% if not todays %}
-                      <div class="row">
-                            <div class="col"> <p>No games today!</p> 
-                            </div>
-                        </div>
-                    {%endif%}
-                    {% for game in todays %}      
-                        {% include '_game.html'%}
-                    {% endfor %}
+                {% if not todays %}
+                    No games today!
+                {%endif%}
+
+                {% for game in todays %}      
+                    {% include '_game.html'%}
+                {% endfor %}
               
             </div> 
 
@@ -32,13 +30,11 @@
 
             <div class="col-12 col-md-4  mt-0 mb-2">
                 <h3>Tomorrow</h3>
-
+                <p class="small"></p>
                     {% if not tomorrows %}
-                      <div class="row">
-                            <div class="col"> <p>No games tomorrow!</p> 
-                            </div>
-                        </div>
+                    No games tomorrow!
                     {%endif%}
+
                     {% for game in tomorrows %}      
                         {% include '_game.html'%}
                     {% endfor %}
