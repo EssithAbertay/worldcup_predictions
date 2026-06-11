@@ -13,7 +13,7 @@ from sqlalchemy.orm import selectinload
 from zoneinfo import ZoneInfo
 from uuid import uuid4
 from pathlib import Path
-from PIL import Image
+from PIL import Image, ImageOps
 
 
 @app.route('/')
@@ -149,7 +149,6 @@ def edit_profile():
 
             if picture:
                 try:
-                    # Open and verify image
                     img = Image.open(picture)
                     img.verify()
                 except Exception:
@@ -158,6 +157,7 @@ def edit_profile():
 
                 picture.seek(0)   
                 img = Image.open(picture)
+                img = ImageOps.exif_transpose(img)
                 img.thumbnail((512, 512))
 
                 #delete old pic if it exists
