@@ -1,0 +1,26 @@
+<div class="fs-6 py-0 my-0">{{ game.kickoff.strftime('%H:%M') }}</div>  
+
+<div class="d-flex justify-content-center align-items-center gap-2 fs-4">
+
+    <span class="fi fi-{{ game.home_team.flag_code }} align-self-center fs-1 border"></span>
+    
+    <span class="text-center" style="width: 2rem;">
+    {% if not game.home_score %}
+        ?
+    {%else%}
+        {{ game.home_score }}
+    {%endif%}
+    </span>
+    <i class="bi bi-x-diamond-fill" style="font-size: 1rem;"></i>
+    
+    <span class="text-center" style="width: 2rem;">
+    {% if not game.away_score %}
+        ?
+    {%else%}
+        {{ game.away_score }}
+    {%endif%}
+    </span>
+
+    <span class="fi fi-{{ game.away_team.flag_code }} align-self-center fs-1 border"></span>
+
+</div>
