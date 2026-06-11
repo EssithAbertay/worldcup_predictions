@@ -5,15 +5,15 @@
 
     {% set ns = namespace(curr_date=None) %}
         
-    {% for result in results %}
+    {% for game in results %}
 
-        {% if ns.curr_date != result.kickoff.date() %}
-            {% set ns.curr_date = result.kickoff.date() %}
+        {% if ns.curr_date != game.kickoff.date() %}
+            {% set ns.curr_date = game.kickoff.date() %}
             <hr>
             <h4>{{ns.curr_date}}</h4> 
         {% endif %}  
         
-        {{result.home_team.name}} {{result.home_score}} - {{result.away_score}} {{result.away_team.name }}
+        {% include '_game.html'%} 
         <br>
     {% endfor %}
 
