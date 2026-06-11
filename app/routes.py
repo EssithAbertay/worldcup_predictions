@@ -99,7 +99,25 @@ def register():
 def user(username):
     user = db.first_or_404(sa.select(User).where(User.username == username))
 
-    return render_template('user.html', user=user)
+    # get total prediction count
+    # get number of predicitons awarded 5 points - correct score
+    # get number of predicitons awarded 2/3 points - correct result
+    # get number of predicitons awarded 3 points - received bonus
+
+    stats = db.session.execute(
+        sa.select(
+            sa.func.count(Prediction.id).label("total"),
+            sa.func.sum(sa.case((Prediction.points_awarded == 5, 1), else_=0)).label("scores"),
+            sa.func.sum(sa.case((Prediction.points_awarded.in_([2, 3]), 1), else_=0)).label("results"),
+            sa.func.sum(sa.case((Prediction.points_awarded == 3, 1), else_=0)).label("bonus"),
+        ).where(Prediction.user_id == user.id)).one()
+
+    games_total = stats.total
+    scores_total = stats.scores
+    results_total = stats.results
+    bonus_total = stats.bonus
+
+    return render_template('user.html', user=user, games_total=games_total, scores_total=scores_total, results_total=results_total, bonus_total=bonus_total)
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
@@ -336,10 +354,11 @@ def admin_panel():
             users = db.session.scalars(query).all()
             flash('got users')
 
-            for user in users:
+            for index, user in enumerate(users):
                 flash('attempting to update user scores')
                 user.calculate_points()
                 flash('updated scores for user')
+                user.ranking = index + 1 # +1 to account for 0th
 
             db.session.commit()
 

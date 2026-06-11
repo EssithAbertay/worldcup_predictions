@@ -38,13 +38,35 @@ class User(UserMixin, db.Model):
         else:
           return url_for('static',filename=f'profile_pics/{self.profile_pic_file}')
 
+    def get_ranking_text(self):
+        base_string = str(self.ranking)
+        last_digit = int(base_string[-1])
+        
+        if self.ranking == 1:
+            return "1st 🥇"
+        elif self.ranking == 2:
+            return "2nd 🥈"
+        elif self.ranking == 3:
+            return "3rd 🥉"
+        elif self.ranking > 3 and self.ranking < 20:
+            return base_string + "th"
+        elif last_digit == 1:
+            return base_string + "st"
+        elif last_digit == 2:
+            return base_string + "nd"
+        elif last_digit == 1:
+            return base_string + "rd"
+        else:
+            return base_string + "th"
+
+          
     def calculate_points(self):
         # for each prediction, check it against its game then assign points
         # for now its just working off of scores, will add penalties later
         # also have to make it skip games that have already been worked out
         self.points = 0
        # predictions = db.session.execute(self.predictions.select().where(Prediction.points_awarded == None)).scalars() # this ver should only get games that havent been set yet
-        predictions = db.session.execute(self.predictions.select()).scalars() # gets all games
+        predictions = self.predictions # gets all predictions
 
         for prediction in predictions:
 

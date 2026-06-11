@@ -3,89 +3,97 @@
 {% block content %}
 <div class="container text-start min-vh-100 mb-100" style="padding-bottom: 120px;"> 
     
-    <div class="container text-center"> 
-    <div class="row">
-        <div class="col-6">
-            <h1>{{ user.username }}</h1>
-            <h3>{{user.points}} points</h3>   
-            
-            {% if user == current_user %}
-            <p><a href="{{ url_for('edit_profile') }}">Edit Username or Profile Picture</a></p>
-            {% endif %}
+    <!--Banner, Name, pts, Profile Pic, and edit link-->
+    <div class="text-start"> 
+        <div class="row">
+            <div class="col-6">
+                <h2 class="text-break"><u>{{user.username}}</u></h2>
+                <h3>{{user.points}}pts</h3>   
+                <h3>{{user.get_ranking_text()}}</h3>   
+                
+                {% if user == current_user %}
+                <p><a href="{{ url_for('edit_profile') }}">Edit Username or Profile Picture</a></p>
+                {% endif %}
+            </div>
+            <div class="col-6 text-end">
+                <img class="border border-secondary rounded" src="{{ user.avatar(128) }}" alt="User Avatar" style="width: 128px; height: 128px;">
+            </div>
         </div>
-        <div class="col-6">
-            <img class="border border-secondary rounded" src="{{ user.avatar(128) }}" alt="User Avatar" style="width: 128px; height: 128px;">
-         
-        </div>
-    </div>
-    </div>
-
-    <hr>
-
-    <div class="container text-center fs-5 bold"> 
-        <h2>Games</h2>
-        <div class="row text-center">
-            <div class="col-4 text-center">
-                Prediction
-            </div>
-            <div class="col-2 text-center">
-                Result
-            </div>
-            <div class="col-2 text-center">
-                Score
-            </div>
-            <div class="col-2 text-center">
-                Bonus
-            </div>
-            <div class="col-2 text-center">
-                Total
-            </div>
-            
-        </div>
-
+        
         <hr>
+    </div>
 
-        {% for prediction in user.predictions %}
-            <div class="row">
-                <div class="col-4">
+    <div class = "row">
+
+        <!--Predicted Games-->
+        <div class="col-12 col-md-4 mb-2">
+            <div class="text-center fs-5"> 
+                <h2>Predictions</h2>
+                <hr>
+                {% for prediction in user.predictions %}
                     {% include '_prediction.html' %} 
-                </div>
+                {% endfor %}
 
-                <div class="col-2">
-                    {% if prediction.points_awarded == 5 %}
-                    5
-                    {% else %}
-                    0
-                    {% endif %}
-                </div>
-
-                <div class="col-2">                 
-                    {% if prediction.points_awarded == 5 %}
-                    N/A
-                    {% elif prediction.points_awarded == 2 %}
-                    2
-                    {% else %}
-                    0
-                    {% endif %}
-                </div>
-
-                <div class="col-2">
-                    {% if prediction.points_awarded == 5 %}
-                    N/A
-                    {% elif prediction.points_awarded == 3 %}
-                    1
-                    {% else %}
-                    0
-                    {% endif %}
-                </div>
-
-                <div class="col-2">
-                    {{prediction.points_awarded}}
-                </div>
             </div>
-
+        </div>
+        <div class="col-12 d-md-none">
+        <hr class="my-2">
+        </div>
+        <!--Stats-->
+        <div class="col-12 col-md-8">
+              <h2 class="text-center">Stats</h2>
             <hr>
-        {% endfor %}
+            <div class="card"> 
+                    <div class="card-header">Scoring Breakdown</div>
+                    <div class="card-body">
+
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Category</th>
+                                    <th scope="col">Times Occured</th>
+                                    <th scope="col">Points Earned</th>
+                                </tr>   
+                            </thead>
+
+                            <tbody>
+                                <tr>
+                                    <td>Games Predicted</td>
+                                    <td>{{games_total}}</td>
+                                    <td>N/A</td>
+                                </tr>
+
+                                <tr>
+                                    <td>Accurate Scores</td>
+                                    <td>{{scores_total}}</td>
+                                    <td>{{scores_total * 5}}</td>
+                                </tr>
+
+                                <tr>
+                                    <td>Accurate Results</td>
+                                    <td>{{results_total}}</td>
+                                    <td>{{results_total * 2}}</td>
+                                </tr>
+
+                                <tr>
+                                    <td>Bonus Points</td>
+                                    <td>{{bonus_total}}</td>
+                                    <td>{{bonus_total}}</td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>Totally Inaccurate</td>
+                                    <td>{{games_total - scores_total - results_total}}</td>
+                                    <td>N/A</td>
+                                </tr>
+                                
+                            </tbody>    
+                        </table>
+                    </div>
+            </div>
+        </div>
+
+        
     </div>
 </div>
 {% endblock %}
