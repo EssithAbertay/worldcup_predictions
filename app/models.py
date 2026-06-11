@@ -7,6 +7,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from hashlib import md5
 from flask import url_for
+from sqlalchemy import func
 
 class User(UserMixin, db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
@@ -170,10 +171,18 @@ class Game(db.Model):
     )
 
     def get_average_home_score(self):
-        return db.session.scalar(func.avg(Prediction.home_score_predicted)).where(Prediction.match_id == self.id) or 0
+        return (
+        db.session.query(func.avg(Prediction.home_score_predicted))
+        .filter(Prediction.game_id == self.id)
+        .scalar()
+        ) or 'N/A'
 
     def get_average_away_score(self):
-        return db.session.scalar(func.avg(Prediction.away_score_predicted)).where(Prediction.match_id == self.id) or 0
+        return (
+        db.session.query(func.avg(Prediction.away_score_predicted))
+        .filter(Prediction.game_id == self.id)
+        .scalar()
+        ) or 'N/A'
 
 
 class Prediction(db.Model):
