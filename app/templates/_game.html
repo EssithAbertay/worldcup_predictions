@@ -5,7 +5,7 @@
     <span class="fi fi-{{ game.home_team.flag_code }} align-self-center fs-1 border"></span>
     
     <span class="text-center" style="width: 2rem;">
-    {% if not game.home_score %}
+    {% if game.home_score is none %}
         ?
     {%else%}
         {{ game.home_score }}
@@ -14,7 +14,7 @@
     <i class="bi bi-x-diamond-fill" style="font-size: 1rem;"></i>
     
     <span class="text-center" style="width: 2rem;">
-    {% if not game.away_score %}
+    {% if game.away_score is none %}
         ?
     {%else%}
         {{ game.away_score }}
