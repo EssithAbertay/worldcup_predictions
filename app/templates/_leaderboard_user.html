@@ -1,8 +1,12 @@
 <div class="row border-top g-0 py-2 justify-content-center align-items-center">
 
     <div class="col-1 fs-6">
-        {{ rank + 3 }}.</div>
-  <!--need this back<p class="m-0 fs-5">🥄. <a href="{{ url_for('user', username=user.username) }}"> {{user.username}}</a> - {{user.points}} points</p>-->
+        {% if rank + 3 == last%}
+            🥄
+        {%else%}
+            {{ rank + 3 }}.
+        {%endif%}
+    </div>
     <div class="col-2 fs-6">
         {{user.points}} pts
     </div>

@@ -376,6 +376,9 @@ def leaderboard():
     podium = users[:3]
     rest = users[3:]
 
+    last = len(users)
+
+
     now_time = (datetime.now(ZoneInfo("Europe/London"))).replace(tzinfo=None)  # go a day into the future so that you can see todays games
     cutoff = now_time - timedelta(days=1)
     for user in rest:
@@ -384,7 +387,7 @@ def leaderboard():
             if p.match.kickoff >= cutoff
         ]
 
-    return render_template('leaderboard.html', title='Leaderboard', podium=podium, rest=rest)
+    return render_template('leaderboard.html', title='Leaderboard', podium=podium, rest=rest, last=last)
 
 @app.route('/faq')
 def faq():
