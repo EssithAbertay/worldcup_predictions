@@ -1,217 +1,219 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Frequently Asked Questions</h1>
-<h4>This page will be updated regulary as any new information or features are added</h4>
-<hr>
-<div class="accordion" id="FAQaccordion">
-    <div class="accordion-item">
-        <h3 class="accordion-header">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-            How does this work?
-            </button>
-        </h3>
-        <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#FAQaccordion">
-            <div class="accordion-body">
-                <p>
-                For every game in the 2026 World Cup, predict the result on the  <a href="{{url_for('upcoming_games')}}">"Upcoming Games"</a> page.
-                <br>
-                Simply enter a number into the correct boxes then hit "Submit Predictions", we'll handle the rest!
-                <br>
-                Based on your predictions you'll earn points, and you can see how you stack up on the  <a href="{{url_for('leaderboard')}}">"Leaderboard"</a> page.
-                </p>
+<div class="container text-start min-vh-100 mb-100" style="padding-bottom: 120px;"> 
+    <h1><u>Frequently Asked Questions</u></h1>
+    <h4>This page will be updated regulary as any new information or features are added</h4>
+    <hr>
+    <div class="accordion" id="FAQaccordion">
+        <div class="accordion-item">
+            <h3 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                How does this work?
+                </button>
+            </h3>
+            <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#FAQaccordion">
+                <div class="accordion-body">
+                    <p>
+                    For every game in the 2026 World Cup, predict the result on the  <a href="{{url_for('upcoming_games')}}">"Upcoming Games"</a> page.
+                    <br>
+                    Simply enter a number into the correct boxes then hit "Submit Predictions", we'll handle the rest!
+                    <br>
+                    Based on your predictions you'll earn points, and you can see how you stack up on the  <a href="{{url_for('leaderboard')}}">"Leaderboard"</a> page.
+                    </p>
+                </div>
             </div>
         </div>
-    </div>
-
-    <div class="accordion-item">
-        <h3 class="accordion-header">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-            When can I predict games?
-            </button>
-        </h3>
-        <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#FAQaccordion">
-            <div class="accordion-body">
-                <p>
-                Every game can be predicted up until the minute it starts (GMT), anything past this won't be counted. 
-                <br>
-                There's no requirement to do all the games at once either, but be careful not to forget!
-                </p>
-            </div>
-        </div>
-    </div>
-
-    <div class="accordion-item">
-        <h3 class="accordion-header">
-            <button class="accordion-button collapsed"  type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-            What if I want to change a prediction?
-            </button>
-        </h3>
-        <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#FAQaccordion">
-            <div class="accordion-body">
-                <p>
-                At the bottom of the <a href="{{url_for('upcoming_games')}}">"Upcoming Games"</a> page, games that you've already predicted that haven't yet happened can be updated.
-                </p>
-            </div>
-        </div>
-    </div>
 
         <div class="accordion-item">
-        <h3 class="accordion-header">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
-            How often are scores updated?
-            </button>
-        </h3>
-        <div id="collapseFour" class="accordion-collapse collapse" data-bs-parent="#FAQaccordion">
-            <div class="accordion-body">
-                <p>
-                Scores should be updated roughly once a day during the tournament, however the calculation isn't automatic and relies on an admin (me) pressing a button that you can't see, so it won't always be at precisely the same time.
-                </p>
+            <h3 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                When can I predict games?
+                </button>
+            </h3>
+            <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#FAQaccordion">
+                <div class="accordion-body">
+                    <p>
+                    Every game can be predicted up until the minute it starts (GMT), anything past this won't be counted. 
+                    <br>
+                    There's no requirement to do all the games at once either, but be careful not to forget!
+                    </p>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="accordion-item">
-        <h3 class="accordion-header">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
-            How are my scores calculated?
-            </button>
-        </h3>
-        <div id="collapseFive" class="accordion-collapse collapse" data-bs-parent="#FAQaccordion">
-            <div class="accordion-body">
-                <h5>For group games</h5>
-                <p>
-                <ul>
-                <li>5 points for correct score</li>
-                <li>2 points for the correct result</li>
-                <li>1 bonus point if you predict one of the correct scores</li>
-                </ul>
-                <u>Examples:</u><br>
-                Prediction: Scotland 5 - 0 England<br>
-                Actual Score: Scotland 5 - 0 England<br>
-                Awarded: 5 points (Correct Score)<br>
-                <br>
-                Prediction: Scotland 2 - 1 England<br>
-                Actual Score: Scotland 5 - 0 England<br>
-                Awarded: 2 points (Correct result)<br>
-                <br>
-                Prediction: Scotland 5 - 0 England<br>
-                Actual Score: Scotland 3 - 0 England<br>
-                Awarded: 3 points (Correct result and a bonus point for a correct score, 0 England)<br>
-                <br>
-                Prediction: Scotland 1 - 1 England<br>
-                Actual Score: Scotland 2 - 2 England<br>
-                Awarded: 2 points (Correct result)<br>
-                <br>
-                </p>
-
-                <h5>For knockout games</h5>
-                <p>
-                When predicting a win in regular or extra time:
-                <ul>
-                <li>5 points for the correct score</li>
-                <li>3 points if you predict the correct result</li>
-                <li>1 bonus point if you predict one of the correct scores</li>
-                </ul>
-
-                <u>Examples:</u><br>
-                Prediction: Scotland 5 - 0 England<br>
-                Actual Score: Scotland 5 - 0 England<br>
-                Awarded: 5 points (Correct Score)<br>
-                <br>
-                Prediction: Scotland 2 - 1 England<br>
-                Actual Score: Scotland 5 - 0 England<br>
-                Awarded: 3 points (Correct result)<br>
-                <br>
-                Prediction: Scotland 5 - 0 England<br>
-                Actual Score: Scotland 3 - 0 England<br>
-                Awarded: 4 points (Correct result and a bonus point for a correct score, 0 England)<br>
-                <br>
-                Prediction: Scotland 1 - 1 England<br>
-                Actual Score: Scotland 2 - 2 England<br>
-                Awarded: 3 points (Correct result)<br>
-                <br>
-                When predicting a win on penalties:
-                <ul>
-                <li>3 points for the correct score</li>
-                <li>2 points for the correct result</li>
-                <li>2 bonus points for the winner on penalties</li>
-                </ul>
-
-                <u>Examples:</u><br>
-                Prediction: Scotland 2 - 2 England - Scotland penalty winner<br>
-                Actual Score: Scotland 2 - 2 England  - Scotland penalty winner<br>
-                Awarded: 5 points (3 points for the correct score and 2 bonus points for the correct penalty winner)<br>
-                <br>
-                Prediction: Scotland 2 - 2 England - Scotland penalty winner<br>
-                Actual Score: Scotland 1 - 1 England  - Scotland penalty winner<br>
-                Awarded: 4 points (2 points for the correct result and 2 bonus points for the correct penalty winner)<br>
-                <br>
-                Prediction: Scotland 2 - 2 England - Scotland penalty winner<br>
-                Actual Score: Scotland 2 - 2 England  - England penalty winner<br>
-                Awarded: 3 points (3 points for the correct score but 0 bonus points for the incorrect penalty winner)<br>
-                <br>
-                Prediction: Scotland 2 - 2 England - Scotland penalty winner<br>
-                Actual Score: Scotland 1 - 1 England  - England penalty winner<br>
-                Awarded: 2 points (2 points for the correct result but 0 bonus points for the incorrect penalty winner)<br>
-
-                </p>
+        <div class="accordion-item">
+            <h3 class="accordion-header">
+                <button class="accordion-button collapsed"  type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                What if I want to change a prediction?
+                </button>
+            </h3>
+            <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#FAQaccordion">
+                <div class="accordion-body">
+                    <p>
+                    At the bottom of the <a href="{{url_for('upcoming_games')}}">"Upcoming Games"</a> page, games that you've already predicted that haven't yet happened can be updated.
+                    </p>
+                </div>
             </div>
         </div>
-    </div>
 
-
-     <div class="accordion-item">
-        <h3 class="accordion-header">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSix" aria-expanded="false" aria-controls="collapseSix">
-            I want to change my username or profile picture, how can I?
-            </button>
-        </h3>
-        <div id="collapseSix" class="accordion-collapse collapse" data-bs-parent="#FAQaccordion">
-            <div class="accordion-body">
-                <p>
-                Both can be edited under the "Edit Username or Profile Picture" link on your                         
-
-                {% if current_user.is_anonymous %}
-                    profile.
-                {% else %}
-                        <a href="{{ url_for('user', username=current_user.username) }}">profile</a>.
-                {% endif %}
-
-                If you haven't set a profile picture it is generated based on your username, and so changing your username will also cahneg your profile pic.
-                
-                <br>
-                For custom profile pictures, it is reccomended to use images that are square, larger files can take a while to upload, changes are confirmed when the site says so.
-                </p>
+            <div class="accordion-item">
+            <h3 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                How often are scores updated?
+                </button>
+            </h3>
+            <div id="collapseFour" class="accordion-collapse collapse" data-bs-parent="#FAQaccordion">
+                <div class="accordion-body">
+                    <p>
+                    Scores should be updated roughly once a day during the tournament, however the calculation isn't automatic and relies on an admin (me) pressing a button that you can't see, so it won't always be at precisely the same time.
+                    </p>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="accordion-item">
-        <h3 class="accordion-header">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSeven" aria-expanded="false" aria-controls="collapseSeven">
-            I want to change my password, how can I?
-            </button>
-        </h3>
-        <div id="collapseSeven" class="accordion-collapse collapse" data-bs-parent="#FAQaccordion">
-            <div class="accordion-body">
-                <p>
-                Passwords cannot be changed, unless you <i>really</i> need to, if so let me know.
-                </p>
+
+        <div class="accordion-item">
+            <h3 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                How are my scores calculated?
+                </button>
+            </h3>
+            <div id="collapseFive" class="accordion-collapse collapse" data-bs-parent="#FAQaccordion">
+                <div class="accordion-body">
+                    <h5>For group games</h5>
+                    <p>
+                    <ul>
+                    <li>5 points for correct score</li>
+                    <li>2 points for the correct result</li>
+                    <li>1 bonus point if you predict one of the correct scores</li>
+                    </ul>
+                    <u>Examples:</u><br>
+                    Prediction: Scotland 5 - 0 England<br>
+                    Actual Score: Scotland 5 - 0 England<br>
+                    Awarded: 5 points (Correct Score)<br>
+                    <br>
+                    Prediction: Scotland 2 - 1 England<br>
+                    Actual Score: Scotland 5 - 0 England<br>
+                    Awarded: 2 points (Correct result)<br>
+                    <br>
+                    Prediction: Scotland 5 - 0 England<br>
+                    Actual Score: Scotland 3 - 0 England<br>
+                    Awarded: 3 points (Correct result and a bonus point for a correct score, 0 England)<br>
+                    <br>
+                    Prediction: Scotland 1 - 1 England<br>
+                    Actual Score: Scotland 2 - 2 England<br>
+                    Awarded: 2 points (Correct result)<br>
+                    <br>
+                    </p>
+
+                    <h5>For knockout games</h5>
+                    <p>
+                    When predicting a win in regular or extra time:
+                    <ul>
+                    <li>5 points for the correct score</li>
+                    <li>3 points if you predict the correct result</li>
+                    <li>1 bonus point if you predict one of the correct scores</li>
+                    </ul>
+
+                    <u>Examples:</u><br>
+                    Prediction: Scotland 5 - 0 England<br>
+                    Actual Score: Scotland 5 - 0 England<br>
+                    Awarded: 5 points (Correct Score)<br>
+                    <br>
+                    Prediction: Scotland 2 - 1 England<br>
+                    Actual Score: Scotland 5 - 0 England<br>
+                    Awarded: 3 points (Correct result)<br>
+                    <br>
+                    Prediction: Scotland 5 - 0 England<br>
+                    Actual Score: Scotland 3 - 0 England<br>
+                    Awarded: 4 points (Correct result and a bonus point for a correct score, 0 England)<br>
+                    <br>
+                    Prediction: Scotland 1 - 1 England<br>
+                    Actual Score: Scotland 2 - 2 England<br>
+                    Awarded: 3 points (Correct result)<br>
+                    <br>
+                    When predicting a win on penalties:
+                    <ul>
+                    <li>3 points for the correct score</li>
+                    <li>2 points for the correct result</li>
+                    <li>2 bonus points for the winner on penalties</li>
+                    </ul>
+
+                    <u>Examples:</u><br>
+                    Prediction: Scotland 2 - 2 England - Scotland penalty winner<br>
+                    Actual Score: Scotland 2 - 2 England  - Scotland penalty winner<br>
+                    Awarded: 5 points (3 points for the correct score and 2 bonus points for the correct penalty winner)<br>
+                    <br>
+                    Prediction: Scotland 2 - 2 England - Scotland penalty winner<br>
+                    Actual Score: Scotland 1 - 1 England  - Scotland penalty winner<br>
+                    Awarded: 4 points (2 points for the correct result and 2 bonus points for the correct penalty winner)<br>
+                    <br>
+                    Prediction: Scotland 2 - 2 England - Scotland penalty winner<br>
+                    Actual Score: Scotland 2 - 2 England  - England penalty winner<br>
+                    Awarded: 3 points (3 points for the correct score but 0 bonus points for the incorrect penalty winner)<br>
+                    <br>
+                    Prediction: Scotland 2 - 2 England - Scotland penalty winner<br>
+                    Actual Score: Scotland 1 - 1 England  - England penalty winner<br>
+                    Awarded: 2 points (2 points for the correct result but 0 bonus points for the incorrect penalty winner)<br>
+
+                    </p>
+                </div>
             </div>
         </div>
-    </div>  
-  
-    <div class="accordion-item">
-        <h3 class="accordion-header">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEight" aria-expanded="false" aria-controls="collapseEight">
-            I've forgotten my username/password, what do I do!?
-            </button>
-        </h3>
-        <div id="collapseEight" class="accordion-collapse collapse" data-bs-parent="#FAQaccordion">
-            <div class="accordion-body">
-                <p>
-                Let me know, I'll get you sorted.
-                </p>
+
+
+        <div class="accordion-item">
+            <h3 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSix" aria-expanded="false" aria-controls="collapseSix">
+                I want to change my username or profile picture, how can I?
+                </button>
+            </h3>
+            <div id="collapseSix" class="accordion-collapse collapse" data-bs-parent="#FAQaccordion">
+                <div class="accordion-body">
+                    <p>
+                    Both can be edited under the "Edit Username or Profile Picture" link on your                         
+
+                    {% if current_user.is_anonymous %}
+                        profile.
+                    {% else %}
+                            <a href="{{ url_for('user', username=current_user.username) }}">profile</a>.
+                    {% endif %}
+
+                    If you haven't set a profile picture it is generated based on your username, and so changing your username will also cahneg your profile pic.
+                    
+                    <br>
+                    For custom profile pictures, it is reccomended to use images that are square, larger files can take a while to upload, changes are confirmed when the site says so.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="accordion-item">
+            <h3 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSeven" aria-expanded="false" aria-controls="collapseSeven">
+                I want to change my password, how can I?
+                </button>
+            </h3>
+            <div id="collapseSeven" class="accordion-collapse collapse" data-bs-parent="#FAQaccordion">
+                <div class="accordion-body">
+                    <p>
+                    Passwords cannot be changed, unless you <i>really</i> need to, if so let me know.
+                    </p>
+                </div>
+            </div>
+        </div>  
+    
+        <div class="accordion-item">
+            <h3 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEight" aria-expanded="false" aria-controls="collapseEight">
+                I've forgotten my username/password, what do I do!?
+                </button>
+            </h3>
+            <div id="collapseEight" class="accordion-collapse collapse" data-bs-parent="#FAQaccordion">
+                <div class="accordion-body">
+                    <p>
+                    Let me know, I'll get you sorted.
+                    </p>
+                </div>
             </div>
         </div>
     </div>
