@@ -1,23 +1,22 @@
 <div class="row border-top g-0 py-2 justify-content-center align-items-center">
 
-    <div class="col-1">{{ rank + 3 }}.</div>
+    <div class="col-1 fs-6">
+        {{ rank + 3 }}.</div>
   <!--need this back<p class="m-0 fs-5">🥄. <a href="{{ url_for('user', username=user.username) }}"> {{user.username}}</a> - {{user.points}} points</p>-->
-    <div class="col-1">
+    <div class="col-2 fs-6">
         {{user.points}} pts
     </div>
     
-    <div class="col-8 fs-5 text-start">
-        <img class="border border-secondary rounded" src="{{ user.avatar(48) }}" alt="User Avatar" style="width: 48px; height: 48px;">
+    <div class="col fs-6 text-start text-truncate">
+        <img class="border border-secondary rounded" src="{{ user.avatar(48) }}" alt="User Avatar" style="width: 36px; height: 36px;">
    
         <a href="{{ url_for('user', username=user.username) }}"> {{user.username}}</a>
     </div>
 
-    <div class="col-2">
-        <div class="align-items-end">
+    <div class="col-2 fs-6">
             <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{rank}}" aria-expanded="false" aria-controls="collapse{{rank}}">
-                Upcoming
+                <i class="bi bi-caret-down-fill"></i>
             </button>
-        </div>
     </div>
 
     <div class="collapse " id="collapse{{rank}}">
