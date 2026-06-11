@@ -7,41 +7,52 @@
 <form action="" method="post">
     {{ form.hidden_tag() }}
 
-    <h3>Still to Predict</h3> 
+    <div class="container">
 
-    {% set ns = namespace(curr_date=None) %}
-    
-    {% for id in unpredicted_games %}
-        {% set prediction = form.predictions[id] %}
+        <h3>Still to Predict</h3> 
+
+        {% set ns = namespace(curr_date=None) %}
         
-        {% if ns.curr_date != prediction.kickoff_time.date() %}
-            {% set ns.curr_date = prediction.kickoff_time.date() %}
-            <hr>
-            <h4>{{ns.curr_date}}</h4> 
+        {% for id in unpredicted_games %}
+        <div class="row">
+            <div class = "col-12">
+                {% set prediction = form.predictions[id] %}
+                
+                {% if ns.curr_date != prediction.kickoff_time.date() %}
+                    {% set ns.curr_date = prediction.kickoff_time.date() %}
+                    <hr>
+                    <h4>{{ns.curr_date}}</h4> 
 
-            {% if ns.curr_date == today %}
-            <h5 class="text-danger">Due Today!</h5> 
-            {% endif %}
-        {% endif %}  
+                    {% if ns.curr_date == today %}
+                    <h5 class="text-danger">Due Today!</h5> 
+                    {% endif %}
+                {% endif %}  
+                
+                {% include '_to_predict.html' %}
+            </div>
+        </div> 
+        {% endfor %}
         
-        {% include '_to_predict.html' %} 
-    {% endfor %}
-    
-    <hr>
+        <hr>
 
-    {% set ns.curr_date = None %}
+        {% set ns = namespace(curr_date=None) %}
+        
+        <h3>Already Predicted</h3>
+        {% for id in predicted_games %}      
+        <div class="row">
+            <div class = "col-12">
+            {% set prediction = form.predictions[id] %}
 
-    <h3>Already Predicted</h3>
-    {% for id in predicted_games %}
-        {% set prediction = form.predictions[id] %}
-
-        {% if ns.curr_date != prediction.kickoff_time.date() %}
-            {% set ns.curr_date = prediction.kickoff_time.date() %}
-            <hr>
-            <h4>{{ns.curr_date}}</h4> 
-        {% endif %}  
-            {% include '_to_predict.html' %} 
-    {% endfor %}
+            {% if ns.curr_date != prediction.kickoff_time.date() %}
+                {% set ns.curr_date = prediction.kickoff_time.date() %}
+                <hr>
+                <h4>{{ns.curr_date}}</h4> 
+            {% endif %}  
+                {% include '_to_predict.html' %} 
+            </div>
+        </div>
+        {% endfor %}
+    </div>
 
     <div class="fixed-bottom p-3 bg-white border-top text-center">
         {{ form.submit(class="btn btn-primary fs-3") }}

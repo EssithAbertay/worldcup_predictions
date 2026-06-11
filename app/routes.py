@@ -21,23 +21,25 @@ from PIL import Image
 @login_required
 def index():
     
-    now_utc = datetime.now(timezone.utc)
-    today_start = now_utc.replace(hour=0, minute=0, second=0, microsecond=0)
+    now_time = datetime.now(ZoneInfo("Europe/London"))
+    today_start = now_time.replace(hour=0, minute=0, second=0, microsecond=0)
 
-    yesterday_start = today_start - timedelta(days=1)
+    yesterday_start = today_start - timedelta(days=1) 
     tomorrow_start = today_start + timedelta(days=1)
-    day_after_tomorrow = today_start + timedelta(days=2)
+    day_after_tomorrow = today_start + timedelta(days=2) 
     
-    todays =        db.session.scalars(sa.select(Game).where(Game.kickoff >= today_start, Game.kickoff < tomorrow_start).order_by(Game.kickoff.asc())).all()
-    yesterdays =    db.session.scalars(sa.select(Game).where(Game.kickoff >= yesterday_start,Game.kickoff < today_start).order_by(Game.kickoff.asc())).all()
+    todays =        db.session.scalars(sa.select(Game).where(Game.kickoff >= today_start , Game.kickoff < tomorrow_start).order_by(Game.kickoff.asc())).all()
+    yesterdays =    db.session.scalars(sa.select(Game).where(Game.kickoff >= yesterday_start,Game.kickoff< today_start).order_by(Game.kickoff.asc())).all()
     tomorrows =     db.session.scalars(sa.select(Game).where(Game.kickoff >= tomorrow_start,Game.kickoff < day_after_tomorrow).order_by(Game.kickoff.asc())).all()
+
+    game = db.session.scalar(sa.select(Game).limit(1))
 
     users = db.session.scalars(sa.select(User).order_by(User.points.desc()).limit(5)).all()
 
     leaderboard = []
 
     for user in users:
-        query = sa.select(Prediction).join(Prediction.match).where(Game.kickoff >= datetime.now(),Prediction.user_id == user.id).order_by(Game.kickoff.asc()).limit(4)
+        query = sa.select(Prediction).join(Prediction.match).where(Game.kickoff  >= datetime.now(ZoneInfo("Europe/London")),Prediction.user_id == user.id).order_by(Game.kickoff.asc()).limit(4)
         predictions = db.session.scalars(query).all()
 
         leaderboard.append(TopUser(user=user,predictions=predictions))
@@ -191,9 +193,9 @@ def edit_profile():
 @app.route('/upcoming_games', methods=['GET','POST'])
 @login_required
 def upcoming_games():
-    right_now = datetime.now() # we all love a little fatboy slim ;)
+    right_now = datetime.now(ZoneInfo("Europe/London")) # we all love a little fatboy slim ;)
 
-    games = db.session.scalars(sa.select(Game).where(Game.kickoff > right_now)).all()
+    games = db.session.scalars(sa.select(Game).where(Game.kickoff  > right_now )).all()
     predictions =  db.session.scalars(sa.select(Prediction).where(Prediction.user_id == current_user.id)).all()
 
     prediction_map = {
@@ -374,14 +376,13 @@ def leaderboard():
     podium = users[:3]
     rest = users[3:]
 
-    now = datetime.utcnow()
-
+    now_time = (datetime.now(ZoneInfo("Europe/London"))).replace(tzinfo=None)  # go a day into the future so that you can see todays games
+    cutoff = now_time - timedelta(days=1)
     for user in rest:
         user.upcoming_predictions = [
             p for p in user.predictions
-            if p.match.kickoff > now
+            if p.match.kickoff >= cutoff
         ]
-
 
     return render_template('leaderboard.html', title='Leaderboard', podium=podium, rest=rest)
 
@@ -391,7 +392,7 @@ def faq():
 
 @app.route('/results')
 def results():
-    games = db.session.scalars(sa.select(Game).where(Game.kickoff <= datetime.now())).all() # get all games that have started already, just to cut down on costs, rathter than all games as we know future ones dont have scores yet
+    games = db.session.scalars(sa.select(Game).where(Game.kickoff <= datetime.now(ZoneInfo("Europe/London")))).all() # get all games that have started already, just to cut down on costs, rathter than all games as we know future ones dont have scores yet
 
     results = []
 
@@ -400,5 +401,3 @@ def results():
             results.append(game)
 
     return render_template('results.html', title='Results', results=results)
-
-
