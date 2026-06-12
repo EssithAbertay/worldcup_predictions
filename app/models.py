@@ -17,7 +17,7 @@ class User(UserMixin, db.Model):
     password_hash: so.Mapped[Optional[str]] = so.mapped_column(sa.String(256))
     points: so.Mapped[int] = so.mapped_column(default=0)
     ranking: so.Mapped[int] = so.mapped_column(nullable=True)
-    previous_ranking: so.Mapped[int] = so.mapped_column(nullable=True, default=list)
+    previous_ranking: so.Mapped[int] = so.mapped_column(nullable=True, default=0)
     ranking_history: so.Mapped[list[dict]] = so.mapped_column(MutableList.as_mutable(JSON))
     is_admin: so.Mapped[bool] = so.mapped_column(default=False)
     profile_pic_file: so.Mapped[str] = so.mapped_column(sa.String(64), default='none')
