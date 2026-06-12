@@ -358,7 +358,7 @@ def admin_panel():
 
             for index, user in enumerate(users):
 
-                string = 'attempting to update' + user.username + 'scores'
+                string = 'attempting to update' + user.username + ' scores'
                 flash(string)
                 user.calculate_points()
                 flash('updated scores for user')
@@ -372,7 +372,7 @@ def admin_panel():
                 if user.ranking_history is None:
                     user.ranking_history = []
 
-                user.ranking_history.append({"old":current_rank_rank,"new":new_rank})
+                user.ranking_history.append({"old":current_rank,"new":new_rank})
 
 
             db.session.commit()
