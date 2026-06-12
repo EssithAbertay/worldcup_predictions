@@ -9,85 +9,69 @@
 
     <div class="container">
 
-         <ul class="nav nav-tabs mb-3 d-flex" role="tablist">
-            <li class="nav-item flex-fill">
+         <ul class="nav nav-tabs mb-3 nav-fill" role="tablist">
+            <li class="nav-item">
                 <button class="nav-link active"
                         data-bs-toggle="tab"
                         data-bs-target="#stillto"
                         type="button">
-                    Still To Predict
+                    <h3>Still To Predict</h3>
                 </button>
             </li>
-            <li class="nav-item flex-fill">
+            <li class="nav-item">
                 <button class="nav-link"
                         data-bs-toggle="tab"
                         data-bs-target="#already"
                         type="button">
-                    Already Predicted
+                    <h3>Already Predicted</h3>
                 </button>
             </li>
         </ul>
 
         <div class="tab-content">
             <div class="tab-pane show active" id="stillto">
+                {% set ns = namespace(curr_date=None) %}
+                
+                {% for id in unpredicted_games %}
+                <div class="row">
+                    <div class = "col-12">
+                        {% set prediction = form.predictions[id] %}
+                        
+                        {% if ns.curr_date != prediction.kickoff_time.date() %}
+                            {% set ns.curr_date = prediction.kickoff_time.date() %}
+                            <hr>
+                            <h4>{{ns.curr_date}}</h4> 
 
+                            {% if ns.curr_date == today %}
+                            <h5 class="text-danger">Due Today!</h5> 
+                            {% endif %}
+                        {% endif %}  
+                        
+                        {% include '_to_predict.html' %}
+                    </div>
+                </div> 
+                {% endfor %}
             </div>
 
             <div class="tab-pane" id="already">
+                {% set ns = namespace(curr_date=None) %}
 
+                {% for id in predicted_games %}      
+                <div class="row">
+                    <div class = "col-12">
+                    {% set prediction = form.predictions[id] %}
+
+                    {% if ns.curr_date != prediction.kickoff_time.date() %}
+                        {% set ns.curr_date = prediction.kickoff_time.date() %}
+                        <hr>
+                        <h4>{{ns.curr_date}}</h4> 
+                    {% endif %}  
+                        {% include '_to_predict.html' %} 
+                    </div>
+                </div>
+                {% endfor %}
             </div>
         </div>
-
-
-
-
-
-
-
-
-        <h3>Still to Predict</h3> 
-
-        {% set ns = namespace(curr_date=None) %}
-        
-        {% for id in unpredicted_games %}
-        <div class="row">
-            <div class = "col-12">
-                {% set prediction = form.predictions[id] %}
-                
-                {% if ns.curr_date != prediction.kickoff_time.date() %}
-                    {% set ns.curr_date = prediction.kickoff_time.date() %}
-                    <hr>
-                    <h4>{{ns.curr_date}}</h4> 
-
-                    {% if ns.curr_date == today %}
-                    <h5 class="text-danger">Due Today!</h5> 
-                    {% endif %}
-                {% endif %}  
-                
-                {% include '_to_predict.html' %}
-            </div>
-        </div> 
-        {% endfor %}
-        
-        <hr>
-
-        {% set ns = namespace(curr_date=None) %}
-        
-        <h3>Already Predicted</h3>
-        {% for id in predicted_games %}      
-        <div class="row">
-            <div class = "col-12">
-            {% set prediction = form.predictions[id] %}
-
-            {% if ns.curr_date != prediction.kickoff_time.date() %}
-                {% set ns.curr_date = prediction.kickoff_time.date() %}
-                <hr>
-                <h4>{{ns.curr_date}}</h4> 
-            {% endif %}  
-                {% include '_to_predict.html' %} 
-            </div>
-        </div>
-        {% endfor %}
     </div>
 
     <div class="fixed-bottom p-3 bg-white border-top text-center">
