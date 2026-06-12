@@ -143,11 +143,11 @@ def user(username):
 
         ranks.append(rank["new"])
         labels.append(datetime.fromisoformat(timestamp).strftime("%d %b"))
-
+    
     query = sa.select(User)
     users = db.session.scalars(query).all()
     user_count = len(users)
- 
+
     return render_template('user.html', user=user, games_total=games_total, scores_total=scores_total, results_total=results_total, bonus_total=bonus_total, ranks=ranks, labels=labels, user_count= user_count, special_text=special_text)
 
 @app.route('/edit_profile', methods=['GET', 'POST'])

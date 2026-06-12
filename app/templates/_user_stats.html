@@ -51,43 +51,9 @@
 
         <li class="list-group-item">
             <div>
-                <canvas id="myChart"></canvas>
+                <canvas class="ranking_chart"></canvas>
             </div>
         </li>
     </ul>
 </div>
 
-<script>
-    const ranks_data = {{ ranks | tojson }};
-    const labels_data = {{ labels | tojson }};
-    const num_user = {{user_count}};
-</script>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<script>
-    const ctx = document.getElementById('myChart');
-
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-        labels: labels_data,
-        datasets: [{
-            label: 'Ranking History',
-            data: ranks_data,
-            fill: false,
-            borderColor: 'rgb(75, 192, 192)',
-            tension: 0.1
-        }]
-        },
-        options: {
-            scales: {
-                y: {
-                    reverse: true,
-                    min: 1,
-                    max: num_user
-                }
-            }
-        }
-    });
-</script>
