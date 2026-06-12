@@ -107,10 +107,12 @@ def user(username):
         other = 8 if user.id == 4 else 4
         other_user = db.session.get(User, other)
 
+
+
         if other_user.points > user.points:
-            special_text = f"Gap to {other_user.username}: {gap} pts"
+            special_text = f"Gap to {other_user.username}: {other_user.points - user.points} pts"
         elif other_user.points < user.points:
-            special_text = f"Lead over {other_user.username}: {gap} pts"
+            special_text = f"Lead over {other_user.username}: {user.points - other_user.points} pts"
         else:
             special_text = f"Tied with {other_user.username}"
 
