@@ -63,17 +63,22 @@ class User(UserMixin, db.Model):
         else:
             return base_string + "th"
 
-          
     def calculate_points(self):
         # for each prediction, check it against its game then assign points
         # for now its just working off of scores, will add penalties later
         # also have to make it skip games that have already been worked out
-        self.points = 0
+        # TODO: skip calculated games
+
+        self.points = 0 # stopgap while recalcing all games
        # predictions = db.session.execute(self.predictions.select().where(Prediction.points_awarded == None)).scalars() # this ver should only get games that havent been set yet
         predictions = self.predictions # gets all predictions
 
         for prediction in predictions:
-
+            # all reset to 0
+            prediction.points_awarded=0
+            prediction.score_points = False
+            prediction.result_points = False
+            prediction.bonus_points = False
 
             #first skip games that haven't happened yet
             if prediction.match.home_score is None or prediction.match.away_score is None:
@@ -89,8 +94,6 @@ class User(UserMixin, db.Model):
                         prediction.points_awarded = 0
                         self.points += 0
             else: # when it's not a penalty game
-                prediction.points_awarded = 0
-
                 # check if scores are correct
                 home_correct = bool(prediction.home_score_predicted == prediction.match.home_score)
                 away_correct = bool(prediction.away_score_predicted == prediction.match.away_score)
@@ -110,21 +113,24 @@ class User(UserMixin, db.Model):
 
                 # check if user has correct score
                 if(home_correct and away_correct): # correct score + results
-                    prediction.points_awarded += 5
+                    prediction.points_awarded = 5
+                    prediction.score_points = True
                     self.points += 5
+                    
                     continue # continue as max points is 5
 
                 if(actual_result == predicted_result): # if predicted correct result
-                    prediction.points_awarded += 2
+                    prediction.points_awarded = 2
+                    prediction.result_points = True
+                    
                     self.points += 2
                 
                 if(home_correct or away_correct): # bonus point for a correct score
-                        prediction.points_awarded += 1
-                        self.points += 1
+                    prediction.points_awarded += 1
+                    prediction.bonus_points = True
+                
+                    self.points += 1
 
-                # nothing correct at all
-                prediction.points_awarded += 0
-                self.points += 0
 
 class Team(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
@@ -195,6 +201,10 @@ class Prediction(db.Model):
     points_awarded: so.Mapped[int] = so.mapped_column(default=0)
     user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), index=True)
     game_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Game.id), index=True)
+
+    score_points: so.Mapped[bool] = so.mapped_column(default=False)
+    result_points: so.Mapped[bool] = so.mapped_column(default=False)
+    bonus_points: so.Mapped[bool] = so.mapped_column(default=False)
 
     author: so.Mapped[User] = so.relationship(back_populates='predictions')
     match: so.Mapped[Game] = so.relationship(back_populates='predictions')

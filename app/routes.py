@@ -109,9 +109,9 @@ def user(username):
     stats = db.session.execute(
         sa.select(
             sa.func.count(Prediction.id).label("total"),
-            sa.func.sum(sa.case((Prediction.points_awarded == 5, 1), else_=0)).label("scores"),
-            sa.func.sum(sa.case((Prediction.points_awarded.in_([2, 3]), 1), else_=0)).label("results"),
-            sa.func.sum(sa.case((Prediction.points_awarded == 3, 1), else_=0)).label("bonus"),
+            sa.func.sum(sa.case((Prediction.score_points,1), else_=0)).label("scores"),
+            sa.func.sum(sa.case((Prediction.result_points,1), else_=0)).label("results"),
+            sa.func.sum(sa.case((Prediction.bonus_points,1), else_=0)).label("bonus"),
         ).where(Prediction.user_id == user.id)).one()
 
     games_total = stats.total
