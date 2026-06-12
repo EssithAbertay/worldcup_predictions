@@ -266,12 +266,12 @@ def upcoming_games():
             existing_prediction = prediction_map.get(field.game_id.data)
 
             if existing_prediction:
-                flash('Prediction did exist, updating')
+                #flash('Prediction did exist, updating')
                 existing_prediction.home_score_predicted = home_score
                 existing_prediction.away_score_predicted = away_score
                 existing_prediction.penalty_winner_predicted = penalty_winner
             else:
-                flash('Prediction didn\'t exist, adding')
+                #flash('Prediction didn\'t exist, adding')
                 prediction = Prediction(user_id=current_user.id ,game_id=field.game_id.data, home_score_predicted=home_score, away_score_predicted=away_score, penalty_winner_predicted=penalty_winner)
                 db.session.add(prediction)
 
@@ -283,7 +283,7 @@ def upcoming_games():
 
         db.session.commit()
 
-        flash('Your predictions have been saved.')
+        flash('Your predictions have been saved')
         return redirect(url_for('upcoming_games'))
     else:
         print(form.errors)
