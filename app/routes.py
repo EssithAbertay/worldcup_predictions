@@ -369,9 +369,6 @@ def admin_panel():
                 new_rank = index+1 # +1 to account for 0
                 user.ranking = new_rank
 
-                if user.ranking_history is None:
-                    user.ranking_history = []
-
                 user.ranking_history.append({"old":current_rank,"new":new_rank})
 
 
