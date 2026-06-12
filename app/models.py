@@ -7,7 +7,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from hashlib import md5
 from flask import url_for
-from sqlalchemy import func
+from sqlalchemy import func, JSON
 
 class User(UserMixin, db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
@@ -16,6 +16,8 @@ class User(UserMixin, db.Model):
     password_hash: so.Mapped[Optional[str]] = so.mapped_column(sa.String(256))
     points: so.Mapped[int] = so.mapped_column(default=0)
     ranking: so.Mapped[int] = so.mapped_column(nullable=True)
+    previous_ranking: so.Mapped[int] = so.mapped_column(nullable=True, default=list)
+    ranking_history: so.Mapped[list[int]] = so.mapped_column(JSON)
     is_admin: so.Mapped[bool] = so.mapped_column(default=False)
     profile_pic_file: so.Mapped[str] = so.mapped_column(sa.String(64), default='none')
 
@@ -183,7 +185,6 @@ class Game(db.Model):
         .filter(Prediction.game_id == self.id)
         .scalar()
         ) or 'N/A'
-
 
 class Prediction(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)

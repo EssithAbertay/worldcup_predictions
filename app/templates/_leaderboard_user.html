@@ -1,10 +1,20 @@
 <div class="row border-top g-0 py-2 justify-content-center align-items-center">
 
     <div class="col-1 fs-6">
-        {% if rank + 3 == last%}
+        {% if user.ranking == last%}
             🥄
         {%else%}
-            {{ rank + 3 }}.
+            {{ user.ranking  }}.
+        {%endif%}
+
+        {% if user.ranking != user.previous_ranking %}
+            {% set change =  (user.previous_ranking - user.ranking) %}
+            
+            {% if change > 0 %}
+            <i class="bi bi-caret-up-fill"></i> {{change | abs}}
+            {% elif change < 0 %}
+            <i class="bi bi-caret-down-fill"></i> {{change | abs}}
+            {%endif%}
         {%endif%}
     </div>
     <div class="col-2 fs-6">

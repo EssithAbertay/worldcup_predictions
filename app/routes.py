@@ -357,10 +357,23 @@ def admin_panel():
             flash('got users')
 
             for index, user in enumerate(users):
-                flash('attempting to update user scores')
+
+                string = 'attempting to update' + user.username + 'scores'
+                flash(string)
                 user.calculate_points()
                 flash('updated scores for user')
-                user.ranking = index + 1 # +1 to account for 0th
+
+                current_rank = user.ranking
+                user.previous_ranking = current_rank # make current ranking the old ranking
+
+                new_rank = index+1 # +1 to account for 0
+                user.ranking = new_rank
+
+                if user.ranking_history is None:
+                    user.ranking_history = []
+
+                user.ranking_history.append({"old":current_rank_rank,"new":new_rank})
+
 
             db.session.commit()
 
@@ -377,7 +390,6 @@ def leaderboard():
     rest = users[3:]
 
     last = len(users)
-
 
     now_time = (datetime.now(ZoneInfo("Europe/London"))).replace(tzinfo=None)  # go a day into the future so that you can see todays games
     cutoff = now_time - timedelta(days=1)
