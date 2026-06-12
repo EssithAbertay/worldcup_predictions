@@ -107,8 +107,6 @@ def user(username):
         other = 8 if user.id == 4 else 4
         other_user = db.session.get(User, other)
 
-
-
         if other_user.points > user.points:
             special_text = f"Gap to {other_user.username}: {other_user.points - user.points} pts"
         elif other_user.points < user.points:
@@ -381,7 +379,9 @@ def admin_panel():
             print(add_result_form.errors)
 
         if recalculate_points.recalculate_points.data and recalculate_points.validate():
-            query = sa.select(User).order_by(User.points.desc())
+            
+            #get users and update scores
+            query = sa.select(User)
             flash('got query')
             flash('attempting to getusers')
             users = db.session.scalars(query).all()
@@ -393,6 +393,19 @@ def admin_panel():
                 flash(string)
                 user.calculate_points()
                 flash('updated scores for user')
+            
+            db.session.commit()
+
+            #have to redo the query as scores now updated
+
+            query = sa.select(User).order_by(User.points.desc())
+            flash('got query')
+            flash('attempting to getusers')
+            users = db.session.scalars(query).all()
+            flash('got users')
+
+            #sort users
+            for index, user in enumerate(users):
 
                 current_rank = user.ranking
                 user.previous_ranking = current_rank # make current ranking the old ranking
@@ -409,8 +422,9 @@ def admin_panel():
                 history.append({"old": current_rank, "new": new_rank, "datetime": now.isoformat()})
                 user.ranking_history = history
 
-
             db.session.commit()
+
+            
 
             return redirect(url_for('admin_panel'))
 
