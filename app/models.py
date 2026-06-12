@@ -8,6 +8,7 @@ from flask_login import UserMixin
 from hashlib import md5
 from flask import url_for
 from sqlalchemy import func, JSON
+from sqlalchemy.ext.mutable import MutableList
 
 class User(UserMixin, db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
@@ -17,7 +18,7 @@ class User(UserMixin, db.Model):
     points: so.Mapped[int] = so.mapped_column(default=0)
     ranking: so.Mapped[int] = so.mapped_column(nullable=True)
     previous_ranking: so.Mapped[int] = so.mapped_column(nullable=True, default=list)
-    ranking_history: so.Mapped[list[int]] = so.mapped_column(JSON)
+    ranking_history: so.Mapped[list[dict]] = so.mapped_column(MutableList.as_mutable(JSON))
     is_admin: so.Mapped[bool] = so.mapped_column(default=False)
     profile_pic_file: so.Mapped[str] = so.mapped_column(sa.String(64), default='none')
 

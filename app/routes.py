@@ -379,8 +379,13 @@ def admin_panel():
                 new_rank = index+1 # +1 to account for 0
                 user.ranking = new_rank
 
+                now = datetime.now(ZoneInfo("Europe/London"))
+
                 history = user.ranking_history or []
-                history.append({"old": current_rank, "new": new_rank})
+
+                flash("updating")
+
+                history.append({"old": current_rank, "new": new_rank, "datetime": now.isoformat()})
                 user.ranking_history = history
 
 
