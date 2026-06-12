@@ -39,56 +39,65 @@
         <div class="col-12 d-md-none">
         <hr class="my-2">
         </div>
+
         <!--Stats-->
         <div class="col-12 col-md-8">
               <h2 class="text-center">Stats</h2>
             <hr>
             <div class="card"> 
                     <div class="card-header">Scoring Breakdown</div>
-                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Category</th>
+                                            <th scope="col">Times Occured</th>
+                                            <th scope="col">Points Earned</th>
+                                        </tr>   
+                                    </thead>
 
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th scope="col">Category</th>
-                                    <th scope="col">Times Occured</th>
-                                    <th scope="col">Points Earned</th>
-                                </tr>   
-                            </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Games Predicted</td>
+                                            <td>{{games_total}}</td>
+                                            <td>N/A</td>
+                                        </tr>
 
-                            <tbody>
-                                <tr>
-                                    <td>Games Predicted</td>
-                                    <td>{{games_total}}</td>
-                                    <td>N/A</td>
-                                </tr>
+                                        <tr>
+                                            <td>Accurate Scores</td>
+                                            <td>{{scores_total}}</td>
+                                            <td>{{scores_total * 5}}</td>
+                                        </tr>
 
-                                <tr>
-                                    <td>Accurate Scores</td>
-                                    <td>{{scores_total}}</td>
-                                    <td>{{scores_total * 5}}</td>
-                                </tr>
+                                        <tr>
+                                            <td>Accurate Results</td>
+                                            <td>{{results_total}}</td>
+                                            <td>{{results_total * 2}}</td>
+                                        </tr>
 
-                                <tr>
-                                    <td>Accurate Results</td>
-                                    <td>{{results_total}}</td>
-                                    <td>{{results_total * 2}}</td>
-                                </tr>
+                                        <tr>
+                                            <td>Bonus Points</td>
+                                            <td>{{bonus_total}}</td>
+                                            <td>{{bonus_total}}</td>
+                                        </tr>
+                                        
+                                        <tr>
+                                            <td>Totally Inaccurate</td>
+                                            <td>{{games_total - scores_total - results_total}}</td>
+                                            <td>N/A</td>
+                                        </tr>
+                                    
+                                    </tbody>    
+                                </table>
+                            </li>
 
-                                <tr>
-                                    <td>Bonus Points</td>
-                                    <td>{{bonus_total}}</td>
-                                    <td>{{bonus_total}}</td>
-                                </tr>
-                                
-                                <tr>
-                                    <td>Totally Inaccurate</td>
-                                    <td>{{games_total - scores_total - results_total}}</td>
-                                    <td>N/A</td>
-                                </tr>
-                                
-                            </tbody>    
-                        </table>
+                            <li class="list-group-item">
+                                <div>
+                                    <canvas id="myChart"></canvas>
+                                </div>
+                            </li>
+                        </ul>
                     </div>
             </div>
         </div>
@@ -96,6 +105,41 @@
         
     </div>
 </div>
+
+<script>
+    const ranks_data = {{ ranks | tojson }};
+    const labels_data = {{ labels | tojson }};
+    const num_user = {{user_count}};
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const ctx = document.getElementById('myChart');
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+        labels: labels_data,
+        datasets: [{
+            label: 'Ranking History',
+            data: ranks_data,
+            fill: false,
+            borderColor: 'rgb(75, 192, 192)',
+            tension: 0.1
+        }]
+        },
+        options: {
+            scales: {
+                y: {
+                    reverse: true,
+                    min: 1,
+                    max: num_user
+                }
+            }
+        }
+    });
+</script>
 {% endblock %}
 
 
