@@ -101,6 +101,19 @@ def register():
 def user(username):
     user = db.first_or_404(sa.select(User).where(User.username == username))
 
+    special_text = ""
+
+    if user.id == 4 or user.id == 8:
+        other = 8 if user.id == 4 else 4
+        other_user = db.session.get(User, other)
+
+        if other_user.points > user.points:
+            special_text = f"Gap to {other_user.username}: {gap} pts"
+        elif other_user.points < user.points:
+            special_text = f"Lead over {other_user.username}: {gap} pts"
+        else:
+            special_text = f"Tied with {other_user.username}"
+
     # get total prediction count
     # get number of predicitons awarded 5 points - correct score
     # get number of predicitons awarded 2/3 points - correct result
@@ -135,7 +148,7 @@ def user(username):
     users = db.session.scalars(query).all()
     user_count = len(users)
  
-    return render_template('user.html', user=user, games_total=games_total, scores_total=scores_total, results_total=results_total, bonus_total=bonus_total, ranks=ranks, labels=labels, user_count= user_count)
+    return render_template('user.html', user=user, games_total=games_total, scores_total=scores_total, results_total=results_total, bonus_total=bonus_total, ranks=ranks, labels=labels, user_count= user_count, special_text=special_text)
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
