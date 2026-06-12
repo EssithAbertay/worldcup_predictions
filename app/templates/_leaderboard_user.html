@@ -11,9 +11,9 @@
             {% set change =  (user.previous_ranking - user.ranking) %}
             
             {% if change > 0 %}
-            <i class="bi bi-caret-up-fill"></i> {{change | abs}}
+            <i class="bi bi-caret-up-fill text-success"></i> {{change | abs}}
             {% elif change < 0 %}
-            <i class="bi bi-caret-down-fill"></i> {{change | abs}}
+            <i class="bi bi-caret-down-fill text-danger"></i> {{change | abs}}
             {%endif%}
         {%endif%}
     </div>
