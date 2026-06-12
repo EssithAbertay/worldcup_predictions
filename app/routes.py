@@ -120,11 +120,17 @@ def user(username):
     bonus_total = stats.bonus
 
     ranks = []
+    labels = []
+
     for rank in user.ranking_history:
+        timestamp = rank.get("datetime")
+
+        if not timestamp:
+            continue
+
         ranks.append(rank["new"])
-        
-    labels = list(range(1, len(ranks) + 1))
-    
+        labels.append(datetime.fromisoformat(timestamp).strftime("%d %b"))
+
     query = sa.select(User)
     users = db.session.scalars(query).all()
     user_count = len(users)
