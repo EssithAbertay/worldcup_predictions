@@ -8,7 +8,7 @@
         <div class="row">
             <div class="col-6">
                 <h2 class="text-break"><u>{{user.username}}</u></h2>
-                <h3>{{user.points}}pts</h3>   
+                <h3><i>{{user.points}}pts</i></h3>   
                 <h3>{{user.get_ranking_text()}}</h3>   
                 
                 {% if user == current_user %}
@@ -23,9 +23,45 @@
         <hr>
     </div>
 
-    <div class = "row">
+    <!--On Small screen-->
+    <div class="d-md-none">
+        <ul class="nav nav-tabs mb-3" id="mobileTabs" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active"
+                        data-bs-toggle="tab"
+                        data-bs-target="#predictions-tab"
+                        type="button">
+                    Predictions
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link"
+                        data-bs-toggle="tab"
+                        data-bs-target="#stats-tab"
+                        type="button">
+                    Stats
+                </button>
+            </li>
+        </ul>
 
-        <!--Predicted Games-->
+        <div class="tab-content">
+            <div class="tab-pane show active" id="predictions-tab">
+                {% for prediction in user.predictions %}
+                    {% include '_prediction.html' %}
+                {% endfor %}
+            </div>
+
+            <div class="tab-pane" id="stats-tab">
+                {%include '_user_stats.html' %}
+            </div>
+        </div>
+    </div>
+
+
+     <!--On Big screen-->
+    <div class = "row d-none d-md-flex">
+
+    <!--Predicted Games-->
         <div class="col-12 col-md-4 mb-2">
             <div class="text-center fs-5"> 
                 <h2>Predictions</h2>
@@ -36,110 +72,21 @@
 
             </div>
         </div>
+
         <div class="col-12 d-md-none">
-        <hr class="my-2">
+            <hr class="my-2">
         </div>
 
         <!--Stats-->
         <div class="col-12 col-md-8">
-              <h2 class="text-center">Stats</h2>
+            <h2 class="text-center">Stats</h2>
             <hr>
-            <div class="card"> 
-                    <div class="card-header">Scoring Breakdown</div>
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item">
-                                <table class="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">Category</th>
-                                            <th scope="col">Times Occured</th>
-                                            <th scope="col">Points Earned</th>
-                                        </tr>   
-                                    </thead>
-
-                                    <tbody>
-                                        <tr>
-                                            <td>Games Predicted</td>
-                                            <td>{{games_total}}</td>
-                                            <td>N/A</td>
-                                        </tr>
-
-                                        <tr>
-                                            <td>Accurate Scores</td>
-                                            <td>{{scores_total}}</td>
-                                            <td>{{scores_total * 5}}</td>
-                                        </tr>
-
-                                        <tr>
-                                            <td>Accurate Results</td>
-                                            <td>{{results_total}}</td>
-                                            <td>{{results_total * 2}}</td>
-                                        </tr>
-
-                                        <tr>
-                                            <td>Bonus Points</td>
-                                            <td>{{bonus_total}}</td>
-                                            <td>{{bonus_total}}</td>
-                                        </tr>
-                                        
-                                        <tr>
-                                            <td>Totally Inaccurate</td>
-                                            <td>{{games_total - scores_total - results_total}}</td>
-                                            <td>N/A</td>
-                                        </tr>
-                                    
-                                    </tbody>    
-                                </table>
-                            </li>
-
-                            <li class="list-group-item">
-                                <div>
-                                    <canvas id="myChart"></canvas>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-            </div>
+            {%include '_user_stats.html' %}
         </div>
-
-        
     </div>
 </div>
 
-<script>
-    const ranks_data = {{ ranks | tojson }};
-    const labels_data = {{ labels | tojson }};
-    const num_user = {{user_count}};
-</script>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<script>
-    const ctx = document.getElementById('myChart');
-
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-        labels: labels_data,
-        datasets: [{
-            label: 'Ranking History',
-            data: ranks_data,
-            fill: false,
-            borderColor: 'rgb(75, 192, 192)',
-            tension: 0.1
-        }]
-        },
-        options: {
-            scales: {
-                y: {
-                    reverse: true,
-                    min: 1,
-                    max: num_user
-                }
-            }
-        }
-    });
-</script>
 {% endblock %}
 
 
