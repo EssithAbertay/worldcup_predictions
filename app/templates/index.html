@@ -3,10 +3,55 @@
 {% block content %}
 
     <div class="container text-center "> 
+        <div class = "row">
+            <div class = "col-12 col-md-4">
+                <div class="card mb-1">
+                    <div class="card-header">
+                        <h4>Since the last scores update...</h4>
+                    </div>
 
-        <h5 class="bg-info text-white">
-            Timezones have been fixed!
-        </h5>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col">
+                                <span><i class="bi bi-graph-up-arrow"></i> Biggest Gains</span>
+                                {%for gainer in biggest_gainers %}
+                                <div>
+                                    {{gainer[0].username}}
+                                    <i class="bi bi-caret-up-fill text-success"></i>
+                                    {{gainer[1] | abs}}
+                                </div>
+                                {%endfor%}
+                            </div>
+
+                            <div class="col">
+                                <span><i class="bi bi-graph-down-arrow"></i> Biggest Losses</span>
+                                {%for loser in biggest_losers %}
+                                <div>
+                                    {{loser[0].username}}
+                                    <i class="bi bi-caret-down-fill text-danger"></i>
+                                    {{loser[1] | abs}}
+                                </div>
+                                {%endfor%}
+                             </div>
+                        </div>
+                    </div>
+                </div> 
+            </div>
+            <div class = "col-12 col-md-8">
+                <div class="card mb-1">
+                    <div class="card-header">
+                        <h4>How's the leaderboard looking?</h4>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"> 
+                            <div>
+                                <canvas class="points_chart"></canvas>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
 
         <div class = "row">   
 
@@ -96,7 +141,70 @@
         </div>
     </div>
 
+<script>
+    const your_data = {{ your_data | tojson }};
+    console.log(your_data);
+    const first_data = {{ other_user_data[0] | tojson }};
+    console.log(first_data);
+    const second_data = {{ other_user_data[1] | tojson }};
+    console.log(second_data);
+    const third_data = {{ other_user_data[2] | tojson }};
+    console.log(third_data);
+    const labels_data = {{ labels_data | tojson }};
+    const num_user = {{num_user}};
+</script>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+<script>
+        const pointsChartConfig = {
+        type: 'line',
+        data: {
+            labels: labels_data,
+            datasets: [{
+                label: 'You',
+                data: your_data,
+                fill: false,
+                borderColor: 'rgb(255, 104, 104)',
+                tension: 0.3
+            },
+            {
+                label: 'First',
+                data: first_data,
+                fill: false,
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.3
+            },
+           {
+                label: 'Second',
+                data: second_data,
+                fill: false,
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.3
+            },
+           {
+                label: 'Third',
+                data: third_data,
+                fill: false,
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.3
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    min: 0,
+                    max: 18
+                }
+            }
+        }
+    };
+
+    document.querySelectorAll('.points_chart').forEach(canvas => {
+        new Chart(canvas, pointsChartConfig);
+    });
+</script>
 
 {% endblock %}
 
