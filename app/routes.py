@@ -70,7 +70,6 @@ def index():
 
         if(index < 3):
             for point in user.points_history:
-                flash(point)
                 other_user_data[index].append(point["new"] or 0)
 
                 if(index == 0):
