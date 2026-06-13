@@ -45,7 +45,7 @@ def index():
     biggest_losers = [None] * 3
 
     # points changes of top 3 players and this user, if this user is in top 3 use 4th
-    your_data = []
+    your_data = [0]
 
     other_user_data = [[0], [0], [0]]
 
@@ -62,15 +62,23 @@ def index():
     biggest_gainers = sorted_changes[:3]
     biggest_losers = sorted_changes[-3:]
 
+    modifier = 0
+
     for index, user in enumerate(users):
         if(index < 5):        
             query = sa.select(Prediction).join(Prediction.match).where(Game.kickoff  >= datetime.now(ZoneInfo("Europe/London")),Prediction.user_id == user.id).order_by(Game.kickoff.asc()).limit(5)
             predictions = db.session.scalars(query).all()
             leaderboard.append(TopUser(user=user,predictions=predictions))
 
-        if(index < 3):
+        if(user == current_user):
+            modifier = 1
+            continue
+
+        if(index < 3 + modifier):
+
+            this_idx = index - modifier
             for point in user.points_history:
-                other_user_data[index].append(point["new"] or 0)
+                other_user_data[this_idx].append(point["new"] or 0)
 
                 if(index == 0):
                     timestamp = point.get("datetime")
@@ -78,10 +86,14 @@ def index():
                         continue
                     labels_data.append(datetime.fromisoformat(timestamp).strftime("%d %b"))
 
-    # how many users
-    num_user = len(users)
+    for point in current_user.points_history:
+        your_data.append(point["new"] or 0)
 
-    return render_template('index.html', title='Home', todays=todays, yesterdays=yesterdays, tomorrows=tomorrows, leaderboard=leaderboard,biggest_gainers=biggest_gainers,biggest_losers=biggest_losers,your_data=your_data,other_user_data=other_user_data, labels_data=labels_data, num_user=num_user)
+    
+    max_points = max(other_user_data[0][-1], your_data[-1])
+
+
+    return render_template('index.html', title='Home', todays=todays, yesterdays=yesterdays, tomorrows=tomorrows, leaderboard=leaderboard,biggest_gainers=biggest_gainers,biggest_losers=biggest_losers,your_data=your_data,other_user_data=other_user_data, labels_data=labels_data, max_points=max_points)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

@@ -10,26 +10,26 @@
                         <h4>Since the last scores update...</h4>
                     </div>
 
-                    <div class="card-body">
+                    <div class="card-body pt-2">
                         <div class="row">
                             <div class="col">
-                                <span><i class="bi bi-graph-up-arrow"></i> Biggest Gains</span>
+                                <span class="fs-5"><i class="bi bi-graph-up-arrow"></i> <u>Biggest Gains</u></span>
                                 {%for gainer in biggest_gainers %}
-                                <div>
-                                    {{gainer[0].username}}
+                                <div class="text-start">
                                     <i class="bi bi-caret-up-fill text-success"></i>
                                     {{gainer[1] | abs}}
+                                    {{gainer[0].username}}
                                 </div>
                                 {%endfor%}
                             </div>
 
                             <div class="col">
-                                <span><i class="bi bi-graph-down-arrow"></i> Biggest Losses</span>
+                                <span class="fs-5"><i class="bi bi-graph-down-arrow"></i> <u>Biggest Losses</u></span>
                                 {%for loser in biggest_losers %}
-                                <div>
-                                    {{loser[0].username}}
-                                    <i class="bi bi-caret-down-fill text-danger"></i>
-                                    {{loser[1] | abs}}
+                                <div class="text-start">
+                                    <i class="bi bi-caret-down-fill text-danger">
+                                    </i> {{loser[1] | abs}}
+                                    {{loser[0].username}}                       
                                 </div>
                                 {%endfor%}
                              </div>
@@ -151,7 +151,7 @@
     const third_data = {{ other_user_data[2] | tojson }};
     console.log(third_data);
     const labels_data = {{ labels_data | tojson }};
-    const num_user = {{num_user}};
+    const max_value = {{max_points}};
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -195,7 +195,7 @@
             scales: {
                 y: {
                     min: 0,
-                    max: 18
+                    max: max_value
                 }
             }
         }
