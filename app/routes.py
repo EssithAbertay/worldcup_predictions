@@ -48,7 +48,8 @@ def index():
     your_data = [0]
 
     other_user_data = [[0], [0], [0]]
-
+    other_usernames = [[], [], []]
+    
     # dates
     labels_data = ['11 Jun']
 
@@ -75,11 +76,10 @@ def index():
             continue
 
         if(index < 3 + modifier):
-
             this_idx = index - modifier
             for point in user.points_history:
                 other_user_data[this_idx].append(point["new"] or 0)
-
+                other_usernames[this_idx] = user.username
                 if(index == 0):
                     timestamp = point.get("datetime")
                     if not timestamp:
@@ -93,7 +93,7 @@ def index():
     max_points = max(other_user_data[0][-1], your_data[-1])
 
 
-    return render_template('index.html', title='Home', todays=todays, yesterdays=yesterdays, tomorrows=tomorrows, leaderboard=leaderboard,biggest_gainers=biggest_gainers,biggest_losers=biggest_losers,your_data=your_data,other_user_data=other_user_data, labels_data=labels_data, max_points=max_points)
+    return render_template('index.html', title='Home', todays=todays, yesterdays=yesterdays, tomorrows=tomorrows, leaderboard=leaderboard,biggest_gainers=biggest_gainers,biggest_losers=biggest_losers,your_data=your_data,other_user_data=other_user_data, labels_data=labels_data, max_points=max_points, other_usernames=other_usernames)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
