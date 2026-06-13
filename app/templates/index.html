@@ -4,10 +4,10 @@
 
     <div class="container text-center "> 
         <div class = "row">
-            <div class = "col-12 col-md-4">
-                <div class="card mb-1">
+            <div class = "col-12 col-md-6">
+                <div class="card mb-3">
                     <div class="card-header">
-                        <h4>Since the last scores update...</h4>
+                        <h4 class = "card-title">Since the last scores update...</h4>
                     </div>
 
                     <div class="card-body pt-2">
@@ -36,11 +36,57 @@
                         </div>
                     </div>
                 </div> 
+
+            <div class="card  mb-3">
+                <div class="card-header">
+                    <h4 class = "card-title">Today's Games</h4>
+                    <h6 class = "card-subtitle text-muted">
+                        Go to <a href="{{url_for('upcoming_games')}}">Upcoming Games</a> to predict
+                    </h6>
+                </div>
+
+                <div class="card-body">
+                    {% if not todays %}
+                        No games today!
+                    {%endif%}
+
+                    
+                        {% for game in todays %}
+                        <div class="card mb-3">      
+                            {% include '_game.html'%}
+                            
+                            <div class="container d-flex w-100 p-1 align-items-center" >
+                                <div class="bg-primary rounded-start text-light " style="width: {{prediction_scores[loop.index-1][0]}}%; min-height: 24px;">
+                                    {% if prediction_scores[loop.index-1][0] >= 12 %}
+                                    <span>  {{prediction_scores[loop.index-1][0]}}%</span>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="bg-secondary text-light"  style="width: {{prediction_scores[loop.index-1][2]}}%; min-height: 24px;">
+                                    {% if prediction_scores[loop.index-1][2] >= 12 %}
+                                    <span>  {{prediction_scores[loop.index-1][2]}}% </span>
+                                    {% endif %}
+                                </div>
+
+                                <div class="bg-danger rounded-end text-light" style="width: {{prediction_scores[loop.index-1][1]}}%; min-height: 24px;">
+                                    {% if prediction_scores[loop.index-1][1] >= 12 %}
+                                    <span>  {{prediction_scores[loop.index-1][1]}}%</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    
+                </div>
+            </div> 
+
             </div>
-            <div class = "col-12 col-md-8">
+
+    
+            <div class = "col-12 col-md-6">
                 <div class="card mb-1">
                     <div class="card-header">
-                        <h4>How's the leaderboard looking?</h4>
+                        <h4 class = "card-title">How's the leaderboard looking?</h4>
                     </div>
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item"> 
@@ -53,62 +99,7 @@
             </div>
         </div>
 
-        <div class = "row">   
 
-           <div class="col-12 col-md-4 mt-0 mb-2">
-                <h3>Today</h3>
-                <p class="small">
-                    Go to <a href="{{url_for('upcoming_games')}}">Upcoming Games</a> to predict
-                </p>
-
-                {% if not todays %}
-                    No games today!
-                {%endif%}
-
-                {% for game in todays %}      
-                    {% include '_game.html'%}
-                {% endfor %}
-              
-            </div> 
-
-            <hr class="d-md-none my-2">
-
-            <div class="col-12 col-md-4  mt-0 mb-2">
-                <h3>Tomorrow</h3>
-                <p class="small"></p>
-                    {% if not tomorrows %}
-                    No games tomorrow!
-                    {%endif%}
-
-                    {% for game in tomorrows %}      
-                        {% include '_game.html'%}
-                    {% endfor %}
-                 
-            </div> 
-
-            <hr class="d-md-none my-2">
-
-            <div class="col-12 col-md-4 mt-0 mb-2">
-                <h3>Yesterday</h3>
-                <p class="small">
-                    Go to <a href="{{url_for('results')}}">Results</a> to view all
-                </p>
-                
-                {% if not yesterdays %}
-                    <div class="row">
-                        <div class="col"> <p>No games yesterday!</p> 
-                        </div>
-                    </div>
-                {%endif%}
-
-                {% for game in yesterdays %}
-                    {% include '_game.html'%}
-                {% endfor %}
-            </div>
-            
-            <hr>
-        </div> 
-       
     </div>
 
     

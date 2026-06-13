@@ -132,7 +132,6 @@ class User(UserMixin, db.Model):
                 
                     self.points += 1
 
-
 class Team(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
 

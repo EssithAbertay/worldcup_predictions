@@ -32,7 +32,28 @@ def index():
     yesterdays =    db.session.scalars(sa.select(Game).where(Game.kickoff >= yesterday_start,Game.kickoff< today_start).order_by(Game.kickoff.asc())).all()
     tomorrows =     db.session.scalars(sa.select(Game).where(Game.kickoff >= tomorrow_start,Game.kickoff < day_after_tomorrow).order_by(Game.kickoff.asc())).all()
 
-    game = db.session.scalar(sa.select(Game).limit(1))
+    prediction_scores = []
+
+    for today in todays:
+        home = 0
+        away = 0
+        draw = 0
+        for prediction in today.predictions:
+            if(prediction.home_score_predicted > prediction.away_score_predicted):
+                home += 1
+            elif (prediction.home_score_predicted < prediction.away_score_predicted):
+                away += 1
+            else:
+                draw +=1
+
+            total = home + away + draw
+
+        home_percent = round((home / total) * 100,1)
+        away_percent = round((away / total) * 100,1)
+        draw_percent = round((draw / total) * 100,1)
+
+        prediction_scores.append([home_percent,away_percent,draw_percent])
+
 
     users = db.session.scalars(sa.select(User).order_by(User.points.desc())).all()
 
@@ -93,7 +114,8 @@ def index():
     max_points = max(other_user_data[0][-1], your_data[-1])
 
 
-    return render_template('index.html', title='Home', todays=todays, yesterdays=yesterdays, tomorrows=tomorrows, leaderboard=leaderboard,biggest_gainers=biggest_gainers,biggest_losers=biggest_losers,your_data=your_data,other_user_data=other_user_data, labels_data=labels_data, max_points=max_points, other_usernames=other_usernames)
+    #TODO: Put this in a struct or smthn please
+    return render_template('index.html', title='Home', todays=todays, yesterdays=yesterdays, tomorrows=tomorrows, leaderboard=leaderboard,biggest_gainers=biggest_gainers,biggest_losers=biggest_losers,your_data=your_data,other_user_data=other_user_data, labels_data=labels_data, max_points=max_points, other_usernames=other_usernames, prediction_scores=prediction_scores)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
