@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %} 
-
+<div style="margin-bottom:100px">
 <h1><u>Upcoming Games</u></h1>
 <hr>
 <form action="" method="post">
@@ -78,6 +78,7 @@
         {{ form.submit(class="btn btn-primary fs-3") }}
     </div>
 </form>
+</div>
 
 <script>
 document.querySelectorAll('.prediction-row').forEach(row => {
