@@ -3,10 +3,33 @@
 {% block content %}
 
     <div class="container text-center "> 
+        <div class = "row">
+            <div class = "col-12 col-md-4">
+                <div class="card mb-1">
+                    <div class="card-header">
+                        <h4>Since the last scores update...</h4>
+                    </div>
 
-        <h5 class="bg-info text-white">
-            Timezones have been fixed!
-        </h5>
+                    <div class="card-body">
+                        <span><i class="bi bi-graph-up-arrow"></i> Biggest Gains</span>
+                        <span><i class="bi bi-graph-down-arrow"></i> Biggest Losses</span>
+                    </div>
+                </div> 
+            </div>
+            <div class = "col-12 col-md-8">
+                <div class="card mb-1">
+                    <div class="card-header">
+                        <h4>How's the leaderboard looking?</h4>
+                    </div>
+
+                    <div class="card-body">
+                        <div>
+                            <canvas class="scores_chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <div class = "row">   
 
@@ -96,8 +119,66 @@
         </div>
     </div>
 
+<script>
+    const your_data = {{ your_data | tojson }};
+    const first_data = {{ first_data | tojson }};
+    const second_data = {{ second_data | tojson }};
+    const third_data = {{ third_data | tojson }};
+    const labels_data = {{ labels_data | tojson }};
+    const num_user = {{num_user}};
+</script>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+<script>
+        const chartConfig = {
+        type: 'line',
+        data: {
+            labels: labels_data,
+            datasets: [{
+                label: 'You',
+                data: your_data,
+                fill: false,
+                borderColor: 'rgb(255, 104, 104)',
+                tension: 0.1
+            },
+            {
+                label: 'First',
+                data: first_data,
+                fill: false,
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1
+            },
+           {
+                label: 'Second',
+                data: second_data,
+                fill: false,
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1
+            },
+           {
+                label: 'Third',
+                data: third_data,
+                fill: false,
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    reverse: true,
+                    min: 1,
+                    max: num_user
+                }
+            }
+        }
+    };
+
+    document.querySelectorAll('.scores_chart').forEach(canvas => {
+        new Chart(canvas, chartConfig);
+    });
+</script>
 {% endblock %}
 
 {% block footer %}

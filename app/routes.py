@@ -44,7 +44,26 @@ def index():
 
         leaderboard.append(TopUser(user=user,predictions=predictions))
 
-    return render_template('index.html', title='Home', todays=todays, yesterdays=yesterdays, tomorrows=tomorrows, leaderboard=leaderboard)
+    # how many users
+    num_user = len(users)
+
+    # what users gained the most positions - top3
+    biggest_gainers = []
+
+    # what users lost the most positions - top3
+    biggest_losers = []
+
+    # points changes of top 3 players and this user, if this user is in top 3 use 4th
+    your_data = []
+    first_data = []
+    second_data = []
+    third_data = []      
+
+    # dates
+    labels_data = []
+ 
+    
+    return render_template('index.html', title='Home', todays=todays, yesterdays=yesterdays, tomorrows=tomorrows, leaderboard=leaderboard,biggest_gainers=biggest_gainers,biggest_losers=biggest_losers,your_data=your_data,first_data=first_data,second_data=second_data, third_data=third_data, labels_data=labels_data, num_user=num_user)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -387,14 +406,23 @@ def admin_panel():
             users = db.session.scalars(query).all()
             flash('got users')
 
-            for index, user in enumerate(users):
+            now = datetime.now(ZoneInfo("Europe/London"))
 
-                string = 'attempting to update' + user.username + ' scores'
+            for index, user in enumerate(users):
+                string = 'attempting to update' + user.username
                 flash(string)
+                old_points = user.points
                 user.calculate_points()
+                new_points = user.points
                 flash('updated scores for user')
+
+                history = user.points_history or []
+
+                flash("updating points record")
+
+                history.append({"old": old_points, "new": new_points, "datetime": now.isoformat()})
+                user.ranking_history = history
             
-            db.session.commit()
 
             #have to redo the query as scores now updated
 
@@ -406,18 +434,15 @@ def admin_panel():
 
             #sort users
             for index, user in enumerate(users):
-
                 current_rank = user.ranking
                 user.previous_ranking = current_rank # make current ranking the old ranking
 
                 new_rank = index+1 # +1 to account for 0
                 user.ranking = new_rank
 
-                now = datetime.now(ZoneInfo("Europe/London"))
-
                 history = user.ranking_history or []
 
-                flash("updating")
+                flash("updating ranking record")
 
                 history.append({"old": current_rank, "new": new_rank, "datetime": now.isoformat()})
                 user.ranking_history = history
