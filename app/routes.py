@@ -468,17 +468,17 @@ def admin_panel():
                 new_points = user.points
                 flash('updated scores for user')
 
-                history = user.points_history or []
+                points_history = user.points_history or []
 
                 flash("updating points record")
 
-                history.append({"old": old_points, "new": new_points, "datetime": now.isoformat()})
-                user.ranking_history = history
+                points_history.append({"old": old_points, "new": new_points, "datetime": now.isoformat()})
+                user.points_history = points_history
             
-
+            db.session.commit()
             #have to redo the query as scores now updated
 
-            query = sa.select(User).order_by(User.points.desc())
+            query = sa.select(User).order_by(User.points.desc(), User.id.asc())
             flash('got query')
             flash('attempting to getusers')
             users = db.session.scalars(query).all()
@@ -492,12 +492,11 @@ def admin_panel():
                 new_rank = index+1 # +1 to account for 0
                 user.ranking = new_rank
 
-                history = user.ranking_history or []
+                rank_history = user.ranking_history or []
+   
+                rank_history.append({"old": current_rank, "new": new_rank, "datetime": now.isoformat()})
 
-                flash("updating ranking record")
-
-                history.append({"old": current_rank, "new": new_rank, "datetime": now.isoformat()})
-                user.ranking_history = history
+                user.ranking_history = rank_history
 
             db.session.commit()
 
