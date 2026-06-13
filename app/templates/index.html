@@ -2,41 +2,9 @@
 
 {% block content %}
 
-    <div class="container text-center "> 
-        <div class = "row">
-            <div class = "col-12 col-md-6">
-                <div class="card mb-3">
-                    <div class="card-header">
-                        <h4 class = "card-title">Since the last scores update...</h4>
-                    </div>
-
-                    <div class="card-body pt-2">
-                        <div class="row">
-                            <div class="col">
-                                <span class="fs-5"><i class="bi bi-graph-up-arrow"></i> <u>Biggest Gains</u></span>
-                                {%for gainer in biggest_gainers %}
-                                <div class="text-start">
-                                    <i class="bi bi-caret-up-fill text-success"></i>
-                                    {{gainer[1] | abs}}
-                                    {{gainer[0].username}}
-                                </div>
-                                {%endfor%}
-                            </div>
-
-                            <div class="col">
-                                <span class="fs-5"><i class="bi bi-graph-down-arrow"></i> <u>Biggest Losses</u></span>
-                                {%for loser in biggest_losers %}
-                                <div class="text-start">
-                                    <i class="bi bi-caret-down-fill text-danger">
-                                    </i> {{loser[1] | abs}}
-                                    {{loser[0].username}}                       
-                                </div>
-                                {%endfor%}
-                             </div>
-                        </div>
-                    </div>
-                </div> 
-
+<div class="container text-center "> 
+    <div class = "row">
+        <div class = "col-12 col-md-6">
             <div class="card  mb-3">
                 <div class="card-header">
                     <h4 class = "card-title">Today's Games</h4>
@@ -52,23 +20,55 @@
 
                     
                     {% for game in todays %}
+                    
                     <div class="card  {{ 'mb-0' if loop.last else 'mb-3' }}">      
-                        {% include '_game.html'%}
                         
+                        <div class="fs-6 py-0 my-0">
+                            {{ game.kickoff.strftime('%H:%M') }}
+                        </div>  
+
+                        <div class="d-flex justify-content-center align-items-center gap-2 fs-4">
+                            <span class="fi fi-{{ game.home_team.flag_code }} align-self-center fs-1 border"></span>
+                            
+                            <span class="text-center" style="width: 2rem;">
+                            {% if game.home_score is none %}
+                                ?
+                            {%else%}
+                                {{ game.home_score }}
+                            {%endif%}
+                            </span>
+                            <i class="bi bi-x-diamond-fill" style="font-size: 1rem;"></i>
+                            
+                            <span class="text-center" style="width: 2rem;">
+                            {% if game.away_score is none %}
+                                ?
+                            {%else%}
+                                {{ game.away_score }}
+                            {%endif%}
+                            </span>
+
+                            <span class="fi fi-{{ game.away_team.flag_code }} align-self-center fs-1 border"></span>
+                        </div>
+                        
+                        {% set avg_home = game.get_average_home_score() %}
+                        {% set avg_away = game.get_average_away_score() %}
+
+                        <span>{{avg_home | float | round(2) if avg_home is not none else "?" }} - {{avg_away | float | round(2) if avg_away is not none else "?"}}</span>
+
                         <div class="container d-flex w-100 p-1 align-items-center" >
-                            <div class="bg-primary rounded-start text-light " style="width: {{prediction_scores[loop.index-1][0]}}%; min-height: 24px;">
+                            <div class="bg-primary rounded-start text-light border border-end-0" style="width: {{prediction_scores[loop.index-1][0]}}%; min-height: 26px;">
                                 {% if prediction_scores[loop.index-1][0] >= 12 %}
                                 <span>  {{prediction_scores[loop.index-1][0]}}%</span>
                                 {% endif %}
                             </div>
                             
-                            <div class="bg-secondary text-light"  style="width: {{prediction_scores[loop.index-1][2]}}%; min-height: 24px;">
+                            <div class="bg-secondary text-light border border-start-0 border-end-0"  style="width: {{prediction_scores[loop.index-1][2]}}%; min-height: 26px;">
                                 {% if prediction_scores[loop.index-1][2] >= 12 %}
                                 <span>  {{prediction_scores[loop.index-1][2]}}% </span>
                                 {% endif %}
                             </div>
 
-                            <div class="bg-danger rounded-end text-light" style="width: {{prediction_scores[loop.index-1][1]}}%; min-height: 24px;">
+                            <div class="bg-danger rounded-end text-light border border-start-0" style="width: {{prediction_scores[loop.index-1][1]}}%; min-height: 26px;">
                                 {% if prediction_scores[loop.index-1][1] >= 12 %}
                                 <span>  {{prediction_scores[loop.index-1][1]}}%</span>
                                 {% endif %}
@@ -80,57 +80,56 @@
                 </div>
             </div> 
 
-            </div>
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h4 class = "card-title">Since the last scores update...</h4>
+                </div>
 
-    
-            <div class = "col-12 col-md-6">
-                <div class="card mb-1">
-                    <div class="card-header">
-                        <h4 class = "card-title">How's the leaderboard looking?</h4>
-                    </div>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item"> 
-                            <div>
-                                <canvas class="points_chart"></canvas>
+                <div class="card-body pt-2">
+                    <div class="row">
+                        <div class="col">
+                            <span class="fs-5"><i class="bi bi-graph-up-arrow"></i> <u>Biggest Gains</u></span>
+                            {%for gainer in biggest_gainers %}
+                            <div class="text-start">
+                                <i class="bi bi-caret-up-fill text-success"></i>
+                                {{gainer[1] | abs}}
+                                {{gainer[0].username}}
                             </div>
-                        </li>
-                    </ul>
+                            {%endfor%}
+                        </div>
+
+                        <div class="col">
+                            <span class="fs-5"><i class="bi bi-graph-down-arrow"></i> <u>Biggest Losses</u></span>
+                            {%for loser in biggest_losers %}
+                            <div class="text-start">
+                                <i class="bi bi-caret-down-fill text-danger">
+                                </i> {{loser[1] | abs}}
+                                {{loser[0].username}}                       
+                            </div>
+                            {%endfor%}
+                            </div>
+                    </div>
                 </div>
+            </div> 
+        </div>
+
+
+        <div class = "col-12 col-md-6">
+            <div class="card mb-1">
+                <div class="card-header">
+                    <h4 class = "card-title">How's the leaderboard looking?</h4>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"> 
+                        <div>
+                            <canvas class="points_chart"></canvas>
+                        </div>
+                    </li>
+                </ul>
             </div>
         </div>
-
-
     </div>
-
-    
-    <div class="container text-center"> 
-        <h3>Top 5 and Upcoming Predictions</h3>
-        <p>Go to <a href="{{url_for('leaderboard')}}">Leaderboard</a> to view full details</p>
-
-            <div class = "row">
-            
-            {%for item in leaderboard%}
-            
-            <hr class="d-md-none my-2">
-                
-            <div class="col mb-5">
-                    
-                    <p class="my-0 py-0">{{ loop.index }}.  <img src="{{ item.user.avatar(24) }}" alt="User Avatar" style="width: 24px; height: 24px;">   <a href="{{ url_for('user', username=item.user.username) }}">{{item.user.username}}</a></p>
-                    {{item.user.points}} points
-
-
-                    {%for prediction in item.predictions%}
-
-                        {% include '_prediction.html' %}
-
-                    {%endfor%}
-                    
-                    
-                </div>
-        
-            {%endfor%} 
-        </div>
-    </div>
+</div>
 
 <script>
     const your_data = {{ your_data | tojson }};
