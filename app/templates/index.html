@@ -73,24 +73,46 @@
 
                 <div class="card-body pt-2">
                     <div class="row">
-                        <div class="col">
-                            <span class="fs-5"><i class="bi bi-graph-up-arrow"></i> <u>Biggest Gains</u></span>
+                        <div class="col-6">
+                            <span class="fs-6 d-md-none"> 
+                                <i class="bi bi-graph-down-arrow"></i> 
+                                <u>Biggest Gains</u>
+                            </span>
+
+                            <span class="fs-5 d-none d-md-inline"> 
+                                <i class="bi bi-graph-down-arrow"></i> 
+                                <u>Biggest Gains</u>
+                            </span>
+
                             {%for gainer in biggest_gainers %}
                             <div class="text-start">
-                                <i class="bi bi-caret-up-fill text-success"></i>
-                                {{gainer[1] | abs}}
-                                {{gainer[0].username}}
+                                    <i class="bi bi-caret-up-fill text-success"></i>
+                                    {{gainer[1] | abs}}
+                                
+                                <a href="{{ url_for('user', username=gainer[0].username) }}"> {{gainer[0].username}}</a>
                             </div>
                             {%endfor%}
                         </div>
 
-                        <div class="col">
-                            <span class="fs-5"><i class="bi bi-graph-down-arrow"></i> <u>Biggest Losses</u></span>
+                        <div class="col-6">
+                            <span class="fs-6 d-md-none"> 
+                                <i class="bi bi-graph-down-arrow"></i> 
+                                <u>Biggest Losses</u>
+                            </span>
+
+                            <span class="fs-5 d-none d-md-inline"> 
+                                <i class="bi bi-graph-down-arrow"></i> 
+                                <u>Biggest Losses</u>
+                            </span>
+
                             {%for loser in biggest_losers %}
                             <div class="text-start">
-                                <i class="bi bi-caret-down-fill text-danger">
-                                </i> {{loser[1] | abs}}
-                                {{loser[0].username}}                       
+    
+                                    <i class="bi bi-caret-down-fill text-danger"></i> 
+                                    {{loser[1] | abs}}
+                                
+
+                                <a href="{{ url_for('user', username=loser[0].username) }}"> {{loser[0].username}}</a>                     
                             </div>
                             {%endfor%}
                             </div>
