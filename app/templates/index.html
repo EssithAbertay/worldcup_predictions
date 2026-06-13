@@ -51,32 +51,32 @@
                     {%endif%}
 
                     
-                        {% for game in todays %}
-                        <div class="card mb-3">      
-                            {% include '_game.html'%}
+                    {% for game in todays %}
+                    <div class="card  {{ 'mb-0' if loop.last else 'mb-3' }}">      
+                        {% include '_game.html'%}
+                        
+                        <div class="container d-flex w-100 p-1 align-items-center" >
+                            <div class="bg-primary rounded-start text-light " style="width: {{prediction_scores[loop.index-1][0]}}%; min-height: 24px;">
+                                {% if prediction_scores[loop.index-1][0] >= 12 %}
+                                <span>  {{prediction_scores[loop.index-1][0]}}%</span>
+                                {% endif %}
+                            </div>
                             
-                            <div class="container d-flex w-100 p-1 align-items-center" >
-                                <div class="bg-primary rounded-start text-light " style="width: {{prediction_scores[loop.index-1][0]}}%; min-height: 24px;">
-                                    {% if prediction_scores[loop.index-1][0] >= 12 %}
-                                    <span>  {{prediction_scores[loop.index-1][0]}}%</span>
-                                    {% endif %}
-                                </div>
-                                
-                                <div class="bg-secondary text-light"  style="width: {{prediction_scores[loop.index-1][2]}}%; min-height: 24px;">
-                                    {% if prediction_scores[loop.index-1][2] >= 12 %}
-                                    <span>  {{prediction_scores[loop.index-1][2]}}% </span>
-                                    {% endif %}
-                                </div>
+                            <div class="bg-secondary text-light"  style="width: {{prediction_scores[loop.index-1][2]}}%; min-height: 24px;">
+                                {% if prediction_scores[loop.index-1][2] >= 12 %}
+                                <span>  {{prediction_scores[loop.index-1][2]}}% </span>
+                                {% endif %}
+                            </div>
 
-                                <div class="bg-danger rounded-end text-light" style="width: {{prediction_scores[loop.index-1][1]}}%; min-height: 24px;">
-                                    {% if prediction_scores[loop.index-1][1] >= 12 %}
-                                    <span>  {{prediction_scores[loop.index-1][1]}}%</span>
-                                    {% endif %}
-                                </div>
+                            <div class="bg-danger rounded-end text-light" style="width: {{prediction_scores[loop.index-1][1]}}%; min-height: 24px;">
+                                {% if prediction_scores[loop.index-1][1] >= 12 %}
+                                <span>  {{prediction_scores[loop.index-1][1]}}%</span>
+                                {% endif %}
                             </div>
                         </div>
-                        {% endfor %}
-                    
+                    </div>
+                    {% endfor %}
+                
                 </div>
             </div> 
 
