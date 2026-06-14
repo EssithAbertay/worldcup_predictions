@@ -23,18 +23,15 @@ def index():
     
     now_time = datetime.now(ZoneInfo("Europe/London"))
     today_start = now_time.replace(hour=0, minute=0, second=0, microsecond=0)
-
     yesterday_start = today_start - timedelta(days=1) 
-    tomorrow_start = today_start + timedelta(days=1)
-    day_after_tomorrow = today_start + timedelta(days=2) 
-    
-    todays =        db.session.scalars(sa.select(Game).where(Game.kickoff >= today_start , Game.kickoff < tomorrow_start).order_by(Game.kickoff.asc())).all()
-    yesterdays =    db.session.scalars(sa.select(Game).where(Game.kickoff >= yesterday_start,Game.kickoff< today_start).order_by(Game.kickoff.asc())).all()
-    tomorrows =     db.session.scalars(sa.select(Game).where(Game.kickoff >= tomorrow_start,Game.kickoff < day_after_tomorrow).order_by(Game.kickoff.asc())).all()
+    tomorrow_start = today_start + timedelta(days=1) 
+
+    # get all games
+    daily_games = db.session.scalars(sa.select(Game).where(Game.kickoff >= today_start, Game.kickoff < tomorrow_start).order_by(Game.kickoff.asc())).all()
 
     prediction_scores = []
 
-    for today in todays:
+    for today in daily_games:
         home = 0
         away = 0
         draw = 0
@@ -137,9 +134,9 @@ def index():
         yesterday_scores.append(points)
         yesterday_names.append (username)
 
-
+    day_to_display = 0
     #TODO: Put this in a struct or smthn please
-    return render_template('index.html', title='Home', todays=todays, yesterdays=yesterdays, tomorrows=tomorrows, leaderboard=leaderboard,biggest_gainers=biggest_gainers,biggest_losers=biggest_losers,your_data=your_data,other_user_data=other_user_data, labels_data=labels_data, max_points=max_points, other_usernames=other_usernames, prediction_scores=prediction_scores, yesterday_scores=yesterday_scores, yesterday_names=yesterday_names)
+    return render_template('index.html', title='Home', day_to_display=day_to_display,daily_games=daily_games, leaderboard=leaderboard,biggest_gainers=biggest_gainers,biggest_losers=biggest_losers,your_data=your_data,other_user_data=other_user_data, labels_data=labels_data, max_points=max_points, other_usernames=other_usernames, prediction_scores=prediction_scores, yesterday_scores=yesterday_scores, yesterday_names=yesterday_names)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

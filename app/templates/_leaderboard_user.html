@@ -1,5 +1,4 @@
 <div class="row border-top g-0 py-2 justify-content-center align-items-center">
-
     <div class="col-1 fs-6">
         {% if user.ranking == last%}
             🥄
@@ -26,7 +25,7 @@
     
     <div class="col fs-5 text-start text-truncate">
         <img class="border border-secondary rounded" src="{{ user.avatar(48) }}" alt="User Avatar" style="width: 36px; height: 36px;">
-   
+
         <a href="{{ url_for('user', username=user.username) }}"> {{user.username}}</a>
     </div>
 
@@ -43,5 +42,4 @@
             {% endfor %}
         </div>
     </div>
-    
 </div>

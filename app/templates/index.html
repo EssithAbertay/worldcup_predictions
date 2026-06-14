@@ -1,25 +1,27 @@
 {% extends "base.html" %}
 
 {% block content %}
-
 <div class="text-center "> 
     <div class = "row">
         <div class = "col-12 col-md-6">
-            <div class="card  mb-3">
-                <div class="card-header">
+            <div class="card mb-3">
+                <div class="card-header d-flex align-items-center justify-content-center">
+                   <!--<button type="button" class="btn btn-secondary" onclick=""><i class="bi bi-caret-left-square-fill fs-3"></i></button>--> 
+                    <div>
                     <h4 class = "card-title">Today's Games</h4>
                     <h6 class = "card-subtitle text-muted">
                         Go to <a href="{{url_for('upcoming_games')}}">Upcoming Games</a> to predict
                     </h6>
+                    </div>
+                    <!--<button type="button" class="btn btn-secondary" onclick=""><i class="bi bi-caret-right-square-fill fs-3"></i></button>--> 
                 </div>
 
                 <div class="card-body">
-                    {% if not todays %}
+                    {% if not daily_games %}
                         No games today!
                     {%endif%}
 
-                    
-                    {% for game in todays %}
+                    {% for game in daily_games %}
                     
                     <div class="card  {{ 'mb-0' if loop.last else 'mb-3' }} p-1 pt-2">                 
                         <div class="d-flex justify-content-center align-items-center gap-2 fs-4">
