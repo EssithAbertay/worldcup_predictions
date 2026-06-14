@@ -14,8 +14,9 @@
         
         <span class="fi fi-{{ prediction.match.away_team.flag_code }} align-self-center fs-1 border"></span>
     </div>
-
+    {% if prediction.match.home_score is not none or prediction.match.away_score is not none%}
     <div class="card-subtitle fs-6">
         ({{prediction.match.home_score}} - {{prediction.match.away_score}})
     </div>
+    {% endif %}
 </div>
