@@ -113,9 +113,33 @@ def index():
     
     max_points = max(other_user_data[0][-1], your_data[-1])
 
+    yesterday_scores = []
+    yesterday_names = []
+
+    # crazy query, i need to understand it better, gets all users and sums the points they earned yesterday
+
+    results = (
+        db.session.query(
+            User.username,
+            sa.func.coalesce(sa.func.sum(Prediction.points_awarded), 0).label("points")
+        )
+        .join(Prediction, Prediction.user_id == User.id)
+        .join(Game, Prediction.game_id == Game.id)
+        .filter(
+            Game.kickoff >= yesterday_start,
+            Game.kickoff < today_start,
+        )
+        .group_by(User.id, User.username)
+        .all()
+    )
+
+    for username, points in results:
+        yesterday_scores.append(points)
+        yesterday_names.append (username)
+
 
     #TODO: Put this in a struct or smthn please
-    return render_template('index.html', title='Home', todays=todays, yesterdays=yesterdays, tomorrows=tomorrows, leaderboard=leaderboard,biggest_gainers=biggest_gainers,biggest_losers=biggest_losers,your_data=your_data,other_user_data=other_user_data, labels_data=labels_data, max_points=max_points, other_usernames=other_usernames, prediction_scores=prediction_scores)
+    return render_template('index.html', title='Home', todays=todays, yesterdays=yesterdays, tomorrows=tomorrows, leaderboard=leaderboard,biggest_gainers=biggest_gainers,biggest_losers=biggest_losers,your_data=your_data,other_user_data=other_user_data, labels_data=labels_data, max_points=max_points, other_usernames=other_usernames, prediction_scores=prediction_scores, yesterday_scores=yesterday_scores, yesterday_names=yesterday_names)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

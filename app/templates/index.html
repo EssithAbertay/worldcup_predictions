@@ -123,7 +123,7 @@
 
 
         <div class = "col-12 col-md-6">
-            <div class="card mb-1">
+            <div class="card mb-3">
                 <div class="card-header">
                     <h4 class = "card-title">How's the leaderboard looking?</h4>
                 </div>
@@ -135,9 +135,27 @@
                     </li>
                 </ul>
             </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h4 class = "card-title">Who earned points yesterday?</h4>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"> 
+                        <div>
+                            <canvas class="yesterday_chart"></canvas>
+                        </div>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
 </div>
+
+<script>
+    const yesterday_scores = {{ yesterday_scores | tojson }};
+    const yesterday_names = {{ yesterday_names | tojson }};
+</script>
 
 <script>
     const your_data = {{ your_data | tojson }};
@@ -149,12 +167,11 @@
     const third_data = {{ other_user_data[2] | tojson }};
     console.log(third_data);
     const labels_data = {{ labels_data | tojson }};
-    const max_value = {{max_points}};
-    const names = {{other_usernames | tojson}}
+    const max_value = {{max_points}} + 2;
+    const names = {{other_usernames | tojson}}  
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 
 <script>
         const pointsChartConfig = {
@@ -210,6 +227,42 @@
 
     document.querySelectorAll('.points_chart').forEach(canvas => {
         new Chart(canvas, pointsChartConfig);
+    });
+</script>
+
+<script>
+    const borderColours = yesterday_names.map((_, i) => {
+        const hue = (i * 360 / yesterday_names.length);
+        return `hsl(${hue}, 70%, 50%)`;
+    });
+
+    const backgroundColours = yesterday_names.map((_, i) => {
+        const hue = (i * 360 / yesterday_names.length);
+        return `hsla(${hue}, 70%, 50%, 0.2)`;
+    });
+
+    const yesterdayChartConfig = {
+    type: 'bar',
+    data: {
+        labels: yesterday_names,
+        datasets: [{
+            data: yesterday_scores,
+            backgroundColor: backgroundColours,
+            borderColor: borderColours,
+            borderWidth: 1
+        }]
+    },
+    options: {
+        plugins: {
+            legend: {
+                display: false
+            }
+        }
+    } 
+};
+
+    document.querySelectorAll('.yesterday_chart').forEach(canvas => {
+        new Chart(canvas, yesterdayChartConfig);
     });
 </script>
 
