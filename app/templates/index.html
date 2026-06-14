@@ -233,6 +233,8 @@
 </script>
 
 <script>
+    const avg = yesterday_scores.reduce((sum, value) => sum + value, 0) / yesterday_scores.length;
+
     const borderColours = yesterday_names.map((_, i) => {
         const hue = (i * 360 / yesterday_names.length);
         return `hsl(${hue}, 70%, 50%)`;
@@ -252,6 +254,15 @@
             backgroundColor: backgroundColours,
             borderColor: borderColours,
             borderWidth: 1
+        },
+        {
+                type: 'line',
+                label: 'Average',
+                data: Array(yesterday_scores.length).fill(avg),
+                borderColor: 'rgb(42, 0, 194)',
+                borderWidth: 2,
+                pointRadius: 0,
+                fill: false
         }]
     },
     options: {
