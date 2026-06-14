@@ -1,16 +1,21 @@
 <div class="card p-1 pt-2 mb-2"> 
      <div class="d-flex justify-content-center align-items-center gap-2 fs-4">
-    <span class="fi fi-{{ prediction.match.home_team.flag_code }} align-self-center fs-1 border"></span>
-    
-    <span class="text-center" style="width: 2rem;">
-        {{ prediction.home_score_predicted }}
-    </span>
+        <span class="fi fi-{{ prediction.match.home_team.flag_code }} align-self-center fs-1 border"></span>
+        
+        <span class="text-center" style="width: 2rem;">
+            {{ prediction.home_score_predicted }}
+        </span>
 
-    <i class="bi bi-x-diamond-fill {{ "text-success" if prediction.score_points else "text-warning" if prediction.result_points else "" }}"></i>
-    
-    <span class="text-center" style="width: 2rem;">
-        {{ prediction.away_score_predicted }}
-    </span>
-    
-    <span class="fi fi-{{ prediction.match.away_team.flag_code }} align-self-center fs-1 border"></span>
-</div></div>
+        <i class="bi bi-x-diamond-fill {{ "text-success" if prediction.score_points else "text-warning" if prediction.result_points else "" }}"></i>
+        
+        <span class="text-center" style="width: 2rem;">
+            {{ prediction.away_score_predicted }}
+        </span>
+        
+        <span class="fi fi-{{ prediction.match.away_team.flag_code }} align-self-center fs-1 border"></span>
+    </div>
+
+    <div class="card-subtitle fs-6">
+        ({{prediction.match.away_score}} - {{prediction.match.home_score}})
+    </div>
+</div>
