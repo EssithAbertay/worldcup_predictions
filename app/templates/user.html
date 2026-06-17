@@ -48,7 +48,7 @@
         </ul>
 
         <div class="tab-content">
-            <div class="tab-pane show active" id="predictions">
+            <div class="tab-pane show active text-center" id="predictions">
                 {% for prediction in user.predictions %}
                     {% include '_prediction.html' %}
                 {% endfor %}
@@ -65,7 +65,7 @@
     <div class = "row d-none d-md-flex">
 
     <!--Predicted Games-->
-        <div class="col-12 col-md-4 mb-2">
+        <div class="col-md-4 mb-2">
             <div class="text-center fs-5"> 
                 <h2>Predictions</h2>
                 <hr>
@@ -76,12 +76,8 @@
             </div>
         </div>
 
-        <div class="col-12 d-md-none">
-            <hr class="my-2">
-        </div>
-
         <!--Stats-->
-        <div class="col-12 col-md-8">
+        <div class="col-md-8">
             <h2 class="text-center">Stats</h2>
             <hr>
             {%include '_user_stats.html' %}

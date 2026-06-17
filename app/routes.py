@@ -27,7 +27,7 @@ def index():
     tomorrow_start = today_start + timedelta(days=1) 
 
     # get all games
-    daily_games = db.session.scalars(sa.select(Game).where(Game.kickoff >= today_start, Game.kickoff < tomorrow_start).order_by(Game.kickoff.asc())).all()
+    daily_games = db.session.scalars(sa.select(Game).options(selectinload(Game.predictions), selectinload(Game.home_team),selectinload(Game.away_team),).where(Game.kickoff >= today_start, Game.kickoff < tomorrow_start).order_by(Game.kickoff.asc())).all()
 
     prediction_scores = []
 
