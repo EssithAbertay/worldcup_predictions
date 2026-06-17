@@ -263,7 +263,7 @@ def edit_profile():
 
             db.session.commit()
             flash('Your changes have been saved.')
-            return redirect(url_for('edit_profile'))
+            return redirect( url_for('user', username=current_user.username))
     
         if profile_form.submit.data and profile_form.validate_on_submit():
             picture = profile_form.profile.data
@@ -274,7 +274,7 @@ def edit_profile():
                     img.verify()
                 except Exception:
                     flash("Invalid image file")
-                    return redirect(url_for("edit_profile"))
+                    return redirect( url_for('user', username=current_user.username))
 
                 picture.seek(0)   
                 img = Image.open(picture)
