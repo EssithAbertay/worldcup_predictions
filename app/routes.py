@@ -529,8 +529,22 @@ def admin_panel():
 
 @app.route('/leaderboard', methods=['GET'])
 def leaderboard():
-    query = sa.select(User).order_by(User.points.desc()).options(selectinload(User.predictions).selectinload(Prediction.match))
+    query = (
+        sa.select(User)
+        .order_by(User.points.desc())
+        .options(
+            selectinload(User.predictions)
+            .selectinload(Prediction.match)
+            .selectinload(Game.home_team),
+
+            selectinload(User.predictions)
+            .selectinload(Prediction.match)
+            .selectinload(Game.away_team)
+        )
+    )
+
     users = db.session.scalars(query).all()
+
 
     podium = users[:3]
     rest = users[3:]
