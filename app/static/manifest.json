@@ -11,14 +11,14 @@
       "src": "/static/icons/icon_512x512.png",
       "type": "image/png",
       "sizes": "512x512",
-      "purpose": "any maskable"
+      "purpose": "maskable"
     }
   ],
-  "id": "/?source=pwa",
+  "id": "/",
   "start_url": "https://essith.pythonanywhere.com/index",
   "background_color": "#000000",
   "display": "standalone",
-  "scope": "https://essith.pythonanywhere.com/",
+  "scope": "/",
   "theme_color": "#3367D6",
   "description": "Predict World Cup 2026 results and compete with friends",
   "orientation": "portrait"
