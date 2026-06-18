@@ -1,0 +1,25 @@
+{
+  "short_name": "WC26 Predictions",
+  "name": "World Cup 2026 Predictions",
+  "icons": [
+    {
+      "src": "/static/icons/icon_192x192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/static/icons/icon_512x512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "id": "/?source=pwa",
+  "start_url": "https://essith.pythonanywhere.com/index",
+  "background_color": "#000000",
+  "display": "standalone",
+  "scope": "https://essith.pythonanywhere.com/",
+  "theme_color": "#3367D6",
+  "description": "Predict World Cup 2026 results and compete with friends",
+  "orientation": "portrait"
+}
