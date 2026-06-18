@@ -23,6 +23,9 @@ class User(UserMixin, db.Model):
     is_admin: so.Mapped[bool] = so.mapped_column(default=False)
     profile_pic_file: so.Mapped[str] = so.mapped_column(sa.String(64), default='none')
 
+    number_of_scores: so.Mapped[int] = so.mapped_column(nullable=True, default=0)
+    number_of_results: so.Mapped[int] = so.mapped_column(nullable=True, default=0)
+
     predictions: so.Mapped[list['Prediction']] = so.relationship(back_populates='author')
     
     def __repr__(self):
@@ -59,7 +62,7 @@ class User(UserMixin, db.Model):
             return base_string + "st"
         elif last_digit == 2:
             return base_string + "nd"
-        elif last_digit == 1:
+        elif last_digit == 3:
             return base_string + "rd"
         else:
             return base_string + "th"
@@ -71,6 +74,8 @@ class User(UserMixin, db.Model):
         # TODO: skip calculated games
 
         self.points = 0 # stopgap while recalcing all games
+        self.number_of_results = 0
+        self.number_of_scores = 0
        # predictions = db.session.execute(self.predictions.select().where(Prediction.points_awarded == None)).scalars() # this ver should only get games that havent been set yet
         predictions = self.predictions # gets all predictions
 
@@ -117,19 +122,18 @@ class User(UserMixin, db.Model):
                     prediction.points_awarded = 5
                     prediction.score_points = True
                     self.points += 5
-                    
+                    self.number_of_scores += 1
                     continue # continue as max points is 5
 
                 if(actual_result == predicted_result): # if predicted correct result
                     prediction.points_awarded = 2
                     prediction.result_points = True
-                    
+                    self.number_of_results += 1
                     self.points += 2
                 
                 if(home_correct or away_correct): # bonus point for a correct score
                     prediction.points_awarded += 1
                     prediction.bonus_points = True
-                
                     self.points += 1
 
 class Team(db.Model):
@@ -216,7 +220,6 @@ class Prediction(db.Model):
             self.home_score_predicted,
             self.away_score_predicted
     )
-
 
 @login.user_loader
 def load_user(id):

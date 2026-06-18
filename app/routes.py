@@ -499,7 +499,7 @@ def admin_panel():
             db.session.commit()
             #have to redo the query as scores now updated
 
-            query = sa.select(User).order_by(User.points.desc(), User.id.asc())
+            query = sa.select(User).order_by(User.points.desc(), User.number_of_results.desc(), User.number_of_scores.desc())
             flash('got query')
             flash('attempting to getusers')
             users = db.session.scalars(query).all()
