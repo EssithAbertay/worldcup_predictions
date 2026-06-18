@@ -529,7 +529,7 @@ def admin_panel():
 
 @app.route('/leaderboard', methods=['GET'])
 def leaderboard():
-    query = sa.select(User).order_by(User.points.desc()).options(selectinload(User.predictions))
+    query = sa.select(User).order_by(User.points.desc()).options(selectinload(User.predictions).selectinload(Prediction.match))
     users = db.session.scalars(query).all()
 
     podium = users[:3]
