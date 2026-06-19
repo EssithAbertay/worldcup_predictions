@@ -531,7 +531,7 @@ def admin_panel():
 def leaderboard():
     query = (
         sa.select(User)
-        .order_by(User.points.desc())
+        .order_by(User.points.desc(), User.number_of_scores.desc(), User.number_of_results.desc())
         .options(
             selectinload(User.predictions)
             .selectinload(Prediction.match)
