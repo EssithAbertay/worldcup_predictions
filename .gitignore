@@ -6,4 +6,4 @@ static/profile_pics/
 *.py[cod]
 *.env
 
-app.db
+*.db
