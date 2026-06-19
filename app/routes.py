@@ -567,12 +567,6 @@ def faq():
 
 @app.route('/results')
 def results():
-    games = db.session.scalars(sa.select(Game).where(Game.kickoff <= datetime.now(ZoneInfo("Europe/London")))).all() # get all games that have started already, just to cut down on costs, rathter than all games as we know future ones dont have scores yet
+    games = db.session.scalars(sa.select(Game).where(Game.kickoff <= datetime.now(ZoneInfo("Europe/London")),Game.home_score.is_not(None), Game.away_score.is_not(None))).all() # get all games that have started already, just to cut down on costs, rathter than all games as we know future ones dont have scores yet
 
-    results = []
-
-    for game in games:
-        if(game.home_score is not None):
-            results.append(game)
-
-    return render_template('results.html', title='Results', results=results)
+    return render_template('results.html', title='Results', results=games)
