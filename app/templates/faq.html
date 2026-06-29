@@ -75,7 +75,7 @@
         <div class="accordion-item">
             <h3 class="accordion-header">
                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
-                How are my scores calculated?
+                How are my scores calculated? (Group Stage)
                 </button>
             </h3>
             <div id="collapseFive" class="accordion-collapse collapse" data-bs-parent="#FAQaccordion">
@@ -105,62 +105,68 @@
                     Awarded: 2 points (Correct result)<br>
                     <br>
                     </p>
-
-                    <h5>For knockout games</h5>
-                    <p>
-                    When predicting a win in regular or extra time:
-                    <ul>
-                    <li>5 points for the correct score</li>
-                    <li>3 points if you predict the correct result</li>
-                    <li>1 bonus point if you predict one of the correct scores</li>
-                    </ul>
-
-                    <u>Examples:</u><br>
-                    Prediction: Scotland 5 - 0 England<br>
-                    Actual Score: Scotland 5 - 0 England<br>
-                    Awarded: 5 points (Correct Score)<br>
-                    <br>
-                    Prediction: Scotland 2 - 1 England<br>
-                    Actual Score: Scotland 5 - 0 England<br>
-                    Awarded: 3 points (Correct result)<br>
-                    <br>
-                    Prediction: Scotland 5 - 0 England<br>
-                    Actual Score: Scotland 3 - 0 England<br>
-                    Awarded: 4 points (Correct result and a bonus point for a correct score, 0 England)<br>
-                    <br>
-                    Prediction: Scotland 1 - 1 England<br>
-                    Actual Score: Scotland 2 - 2 England<br>
-                    Awarded: 3 points (Correct result)<br>
-                    <br>
-                    When predicting a win on penalties:
-                    <ul>
-                    <li>3 points for the correct score</li>
-                    <li>2 points for the correct result</li>
-                    <li>2 bonus points for the winner on penalties</li>
-                    </ul>
-
-                    <u>Examples:</u><br>
-                    Prediction: Scotland 2 - 2 England - Scotland penalty winner<br>
-                    Actual Score: Scotland 2 - 2 England  - Scotland penalty winner<br>
-                    Awarded: 5 points (3 points for the correct score and 2 bonus points for the correct penalty winner)<br>
-                    <br>
-                    Prediction: Scotland 2 - 2 England - Scotland penalty winner<br>
-                    Actual Score: Scotland 1 - 1 England  - Scotland penalty winner<br>
-                    Awarded: 4 points (2 points for the correct result and 2 bonus points for the correct penalty winner)<br>
-                    <br>
-                    Prediction: Scotland 2 - 2 England - Scotland penalty winner<br>
-                    Actual Score: Scotland 2 - 2 England  - England penalty winner<br>
-                    Awarded: 3 points (3 points for the correct score but 0 bonus points for the incorrect penalty winner)<br>
-                    <br>
-                    Prediction: Scotland 2 - 2 England - Scotland penalty winner<br>
-                    Actual Score: Scotland 1 - 1 England  - England penalty winner<br>
-                    Awarded: 2 points (2 points for the correct result but 0 bonus points for the incorrect penalty winner)<br>
-
-                    </p>
                 </div>
             </div>
         </div>
 
+        <div class="accordion-item">
+            <h3 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseNine" aria-expanded="false" aria-controls="collapseNine">
+                How are my scores calculated? (Knockouts)
+                </button>
+            </h3>
+            <div id="collapseNine" class="accordion-collapse collapse" data-bs-parent="#FAQaccordion">
+                <div class="accordion-body">
+                <p>
+                    Knockout matches use a different scoring system to the group stage. <br>
+                    <strong>Method</strong> refers to whether the winning team qualifies in
+                    regular/additional time or via a penalty shootout.
+                </p>
+
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Prediction</th>
+                            <th class="text-end">Points</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Exact</td>
+                            <td class="text-end"><strong>8</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Exact score + wrong penalty winner</td>
+                            <td class="text-end"><strong>6</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Correct result + correct method</td>
+                            <td class="text-end"><strong>5</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Correct result + incorrect method</td>
+                            <td class="text-end"><strong>3</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Correct draw (after regular/additional time)</td>
+                            <td class="text-end"><strong>2</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Correct penalty winner (when predicting a draw)</td>
+                            <td class="text-end"><strong>+3</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Bonus for either score being correct (does not apply in exact predictions)</td>
+                            <td class="text-end"><strong>+1</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+
+                   
+                </div>
+            </div>
+        </div>
 
         <div class="accordion-item">
             <h3 class="accordion-header">
