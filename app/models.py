@@ -85,20 +85,77 @@ class User(UserMixin, db.Model):
             if prediction.match.home_score is None or prediction.match.away_score is None:
                 continue 
 
-            # if this is a penalty game then do this 
-            if prediction.match.penalty_game: # not finished
-                if prediction.match.penalty_winner != 'na': # check that the game required penalties
-                    if prediction.penalty_winner_predicted == prediction.match.penalty_winner:
-                        prediction.points_awarded = 3
-                        self.points += 3
+            # check if scores are correct
+            home_correct = bool(prediction.home_score_predicted == prediction.match.home_score)
+            away_correct = bool(prediction.away_score_predicted == prediction.match.away_score)
+
+            # if this is a penlty/knockout game, scoring changes
+            if prediction.match.penalty_game: 
+
+                # gather prediction
+
+                actual_result = (
+                    "home" if prediction.match.home_score > prediction.match.away_score
+                    else "away" if  prediction.match.home_score < prediction.match.away_score
+                    else prediction.match.penalty_winner
+                )
+
+                predicted_result = (
+                    "home" if prediction.home_score_predicted > prediction.away_score_predicted
+                    else "away" if  prediction.home_score_predicted < prediction.away_score_predicted
+                    else prediction.penalty_winner_predicted
+                )
+
+                actual_draw = bool(prediction.match.home_score == prediction.match.away_score)
+
+                to_award = 0
+
+                # check exact scores predicted are correct
+                if (home_correct and away_correct):
+                    if(actual_result == predicted_result): # check if had the correct result as well, when result is incorrect that's a penalty blunder
+                        to_award = 8
                     else:
-                        prediction.points_awarded = 0
-                        self.points += 0
+                        to_award = 6
+
+                    prediction.points_awarded = to_award
+                    self.points += to_award
+                    continue # don't add anything on top of this
+ 
+
+                if(actual_draw): # if game was actually a draw 
+                    if(prediction.home_score_predicted == prediction.away_score_predicted): # if user predicted a draw
+                        
+                        to_award += 2
+                        
+                        if(actual_result == predicted_result): # if user additionally got the pens winner
+                            to_award += 3
+
+                    else:
+                        if(actual_result == predicted_result): # if user got the winner right
+                            to_award += 3   
+
+
+                else: # if game wasn't a draw
+                    if(prediction.home_score_predicted == prediction.away_score_predicted): # and user predicted a draw
+                        if(actual_result == predicted_result): # if user got the winner right
+                            to_award += 3   
+                    else:
+                         if(actual_result == predicted_result): # if user got the winner right
+                            to_award += 5   
+
+                if (home_correct or away_correct): # bonus point for getting either score correct
+                    to_award += 1
+
+                prediction.points_awarded = to_award
+                self.points += to_award
+
+            #
+            #
+            #
+            #
+
             else: # when it's not a penalty game
-                # check if scores are correct
-                home_correct = bool(prediction.home_score_predicted == prediction.match.home_score)
-                away_correct = bool(prediction.away_score_predicted == prediction.match.away_score)
-                
+
                 actual_result = (
                     "draw" if prediction.match.home_score == prediction.match.away_score
                     else "home" if prediction.match.home_score > prediction.match.away_score
