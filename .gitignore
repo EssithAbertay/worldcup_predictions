@@ -1,7 +1,7 @@
 venv/
 __pycache__/
 instance/
-static/profile_pics/
+app/static/profile_pics
 
 *.py[cod]
 *.env
