@@ -499,7 +499,7 @@ def admin_panel():
             db.session.commit()
             #have to redo the query as scores now updated
 
-            query = sa.select(User).order_by(User.points.desc(), User.id.asc())
+            query = sa.select(User).order_by(User.points.desc(), User.number_of_scores.desc(), User.number_of_results.desc())
             flash('got query')
             flash('attempting to getusers')
             users = db.session.scalars(query).all()
@@ -529,8 +529,22 @@ def admin_panel():
 
 @app.route('/leaderboard', methods=['GET'])
 def leaderboard():
-    query = sa.select(User).order_by(User.points.desc()).options(selectinload(User.predictions))
+    query = (
+        sa.select(User)
+        .order_by(User.points.desc(), User.number_of_scores.desc(), User.number_of_results.desc())
+        .options(
+            selectinload(User.predictions)
+            .selectinload(Prediction.match)
+            .selectinload(Game.home_team),
+
+            selectinload(User.predictions)
+            .selectinload(Prediction.match)
+            .selectinload(Game.away_team)
+        )
+    )
+
     users = db.session.scalars(query).all()
+
 
     podium = users[:3]
     rest = users[3:]
@@ -553,12 +567,6 @@ def faq():
 
 @app.route('/results')
 def results():
-    games = db.session.scalars(sa.select(Game).where(Game.kickoff <= datetime.now(ZoneInfo("Europe/London")))).all() # get all games that have started already, just to cut down on costs, rathter than all games as we know future ones dont have scores yet
+    games = db.session.scalars(sa.select(Game).options(selectinload(Game.predictions), selectinload(Game.home_team),selectinload(Game.away_team)).where(Game.kickoff <= datetime.now(ZoneInfo("Europe/London")),Game.home_score.is_not(None), Game.away_score.is_not(None))).all() # get all games that have started already, just to cut down on costs, rathter than all games as we know future ones dont have scores yet
 
-    results = []
-
-    for game in games:
-        if(game.home_score is not None):
-            results.append(game)
-
-    return render_template('results.html', title='Results', results=results)
+    return render_template('results.html', title='Results', results=games)
