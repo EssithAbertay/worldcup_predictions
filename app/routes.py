@@ -109,13 +109,7 @@ def index():
 
     for point in current_user.points_history[-10:]:
         your_data.append(point["new"] or 0)
-
-    flash(other_user_data)
-    flash(your_data)
-    flash(labels_data)
-    
-   
-
+        
     all_points = your_data + other_user_data[0] + other_user_data[1] + other_user_data[2]
 
     max_points = max(all_points)
