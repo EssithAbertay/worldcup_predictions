@@ -255,6 +255,10 @@ class Game(db.Model):
         ) or 'N/A'
 
 class Prediction(db.Model):
+    __table_args__ = (
+        sa.UniqueConstraint("user_id","game_id", name="uq_prediction_user_game"),
+    )
+
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
     home_score_predicted: so.Mapped[int] = so.mapped_column()
     away_score_predicted: so.Mapped[int] = so.mapped_column()

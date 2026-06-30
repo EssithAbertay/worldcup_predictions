@@ -370,9 +370,6 @@ def upcoming_games():
             away_score = field.away_score.data
             penalty_winner = field.penalty_winner.data
 
- 
-
-
             if home_score is None and away_score is None:
                 continue
 
@@ -392,6 +389,7 @@ def upcoming_games():
             else:
                 #flash('Prediction didn\'t exist, adding')
                 prediction = Prediction(user_id=current_user.id ,game_id=field.game_id.data, home_score_predicted=home_score, away_score_predicted=away_score, penalty_winner_predicted=penalty_winner)
+                prediction_map[prediction.game_id] = prediction # add it to the map so that we deal with low latency and duplicates aren't possible
                 db.session.add(prediction)
 
         print(
@@ -400,7 +398,12 @@ def upcoming_games():
             current_user.username
         )
 
-        db.session.commit()
+        try:
+            db.session.commit()
+        except:
+            db.session.rollback()
+            flash("Error Saving Predictions! Try again later!")
+            return redirect(url_for('upcoming_games'))
 
         flash('Your predictions have been saved')
         return redirect(url_for('upcoming_games'))
