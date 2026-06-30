@@ -130,10 +130,10 @@ class User(UserMixin, db.Model):
                 if(actual_draw): # if game was actually a draw 
                     if(prediction.home_score_predicted == prediction.away_score_predicted): # if user predicted a draw
                         
-                        to_award += 2
+                        to_award += 3
                         
                         if(actual_result == predicted_result): # if user additionally got the pens winner
-                            to_award += 3
+                            to_award += 2
 
                     else:
                         if(actual_result == predicted_result): # if user got the winner right
