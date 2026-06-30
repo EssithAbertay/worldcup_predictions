@@ -109,7 +109,7 @@ def index():
 
     for point in current_user.points_history[-10:]:
         your_data.append(point["new"] or 0)
-        
+
     all_points = your_data + other_user_data[0] + other_user_data[1] + other_user_data[2]
 
     max_points = max(all_points)
@@ -349,6 +349,12 @@ def upcoming_games():
             entry.home_team = game.home_team
             entry.away_team = game.away_team     
 
+
+            entry.penalty_winner.choices = [
+                ('home', game.home_team.name),
+                ('away', game.away_team.name )
+            ]
+
             # prepopulating the fields 
 
             if existing_prediction:
@@ -363,6 +369,9 @@ def upcoming_games():
             home_score = field.home_score.data
             away_score = field.away_score.data
             penalty_winner = field.penalty_winner.data
+
+ 
+
 
             if home_score is None and away_score is None:
                 continue
