@@ -63,13 +63,13 @@ def index():
     biggest_losers = [None] * 3
 
     # points changes of top 3 players and this user, if this user is in top 3 use 4th
-    your_data = [0]
+    your_data = []
 
-    other_user_data = [[0], [0], [0]]
+    other_user_data = [[], [], []]
     other_usernames = [[], [], []]
     
     # dates
-    labels_data = ['11 Jun']
+    labels_data = []
 
 
     rank_changes = [
@@ -95,7 +95,10 @@ def index():
 
         if(index < 3 + modifier):
             this_idx = index - modifier
-            for point in user.points_history:
+
+            recent_points = user.points_history[-10:]
+
+            for point in recent_points:
                 other_user_data[this_idx].append(point["new"] or 0)
                 other_usernames[this_idx] = user.username
                 if(index == 0):
@@ -104,11 +107,19 @@ def index():
                         continue
                     labels_data.append(datetime.fromisoformat(timestamp).strftime("%d %b"))
 
-    for point in current_user.points_history:
+    for point in current_user.points_history[-10:]:
         your_data.append(point["new"] or 0)
 
+    flash(other_user_data)
+    flash(your_data)
+    flash(labels_data)
     
-    max_points = max(other_user_data[0][-1], your_data[-1])
+   
+
+    all_points = your_data + other_user_data[0] + other_user_data[1] + other_user_data[2]
+
+    max_points = max(all_points)
+    min_points = min(all_points)
 
     yesterday_scores = []
     yesterday_names = []
@@ -136,7 +147,7 @@ def index():
 
     day_to_display = 0
     #TODO: Put this in a struct or smthn please
-    return render_template('index.html', title='Home', day_to_display=day_to_display,daily_games=daily_games, leaderboard=leaderboard,biggest_gainers=biggest_gainers,biggest_losers=biggest_losers,your_data=your_data,other_user_data=other_user_data, labels_data=labels_data, max_points=max_points, other_usernames=other_usernames, prediction_scores=prediction_scores, yesterday_scores=yesterday_scores, yesterday_names=yesterday_names)
+    return render_template('index.html', title='Home', day_to_display=day_to_display,daily_games=daily_games, leaderboard=leaderboard,biggest_gainers=biggest_gainers,biggest_losers=biggest_losers,your_data=your_data,other_user_data=other_user_data, labels_data=labels_data, max_points=max_points, other_usernames=other_usernames, prediction_scores=prediction_scores, yesterday_scores=yesterday_scores, yesterday_names=yesterday_names, min_points=min_points)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

@@ -197,6 +197,7 @@
     console.log(third_data);
     const labels_data = {{ labels_data | tojson }};
     const max_value = {{max_points}} + 2;
+    const min_value = {{min_points}} - 2;
     const names = {{other_usernames | tojson}}  
 </script>
 
@@ -243,7 +244,7 @@
         options: {
             scales: {
                 y: {
-                    min: 0,
+                    min: min_value,
                     max: max_value,
                     title: {
                         display: true,
