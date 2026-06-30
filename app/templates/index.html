@@ -102,7 +102,7 @@
 
                 <div class="card-body pt-2">
                     <div class="row">
-                        <div class="col-6">
+                        <div class="col-4">
                             <span class="fs-6 d-md-none"> 
                                 <i class="bi bi-graph-down-arrow"></i> 
                                 <u>Biggest Gains</u>
@@ -114,7 +114,7 @@
                             </span>
 
                             {%for gainer in biggest_gainers %}
-                            <div class="text-start">
+                            <div class="text-start text-truncate">
                                     <i class="bi bi-caret-up-fill text-success"></i>
                                     {{gainer[1] | abs}}
                                 
@@ -123,7 +123,7 @@
                             {%endfor%}
                         </div>
 
-                        <div class="col-6">
+                        <div class="col-4">
                             <span class="fs-6 d-md-none"> 
                                 <i class="bi bi-graph-down-arrow"></i> 
                                 <u>Biggest Losses</u>
@@ -135,7 +135,7 @@
                             </span>
 
                             {%for loser in biggest_losers %}
-                            <div class="text-start">
+                            <div class="text-start text-truncate">
     
                                     <i class="bi bi-caret-down-fill text-danger"></i> 
                                     {{loser[1] | abs}}
@@ -144,6 +144,28 @@
                                 <a href="{{ url_for('user', username=loser[0].username) }}"> {{loser[0].username}}</a>                     
                             </div>
                             {%endfor%}
+                            </div>
+
+                            <div class="col-4">
+                                <span class="fs-6 d-md-none"> 
+                                    <i class="bi bi-graph-down-arrow"></i> 
+                                    <u>Most Gained</u>
+                                </span>
+
+                                <span class="fs-5 d-none d-md-inline"> 
+                                    <i class="bi bi-graph-down-arrow"></i> 
+                                    <u>Most Gained</u>
+                                </span>
+
+                                {%for change in biggest_point_changes %}
+                                <div class="text-start text-truncate">
+                                        <i class="bi bi-plus-circle-fill text-success"></i>
+                                        {{change[1] | abs}}
+                                    
+
+                                    <a href="{{ url_for('user', username=change[0].username) }}"> {{change[0].username}}</a>                     
+                                </div>
+                                {%endfor%}
                             </div>
                     </div>
                 </div>

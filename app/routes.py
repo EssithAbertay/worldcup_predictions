@@ -73,13 +73,22 @@ def index():
 
 
     rank_changes = [
-        (user, user.previous_ranking - user.ranking)
+         (user, user.previous_ranking - user.ranking)
+     for user in users
+    ]
+
+    points_changes = [
+        (user, user.points_history[-1]["new"]-user.points_history[-1]["old"])
     for user in users
     ]
 
     sorted_changes = sorted(rank_changes, key=lambda x: x[1], reverse=True)
+    sorted_point_changes = sorted(points_changes, key=lambda x: x[1], reverse=True)
+    
     biggest_gainers = sorted_changes[:3]
     biggest_losers = sorted_changes[-3:]
+
+    biggest_point_changes = sorted_point_changes[:3]
 
     modifier = 0
 
@@ -141,7 +150,7 @@ def index():
 
     day_to_display = 0
     #TODO: Put this in a struct or smthn please
-    return render_template('index.html', title='Home', day_to_display=day_to_display,daily_games=daily_games, leaderboard=leaderboard,biggest_gainers=biggest_gainers,biggest_losers=biggest_losers,your_data=your_data,other_user_data=other_user_data, labels_data=labels_data, max_points=max_points, other_usernames=other_usernames, prediction_scores=prediction_scores, yesterday_scores=yesterday_scores, yesterday_names=yesterday_names, min_points=min_points)
+    return render_template('index.html', title='Home', day_to_display=day_to_display,daily_games=daily_games, leaderboard=leaderboard,biggest_gainers=biggest_gainers,biggest_losers=biggest_losers,your_data=your_data,other_user_data=other_user_data, labels_data=labels_data, max_points=max_points, other_usernames=other_usernames, prediction_scores=prediction_scores, yesterday_scores=yesterday_scores, yesterday_names=yesterday_names, min_points=min_points, biggest_point_changes=biggest_point_changes)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
