@@ -71,7 +71,7 @@ class SinglePredictionForm(Form):
 
 class PredictionForm(FlaskForm):
     predictions = FieldList(FormField(SinglePredictionForm), min_entries=0)
-    submit = SubmitField('Submit Predictions')
+    submit = SubmitField('Save Predictions')
 
 
 class AdminTeamSubmission(FlaskForm):
