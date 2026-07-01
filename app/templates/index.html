@@ -104,12 +104,12 @@
                     <div class="row">
                         <div class="col-4">
                             <span class="fs-6 d-md-none"> 
-                                <i class="bi bi-graph-down-arrow"></i> 
+                                <i class="bi bi-graph-up-arrow"></i> 
                                 <u>Biggest Gains</u>
                             </span>
 
                             <span class="fs-5 d-none d-md-inline"> 
-                                <i class="bi bi-graph-down-arrow"></i> 
+                                <i class="bi bi-graph-up-arrow"></i> 
                                 <u>Biggest Gains</u>
                             </span>
 
@@ -144,20 +144,20 @@
                                 <a href="{{ url_for('user', username=loser[0].username) }}"> {{loser[0].username}}</a>                     
                             </div>
                             {%endfor%}
-                            </div>
+                        </div>
 
-                            <div class="col-4">
-                                <span class="fs-6 d-md-none"> 
-                                    <i class="bi bi-graph-down-arrow"></i> 
-                                    <u>Most Earned</u>
-                                </span>
+                        <div class="col-4">
+                            <span class="fs-6 d-md-none"> 
+                                <i class="bi bi-graph-down-arrow"></i> 
+                                <u>Most Earned</u>
+                            </span>
 
-                                <span class="fs-5 d-none d-md-inline"> 
-                                    <i class="bi bi-graph-down-arrow"></i> 
-                                    <u>Most Earned</u>
-                                </span>
+                            <span class="fs-5 d-none d-md-inline"> 
+                                <i class="bi bi-graph-down-arrow"></i> 
+                                <u>Most Earned</u>
+                            </span>
 
-                                {%for change in biggest_point_changes %}
+                            {%for change in biggest_point_changes %}
                                 <div class="text-start text-truncate">
                                         <i class="bi bi-plus-circle-fill text-success"></i>
                                         {{change[1] | abs}}
@@ -165,8 +165,8 @@
 
                                     <a href="{{ url_for('user', username=change[0].username) }}"> {{change[0].username}}</a>                     
                                 </div>
-                                {%endfor%}
-                            </div>
+                            {%endfor%}
+                        </div>
                     </div>
                 </div>
             </div> 
@@ -187,7 +187,7 @@
                 </ul>
             </div>
 
-            <div class="card">
+            <div class="card mb-3">
                 <div class="card-header">
                     <h4 class = "card-title">Who earned points yesterday?</h4>
                 </div>
@@ -195,6 +195,19 @@
                     <li class="list-group-item"> 
                         <div>
                             <canvas class="yesterday_chart"></canvas>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h4 class = "card-title">Recent Leaderboard History</h4>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"> 
+                        <div style="height: 300px;">
+                            <canvas class="leaderboard_chart"></canvas>
                         </div>
                     </li>
                 </ul>
@@ -207,6 +220,12 @@
     const yesterday_scores = {{ yesterday_scores | tojson }};
     const yesterday_names = {{ yesterday_names | tojson }};
 </script>
+
+
+
+
+
+
 
 <script>
     const your_data = {{ your_data | tojson }};
@@ -322,10 +341,53 @@
             }
         }
     } 
-};
+    };
 
     document.querySelectorAll('.yesterday_chart').forEach(canvas => {
         new Chart(canvas, yesterdayChartConfig);
+    });
+</script>
+
+<script>
+    const rank_labels = {{ users_ranks_labels | tojson }};
+    const user_ranks = {{ users_ranks | tojson }};
+    const usernames = {{ usernames_ranks | tojson }};
+    
+    const datasets = user_ranks.map((series, i) => ({
+        label: usernames[i],
+        data: series,
+        borderWidth: 2,
+        spanGaps: false,
+        tension: 0.3
+    }));
+</script>
+
+<script>
+    const ranksChartConfig = {
+        type: 'line',
+        data: {
+            labels: rank_labels,
+            datasets: datasets
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    reverse: true,   // IMPORTANT: rank 1 = top
+                    beginAtZero: false
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }   
+        }
+    };
+
+    document.querySelectorAll('.leaderboard_chart').forEach(canvas => {
+        new Chart(canvas, ranksChartConfig);
     });
 </script>
 

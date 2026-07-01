@@ -7,8 +7,7 @@
         </div>
     </div>
      
-    <div class="d-flex justify-content-center align-items-center mb-3 gap-2">
-
+    <div class="d-flex justify-content-center align-items-center gap-2">
         <span class="fi fi-{{ prediction.home_team.flag_code }} align-self-center fs-1 border"></span>
 
         {{ prediction.home_score(size=2, class="home_score form-control text-center", style="width: 80px;") }}
@@ -18,14 +17,22 @@
         {{ prediction.away_score(size=2, class="away_score form-control text-center", style="width: 80px;") }}
 
         <span class="fi fi-{{ prediction.away_team.flag_code }} align-self-center fs-1 border"></span>
-
     </div>
 
-    <div class="row">
+    <div class="row mb-3">
         {% if prediction.penalties_required %}
             <small>Penalties required if scores are tied.</small>
+            <br>
             <div class="penalty" style="display:none;">
-                Penalty Winner: {{ prediction.penalty_winner }}
+                <p class="mb-0">Penalties Winner:</p>
+                <div class="btn-group" role="group">
+                    {% for subfield in prediction.penalty_winner %}
+                        {{ subfield(class="btn-check") }}
+                        <label class="btn btn-outline-primary" for="{{ subfield.id }}">
+                            {{ subfield.label.text }}
+                        </label>
+                    {% endfor %}
+                </div>
             </div>
         {% endif %}
     </div>

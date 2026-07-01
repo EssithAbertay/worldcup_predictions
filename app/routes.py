@@ -92,6 +92,8 @@ def index():
 
     modifier = 0
 
+
+
     for index, user in enumerate(users):
         if(index < 5):        
             query = sa.select(Prediction).join(Prediction.match).where(Game.kickoff  >= datetime.now(ZoneInfo("Europe/London")),Prediction.user_id == user.id).order_by(Game.kickoff.asc()).limit(5)
@@ -116,8 +118,10 @@ def index():
                         continue
                     labels_data.append(datetime.fromisoformat(timestamp).strftime("%d %b"))
 
+        
     for point in current_user.points_history[-10:]:
         your_data.append(point["new"] or 0)
+
 
     all_points = your_data + other_user_data[0] + other_user_data[1] + other_user_data[2]
 
@@ -149,8 +153,35 @@ def index():
         yesterday_names.append (username)
 
     day_to_display = 0
+
+
+    users_ranks = []
+    users_ranks_labels = []
+    usernames_ranks = []
+
+    for index, user in enumerate(users):
+        usernames_ranks.append(user.username)
+        users_ranks.append([])
+
+        for rank in user.ranking_history[-10:]:
+            users_ranks[index].append(rank["new"])
+
+            if(index==0):
+                timestamp = rank.get("datetime")
+                if not timestamp:
+                    continue
+                users_ranks_labels.append(datetime.fromisoformat(timestamp).strftime("%d %b"))
+
+    max_len = max(len(history) for history in users_ranks)
+
+    users_ranks = [
+        [None] * (max_len - len(history)) + history
+        for history in users_ranks
+    ]
+
+
     #TODO: Put this in a struct or smthn please
-    return render_template('index.html', title='Home', day_to_display=day_to_display,daily_games=daily_games, leaderboard=leaderboard,biggest_gainers=biggest_gainers,biggest_losers=biggest_losers,your_data=your_data,other_user_data=other_user_data, labels_data=labels_data, max_points=max_points, other_usernames=other_usernames, prediction_scores=prediction_scores, yesterday_scores=yesterday_scores, yesterday_names=yesterday_names, min_points=min_points, biggest_point_changes=biggest_point_changes)
+    return render_template('index.html', title='Home', day_to_display=day_to_display,daily_games=daily_games, leaderboard=leaderboard,biggest_gainers=biggest_gainers,biggest_losers=biggest_losers,your_data=your_data,other_user_data=other_user_data, labels_data=labels_data, max_points=max_points, other_usernames=other_usernames, prediction_scores=prediction_scores, yesterday_scores=yesterday_scores, yesterday_names=yesterday_names, min_points=min_points, biggest_point_changes=biggest_point_changes, users_ranks=users_ranks,users_ranks_labels=users_ranks_labels,usernames_ranks=usernames_ranks)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -369,6 +400,7 @@ def upcoming_games():
             if existing_prediction:
                 entry.home_score.data = existing_prediction.home_score_predicted
                 entry.away_score.data = existing_prediction.away_score_predicted
+                entry.penalty_winner.data = existing_prediction.penalty_winner_predicted
                 predicted_games.append(id)
             else:
                 unpredicted_games.append(id)

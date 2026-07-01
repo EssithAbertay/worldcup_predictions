@@ -117,6 +117,7 @@ class User(UserMixin, db.Model):
 
                 # check exact scores predicted are correct
                 if (home_correct and away_correct):
+                    prediction.score_points = True
                     if(actual_result == predicted_result): # check if had the correct result as well, when result is incorrect that's a penalty blunder
                         to_award = 8
                     else:
@@ -129,7 +130,7 @@ class User(UserMixin, db.Model):
 
                 if(actual_draw): # if game was actually a draw 
                     if(prediction.home_score_predicted == prediction.away_score_predicted): # if user predicted a draw
-                        
+                        prediction.result_points = True
                         to_award += 3
                         
                         if(actual_result == predicted_result): # if user additionally got the pens winner
@@ -137,19 +138,23 @@ class User(UserMixin, db.Model):
 
                     else:
                         if(actual_result == predicted_result): # if user got the winner right
+                            prediction.result_points = True
                             to_award += 3   
 
 
                 else: # if game wasn't a draw
                     if(prediction.home_score_predicted == prediction.away_score_predicted): # and user predicted a draw
                         if(actual_result == predicted_result): # if user got the winner right
+                            prediction.result_points = True
                             to_award += 3   
                     else:
                          if(actual_result == predicted_result): # if user got the winner right
+                            prediction.result_points = True
                             to_award += 5   
 
                 if (home_correct or away_correct): # bonus point for getting either score correct
                     to_award += 1
+                    prediction.bonus_points = True
 
                 prediction.points_awarded = to_award
                 self.points += to_award
