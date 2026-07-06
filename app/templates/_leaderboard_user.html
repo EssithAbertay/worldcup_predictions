@@ -38,7 +38,11 @@
     <div class="collapse " id="collapse{{rank}}">
         <div class="card card-body border-0">       
             {% for prediction in user.upcoming_predictions %}
-                {% include '_prediction.html' %} 
+                {% if prediction.match.kickoff <= today %}
+                    {% include '_prediction.html' %} 
+                {% else %}
+                    {% include '_hidden_prediction.html'%}
+                {% endif %}
             {% endfor %}
         </div>
     </div>

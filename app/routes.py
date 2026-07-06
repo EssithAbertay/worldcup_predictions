@@ -179,9 +179,12 @@ def index():
         for history in users_ranks
     ]
 
+    now_time = (datetime.now(ZoneInfo("Europe/London"))).replace(tzinfo=None)  # go a day into the future so that you can see todays games
+    today = now_time
+
 
     #TODO: Put this in a struct or smthn please
-    return render_template('index.html', title='Home', day_to_display=day_to_display,daily_games=daily_games, leaderboard=leaderboard,biggest_gainers=biggest_gainers,biggest_losers=biggest_losers,your_data=your_data,other_user_data=other_user_data, labels_data=labels_data, max_points=max_points, other_usernames=other_usernames, prediction_scores=prediction_scores, yesterday_scores=yesterday_scores, yesterday_names=yesterday_names, min_points=min_points, biggest_point_changes=biggest_point_changes, users_ranks=users_ranks,users_ranks_labels=users_ranks_labels,usernames_ranks=usernames_ranks)
+    return render_template('index.html', title='Home', day_to_display=day_to_display,daily_games=daily_games, leaderboard=leaderboard,biggest_gainers=biggest_gainers,biggest_losers=biggest_losers,your_data=your_data,other_user_data=other_user_data, labels_data=labels_data, max_points=max_points, other_usernames=other_usernames, prediction_scores=prediction_scores, yesterday_scores=yesterday_scores, yesterday_names=yesterday_names, min_points=min_points, biggest_point_changes=biggest_point_changes, users_ranks=users_ranks,users_ranks_labels=users_ranks_labels,usernames_ranks=usernames_ranks, today=today)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -285,7 +288,11 @@ def user(username):
     users = db.session.scalars(query).all()
     user_count = len(users)
 
-    return render_template('user.html', user=user, games_total=games_total, scores_total=scores_total, results_total=results_total, bonus_total=bonus_total, ranks=ranks, labels=labels, user_count= user_count, special_text=special_text)
+    now_time = (datetime.now(ZoneInfo("Europe/London"))).replace(tzinfo=None)  # go a day into the future so that you can see todays games
+    today = now_time
+
+
+    return render_template('user.html', user=user, games_total=games_total, scores_total=scores_total, results_total=results_total, bonus_total=bonus_total, ranks=ranks, labels=labels, user_count= user_count, special_text=special_text, today=today)
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
@@ -617,7 +624,10 @@ def leaderboard():
             if p.match.kickoff >= cutoff
         ]
 
-    return render_template('leaderboard.html', title='Leaderboard', podium=podium, rest=rest, last=last)
+
+    today = now_time
+
+    return render_template('leaderboard.html', title='Leaderboard', podium=podium, rest=rest, last=last, today=today)
 
 @app.route('/faq')
 def faq():

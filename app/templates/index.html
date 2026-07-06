@@ -66,25 +66,29 @@
                         <div class="collapse " id="collapse{{game.id}}">
                             <div class="card-body m-2">       
                                 {% for prediction in game.predictions %}
-                                 
-                                 <div class="d-flex justify-content-center align-items-center gap-2 fs-4 border rounded">
+                                
+                                    {% if prediction.match.kickoff <= today %}
+                                        <div class="d-flex justify-content-center align-items-center gap-2 fs-4 border rounded">
+                                            
+                                            <img src="{{ prediction.author.avatar(48) }}" alt="User Avatar" class="m-0 border border-secondary rounded align-self-start" style="width: 48px; height: 48px;">
                                     
-                                    <img src="{{ prediction.author.avatar(48) }}" alt="User Avatar" class="m-0 border border-secondary rounded align-self-start" style="width: 48px; height: 48px;">
-                               
-                                    <span class="fi fi-{{ prediction.match.home_team.flag_code }} align-self-center fs-1 border"></span>
-                                    
-                                    <span class="text-center" style="width: 2rem;">
-                                        {{ prediction.home_score_predicted }}
-                                    </span>
+                                            <span class="fi fi-{{ prediction.match.home_team.flag_code }} align-self-center fs-1 border"></span>
+                                            
+                                            <span class="text-center" style="width: 2rem;">
+                                                {{ prediction.home_score_predicted }}
+                                            </span>
 
-                                    <i class="bi bi-x-diamond-fill {{ "text-success" if prediction.score_points else "text-warning" if prediction.result_points else "" }}"></i>
-                                    
-                                    <span class="text-center" style="width: 2rem;">
-                                        {{ prediction.away_score_predicted }}
-                                    </span>
-                                    
-                                    <span class="fi fi-{{ prediction.match.away_team.flag_code }} align-self-center fs-1 border"></span>
-                                </div>
+                                            <i class="bi bi-x-diamond-fill {{ "text-success" if prediction.score_points else "text-warning" if prediction.result_points else "" }}"></i>
+                                            
+                                            <span class="text-center" style="width: 2rem;">
+                                                {{ prediction.away_score_predicted }}
+                                            </span>
+                                            
+                                            <span class="fi fi-{{ prediction.match.away_team.flag_code }} align-self-center fs-1 border"></span>
+                                        </div>   
+                                    {% else %}
+                                        {% include '_hidden_prediction.html'%}
+                                    {% endif %}
                                 {% endfor %}
                             </div>
                         </div>
@@ -218,12 +222,6 @@
     const yesterday_scores = {{ yesterday_scores | tojson }};
     const yesterday_names = {{ yesterday_names | tojson }};
 </script>
-
-
-
-
-
-
 
 <script>
     const your_data = {{ your_data | tojson }};
