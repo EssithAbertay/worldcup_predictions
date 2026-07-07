@@ -67,8 +67,16 @@
                 </div>
             </div>
         </nav>
-        <main class="flex-grow-1">
-            <div class="container">
+        <main class="flex-grow-1">     
+
+            <div id="loadingOverlay"
+                class="d-none position-fixed top-0 start-0 w-100 h-100
+                        bg-white bg-opacity-75 d-flex justify-content-center align-items-center"
+                style="z-index: 2000;">
+                <div class="spinner-border text-primary" role="status"></div>
+            </div>
+
+            <div class="container loaded">
                 <br>
                 {% with messages = get_flashed_messages() %}
                 {% if messages %}
@@ -90,3 +98,25 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
     </body>
 </html>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    function showLoading() {
+        document.getElementById("loadingOverlay").classList.remove("d-none");
+    }
+
+    // handle links
+    document.querySelectorAll("a[href]").forEach(link => {
+        link.addEventListener("click", function () {
+            showLoading();
+        });
+    });
+
+    // handle form.addEventListener
+    document.querySelectorAll("form").forEach(form => {
+        form.addEventListener("submit", () => {
+            showLoading();
+        });
+    });
+});
+</script>
