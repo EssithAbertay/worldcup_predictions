@@ -101,9 +101,21 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
+      const overlay = document.getElementById("loadingOverlay");
+
+
     function showLoading() {
-        document.getElementById("loadingOverlay").classList.remove("d-none");
+        overlay.classList.remove("d-none");
     }
+
+    function hideLoading() {
+        overlay.classList.add("d-none");
+    }
+
+    // Hide it on initial load
+    hideLoading();
+
+    window.addEventListener("pageshow", hideLoading);
 
     // handle links
     document.querySelectorAll("a[href]").forEach(link => {
