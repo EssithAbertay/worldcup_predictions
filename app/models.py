@@ -265,8 +265,8 @@ class Prediction(db.Model):
     )
 
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
-    home_score_predicted: so.Mapped[int] = so.mapped_column()
-    away_score_predicted: so.Mapped[int] = so.mapped_column()
+    home_score_predicted: so.Mapped[int] = so.mapped_column(default = 0)
+    away_score_predicted: so.Mapped[int] = so.mapped_column(default = 0)
     penalty_winner_predicted: so.Mapped[Optional[str]] = so.mapped_column(sa.String(64))
     points_awarded: so.Mapped[int] = so.mapped_column(default=0)
     user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), index=True)

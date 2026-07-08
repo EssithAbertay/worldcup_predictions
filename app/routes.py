@@ -453,7 +453,7 @@ def upcoming_games():
             flash("Error Saving Predictions! Try again later!")
             return redirect(url_for('upcoming_games'))
 
-        flash('Your predictions have been saved')
+        flash('Your predictions have been saved!')
         return redirect(url_for('upcoming_games'))
     else:
         print(form.errors)

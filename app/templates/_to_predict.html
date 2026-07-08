@@ -1,39 +1,109 @@
 <div class="prediction-row">
-    <div class="row">
-        <div class="col fs-5">
-            {{ prediction.game_id(type="hidden") }}
-            {{ prediction.home_team.name }} vs {{ prediction.away_team.name }}
-            <div class="fs-6 py-0 my-0">{{ prediction.kickoff_time.strftime('%H:%M') }}</div>
+    <div class="card">
+        <div class="row">
+            <div class="col fs-5">
+                {{ prediction.game_id(type="hidden") }}
+                {{ prediction.home_team.name }} vs {{ prediction.away_team.name }}
+                <div class="fs-6 py-0 my-0">{{ prediction.kickoff_time.strftime('%H:%M') }}</div>
+            </div>
+        </div>
+        
+        <div class="d-flex justify-content-center align-items-center gap-2">
+            {{ prediction.home_score(type="hidden", id="home_score_" ~ prediction.game_id.data) }}
+            {{ prediction.away_score(type="hidden", id="away_score_" ~ prediction.game_id.data) }}
+
+
+            <span class="fi fi-{{ prediction.home_team.flag_code }} align-self-center fs-1 border"></span>
+            
+            <div>
+                <button class="btn" type="button" onclick="changeHome_{{prediction.game_id.data}}(1)">
+                    <i class="fs-3 bi bi-plus-circle"></i>
+                </button>
+                
+                <p class="border m-0" id="home_value_{{prediction.game_id.data}}"></p>
+                
+                <button class="btn" type="button" onclick="changeHome_{{prediction.game_id.data}}(-1)">
+                    <i class="fs-3 bi bi-dash-circle"></i>
+                </button>
+            </div>
+
+            <i class="bi bi-x-diamond-fill"></i>
+            
+            <div>
+                <button class="btn" type="button" onclick="changeAway_{{prediction.game_id.data}}(1)">
+                    <i class="fs-3 bi bi-plus-circle"></i>
+                </button>
+                
+                <p class="border m-0" id="away_value_{{prediction.game_id.data}}"></p>
+
+                <button class="btn" type="button" onclick="changeAway_{{prediction.game_id.data}}(-1)">
+                    <i class="fs-3 bi bi-dash-circle"></i>
+                </button>
+            </div>
+
+            <span class="fi fi-{{ prediction.away_team.flag_code }} align-self-center fs-1 border"></span>
+        </div>
+
+        <div class="row mb-3">
+            {% if prediction.penalties_required %}
+                <small>Penalties required if scores are tied.</small>
+                <br>
+                <div class="penalty" style="display:none;">
+                    <p class="mb-0">Penalties Winner:</p>
+                    <div class="btn-group" role="group">
+                        {% for subfield in prediction.penalty_winner %}
+                            {{ subfield(class="btn-check") }}
+                            <label class="btn btn-outline-primary" for="{{ subfield.id }}">
+                                {{ subfield.label.text }}
+                            </label>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
         </div>
     </div>
-     
-    <div class="d-flex justify-content-center align-items-center gap-2">
-        <span class="fi fi-{{ prediction.home_team.flag_code }} align-self-center fs-1 border"></span>
-
-        {{ prediction.home_score(size=2, class="home_score form-control text-center", style="width: 80px;") }}
-
-        <i class="bi bi-x-diamond-fill"></i>
-        
-        {{ prediction.away_score(size=2, class="away_score form-control text-center", style="width: 80px;") }}
-
-        <span class="fi fi-{{ prediction.away_team.flag_code }} align-self-center fs-1 border"></span>
-    </div>
-
-    <div class="row mb-3">
-        {% if prediction.penalties_required %}
-            <small>Penalties required if scores are tied.</small>
-            <br>
-            <div class="penalty" style="display:none;">
-                <p class="mb-0">Penalties Winner:</p>
-                <div class="btn-group" role="group">
-                    {% for subfield in prediction.penalty_winner %}
-                        {{ subfield(class="btn-check") }}
-                        <label class="btn btn-outline-primary" for="{{ subfield.id }}">
-                            {{ subfield.label.text }}
-                        </label>
-                    {% endfor %}
-                </div>
-            </div>
-        {% endif %}
-    </div>
 </div>
+
+<script>        
+    // defaults      
+    let home_value_{{prediction.game_id.data}} = {{ prediction.home_score.data or 0 }};;
+    document.getElementById("home_value_{{prediction.game_id.data}}").innerHTML = {{ prediction.home_score.data or 0 }};;
+    
+    // updating
+    const homeInput_{{prediction.game_id.data}} = document.getElementById("home_score_{{prediction.game_id.data}}");
+
+    function changeHome_{{prediction.game_id.data}}(value) {
+
+  
+
+        home_value_{{prediction.game_id.data}} = home_value_{{prediction.game_id.data}} + value
+
+        if (home_value_{{prediction.game_id.data}} < 0)
+        {
+            home_value_{{prediction.game_id.data}}=0
+        }
+
+        document.getElementById("home_value_{{prediction.game_id.data}}").innerHTML = home_value_{{prediction.game_id.data}};
+        homeInput_{{prediction.game_id.data}}.value = home_value_{{prediction.game_id.data}}
+    }
+
+
+    // defaults 
+    let away_value_{{prediction.game_id.data}} = {{ prediction.away_score.data or 0 }};;
+    const awayInput_{{prediction.game_id.data}} = document.getElementById("away_score_{{prediction.game_id.data}}");
+
+    document.getElementById("away_value_{{prediction.game_id.data}}").innerHTML =  {{ prediction.away_score.data or 0 }};
+    
+    // updating
+    function changeAway_{{prediction.game_id.data}}(value) {
+        away_value_{{prediction.game_id.data}} = away_value_{{prediction.game_id.data}} + value
+
+        if (away_value_{{prediction.game_id.data}} < 0)
+        {
+            away_value_{{prediction.game_id.data}}=0
+        }
+
+        document.getElementById("away_value_{{prediction.game_id.data}}").innerHTML = away_value_{{prediction.game_id.data}};
+        awayInput_{{prediction.game_id.data}}.value = away_value_{{prediction.game_id.data}}
+    }
+</script>
