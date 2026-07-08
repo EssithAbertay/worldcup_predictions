@@ -63,7 +63,7 @@
                             </div>
                         </div>
 
-                        <div class="collapse " id="collapse{{game.id}}">
+                        <div class="collapse" id="collapse{{game.id}}">
                             <div class="card-body m-2">       
                                 {% for prediction in game.predictions %}
                                     {% if prediction.match.kickoff <= today or prediction.author.username == current_user.username %}
