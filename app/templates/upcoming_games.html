@@ -1,10 +1,7 @@
 {% extends "base.html" %}
 
-{% block head %}
-<!--<script src="app\static\js\prediction"></script>-->
-{% endblock%}
-
 {% block content %} 
+
 <div style="margin-bottom:100px">
 <form action="" method="post">
     {{ form.hidden_tag() }}
@@ -83,22 +80,55 @@
 </div>
 
 <script>
-document.querySelectorAll('.prediction-row').forEach(row => {
-    const home = row.querySelector('.home_score');
-    const away = row.querySelector('.away_score'); // second score input
-    const penalty = row.querySelector('.penalty');
-    if (!home || !away || !penalty) return;
+    function checkPens(id){
+        curr_home_score = parseInt(document.getElementById("home_score_" + id).value) || 0
+        curr_away_score = parseInt(document.getElementById("away_score_" + id).value) || 0
+        pens_box = document.getElementById("penalty_" + id)
+        pens_box.style.display = curr_home_score == curr_away_score ?'block' : 'none'
+    }
 
-    const toggle = () => {
-        const h = parseInt(home.value);
-        const a = parseInt(away.value);
-        penalty.style.display = (!isNaN(h) && !isNaN(a) && h === a) ? 'block' : 'none';
-    };
+    let home_values = {}
+    let away_values = {}
 
-    home.addEventListener('input', toggle);
-    away.addEventListener('input', toggle);
+    function changeScore(value, team, id) {
+        console.log("changing " + id + " " + team);
 
-    toggle(); // initial check
-});
+        if(team == "home")
+        {
+            current_score = parseInt(document.getElementById("home_score_" + id).value) || 0
+
+            home_values[id] = current_score + value 
+
+            //console.log(current_score " to " + home_values[id])
+
+            
+            if (home_values[id] < 0)
+            {
+                home_values[id]=0;
+            }
+
+            document.getElementById("home_value_" + id).innerHTML =  home_values[id];
+            document.getElementById("home_score_" + id).value =  home_values[id];
+        }
+        else if(team == "away")
+        {
+
+            current_score = parseInt(document.getElementById("away_score_" + id).value) || 0
+
+            away_values[id] = current_score + value 
+
+            if (away_values[id] < 0)
+            {
+                away_values[id]=0;
+            }
+
+            document.getElementById("away_value_" + id).innerHTML =  away_values[id];
+            document.getElementById("away_score_" + id).value =  away_values[id];
+        }
+
+        checkPens(id)
+    }
+
 </script>
+
 {% endblock %}
