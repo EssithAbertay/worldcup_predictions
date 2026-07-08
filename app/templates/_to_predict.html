@@ -20,7 +20,7 @@
                     <i class="fs-3 bi bi-plus-circle"></i>
                 </button>
                 
-                <p class="border m-0" id="home_value_{{prediction.game_id.data}}">{{prediction.home_score.data or  "None"}}</p>
+                <p class="border m-0" id="home_value_{{prediction.game_id.data}}">{{ prediction.home_score.data if prediction.home_score.data is not none else "None" }}</p>
                 
                 <button class="btn" type="button" onclick="changeScore(-1, 'home' ,{{prediction.game_id.data}})">
                     <i class="fs-3 bi bi-dash-circle"></i>
@@ -34,7 +34,7 @@
                     <i class="fs-3 bi bi-plus-circle"></i>
                 </button>
                 
-                <p class="border m-0" id="away_value_{{prediction.game_id.data}}">{{prediction.away_score.data or "None"}}</p>
+                <p class="border m-0" id="away_value_{{prediction.game_id.data}}">{{prediction.away_score.data if prediction.away_score.data is not none else "None"}}</p>
 
                 <button class="btn" type="button" onclick="changeScore(-1, 'away' ,{{prediction.game_id.data}})">
                     <i class="fs-3 bi bi-dash-circle"></i>
