@@ -70,7 +70,7 @@
                 <h2>Predictions</h2>
                 <hr>
                 {% for prediction in user.predictions %}
-                    {% if prediction.match.kickoff <= toda y%}
+                    {% if prediction.match.kickoff <= today%}
                         {% include '_prediction.html' %} 
                     {% else %}
                         {% include '_hidden_prediction.html'%}
