@@ -8,8 +8,6 @@ from flask_wtf.file import FileField, FileAllowed
 import os
 #from wtforms.validators import Email
 
-
-
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
@@ -55,12 +53,10 @@ class EditUsernameForm(FlaskForm):
             if user is not None:
                 raise ValidationError('Already in use! Please use a different username.')
 
-
 class EditPicForm(FlaskForm):
     profile = FileField('Select Profile Picture', validators=[FileAllowed(['jpg', 'jpeg', 'png'])])
     submit = SubmitField('Submit')
-
-      
+     
 class SinglePredictionForm(Form):
     penalties_required = False
 
@@ -73,14 +69,12 @@ class PredictionForm(FlaskForm):
     predictions = FieldList(FormField(SinglePredictionForm), min_entries=0)
     submit = SubmitField('Save Predictions')
 
-
 class AdminTeamSubmission(FlaskForm):
     team = StringField('Team', validators=[DataRequired()])
     fifa_code = StringField('FIFA Code', validators=[DataRequired()])
     flag_code = StringField('Flag Code', validators=[DataRequired()])
     group = StringField('Group', validators=[DataRequired()])
     submit = SubmitField('Add Team')
-
 
 class AdminGameSubmission(FlaskForm):
     home_team = SelectField('Home Team', validators=[DataRequired()], coerce=int)

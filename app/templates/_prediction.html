@@ -1,49 +1,27 @@
-<div class="p-1 pt-2 mb-2"> 
-     <div class="d-flex justify-content-center align-items-center gap-2 fs-4">
-        <span class="fi fi-{{ prediction.match.home_team.flag_code }} align-self-center fs-1 border"></span>
-        
-        <span style="width: 1.5rem;" class="text-center">
-        {% if prediction.home_score_predicted == prediction.away_score_predicted and prediction.penalty_winner_predicted == 'home' and prediction.match.penalty_game %}
-        <i class="bi bi-check-circle-fill"></i>
-        {% endif %}
-        </span>
+<div class="card p-1"> 
+     <div class="row g-0">
+        <div class="col-9 fs-4">
+            <span class="fi fi-{{ prediction.match.home_team.flag_code }} border rounded"></span>
 
-        <span class="text-center" style="width: 2rem;">
-            {{ prediction.home_score_predicted }}
-        </span>
+            <span class="" style="width: 2rem;">
+                {{ prediction.home_score_predicted }}
+            </span>
 
-        <i class="bi bi-x-diamond-fill {{ "text-success" if prediction.score_points else "text-warning" if prediction.result_points else "" }}"></i>
-        
-        <span class="text-center" style="width: 2rem;">
-            {{ prediction.away_score_predicted }}
-        </span>
+            <i class="bi bi-x-diamond-fill {{ "text-success" if prediction.score_points else "text-warning" if prediction.result_points else ""}}"></i>
+            
+            <span class="" style="width: 2rem;">
+                {{ prediction.away_score_predicted }}
+            </span>
 
-        <span style="width: 1.5rem;" class="text-center">
-        {% if prediction.home_score_predicted == prediction.away_score_predicted and prediction.penalty_winner_predicted == 'away' and prediction.match.penalty_game %}
-        <i class="bi bi-check-circle-fill"></i>
-        {% endif %}
-        </span>
+            <span class="fi fi-{{ prediction.match.away_team.flag_code}} border rounded"></span>
+        </div>
 
-        <span class="fi fi-{{ prediction.match.away_team.flag_code }} align-self-center fs-1 border"></span>
+        <div class="col-3 fs-4 border-start">
+            {% if prediction.match.home_score is not none or prediction.match.away_score is not none%}
+            {{prediction.points_awarded}} pts
+            {%else%}
+            <span>{{prediction.match.kickoff.strftime("%H:%M")}}</span>
+            {%endif%}
+        </div>
     </div>
-
-    {% if prediction.match.home_score is not none or prediction.match.away_score is not none%}
-    <div class="card-subtitle fs-6">
-        (  <span style="width: 1.5rem;" class="text-center">       
-        {% if prediction.match.penalty_winner == 'home'%} 
-        <i class="bi bi-check-circle-fill"></i>
-        {% endif %}
-        </span>
-        {{prediction.match.home_score}} - {{prediction.match.away_score}}      
-        <span style="width: 1.5rem;" class="text-center">    
-        {% if prediction.match.penalty_winner == 'away'%} 
-        <i class="bi bi-check-circle-fill"></i>
-        {% endif %} </span>
-        )
-    </div>
-    <div class="card-subtitle fs-6">
-        {{prediction.points_awarded}} pts
-    </div>
-    {% endif %}
-
 </div>
