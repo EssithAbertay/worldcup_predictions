@@ -287,6 +287,11 @@ class Prediction(db.Model):
             self.away_score_predicted
     )
 
+class League(db.Model):
+    id: so.Mapped[int] = so.mapped_column(primary_key=True)
+    #Join code
+    #Array of users
+
 @login.user_loader
 def load_user(id):
     return db.session.get(User, int(id))
