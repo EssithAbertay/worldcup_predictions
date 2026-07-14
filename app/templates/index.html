@@ -108,12 +108,12 @@
                         <div class="col-4">
                             <span class="fs-6 d-md-none"> 
                                 <i class="bi bi-graph-up-arrow"></i> 
-                                <u>Biggest Gains</u>
+                                <u>Positions Gained</u>
                             </span>
 
                             <span class="fs-5 d-none d-md-inline"> 
                                 <i class="bi bi-graph-up-arrow"></i> 
-                                <u>Biggest Gains</u>
+                                <u>Positions Gained</u>
                             </span>
 
                             {%for gainer in biggest_gainers %}
@@ -129,12 +129,12 @@
                         <div class="col-4">
                             <span class="fs-6 d-md-none"> 
                                 <i class="bi bi-graph-down-arrow"></i> 
-                                <u>Biggest Losses</u>
+                                <u>Positions Lost</u>
                             </span>
 
                             <span class="fs-5 d-none d-md-inline"> 
                                 <i class="bi bi-graph-down-arrow"></i> 
-                                <u>Biggest Losses</u>
+                                <u>Positions Lost</u>
                             </span>
 
                             {%for loser in biggest_losers %}
@@ -151,11 +151,11 @@
 
                         <div class="col-4">
                             <span class="fs-6 d-md-none"> 
-                                <u>Most Earned</u>
+                                <u>Points Earned</u>
                             </span>
 
                             <span class="fs-5 d-none d-md-inline"> 
-                                <u>Most Earned</u>
+                                <u>Points Earned</u>
                             </span>
 
                             {%for change in biggest_point_changes %}
@@ -163,7 +163,6 @@
                                         <i class="bi bi-plus-circle-fill text-success"></i>
                                         {{change[1] | abs}}
                                     
-
                                     <a href="{{ url_for('user', username=change[0].username) }}"> {{change[0].username}}</a>                     
                                 </div>
                             {%endfor%}
@@ -188,7 +187,7 @@
                 </ul>
             </div>
 
-            <div class="card mb-3">
+            <!--<div class="card mb-3">
                 <div class="card-header">
                     <h4 class = "card-title">Who earned points yesterday?</h4>
                 </div>
@@ -199,7 +198,7 @@
                         </div>
                     </li>
                 </ul>
-            </div>
+            </div>-->
 
             <div class="card">
                 <div class="card-header">

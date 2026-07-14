@@ -70,7 +70,7 @@ def index():
     # dates
     labels_data = []
 
-
+    # TODO: Actually make this last five games, rather than last five score updates
     rank_changes = [
          (user, user.ranking_history[-1]["new"] - user.ranking_history[-5]["old"])
      for user in users
@@ -81,11 +81,10 @@ def index():
     for user in users
     ]
 
-    sorted_changes = sorted(rank_changes, key=lambda x: x[1], reverse=True)
+    biggest_losers = sorted(rank_changes, key=lambda x: x[1], reverse=True)[:3]
+    biggest_gainers = sorted(rank_changes, key=lambda x: x[1])[:3]
     sorted_point_changes = sorted(points_changes, key=lambda x: x[1], reverse=True)
     
-    biggest_gainers = sorted_changes[:3]
-    biggest_losers = sorted_changes[-3:]
 
     biggest_point_changes = sorted_point_changes[:3]
    
@@ -130,17 +129,22 @@ def index():
 
     # crazy query, i need to understand it better, gets all users and sums the points they earned yesterday
 
+
+    last_five_game_ids = (
+        db.session.query(Game.id)
+        .filter(Game.kickoff < (datetime.now(ZoneInfo("Europe/London"))).replace(tzinfo=None))
+        .order_by(Game.kickoff.desc())
+        .limit(5)
+        .subquery()
+    )
+
     results = (
         db.session.query(
             User.username,
             sa.func.coalesce(sa.func.sum(Prediction.points_awarded), 0).label("points")
         )
         .join(Prediction, Prediction.user_id == User.id)
-        .join(Game, Prediction.game_id == Game.id)
-        .filter(
-            Game.kickoff >= yesterday_start,
-            Game.kickoff < today_start,
-        )
+        .filter(Prediction.game_id.in_(last_five_game_ids))
         .group_by(User.id, User.username)
         .all()
     )

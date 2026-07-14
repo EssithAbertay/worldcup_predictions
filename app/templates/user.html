@@ -50,11 +50,13 @@
         <div class="tab-content">
             <div class="tab-pane show active text-center" id="predictions">
                 {% for prediction in user.predictions %}
+                <div class = "mt-2">
                     {% if prediction.match.kickoff <= today or prediction.author.username == current_user.username %}
                         {% include '_prediction.html' %} 
                     {% else %}
                         {% include '_hidden_prediction.html'%}
                     {% endif %}
+                </div>
                 {% endfor %}
             </div>
 
@@ -74,11 +76,13 @@
                 <h2>Predictions</h2>
                 <hr>
                 {% for prediction in user.predictions %}
+                <div class = "mt-2">
                     {% if prediction.match.kickoff <= today or prediction.author.username == current_user.username %}
                         {% include '_prediction.html' %} 
                     {% else %}
                         {% include '_hidden_prediction.html'%}
                     {% endif %}
+                </div>
                 {% endfor %}
             </div>
         </div>
