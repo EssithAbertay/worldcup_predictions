@@ -20,7 +20,6 @@ from PIL import Image, ImageOps
 @app.route('/index')
 @login_required
 def index():
-    
     now_time = datetime.now(ZoneInfo("Europe/London"))
     today_start = now_time.replace(hour=0, minute=0, second=0, microsecond=0)
     yesterday_start = today_start - timedelta(days=1) 
@@ -73,12 +72,12 @@ def index():
 
 
     rank_changes = [
-         (user, user.previous_ranking - user.ranking)
+         (user, user.ranking_history[-1]["new"] - user.ranking_history[-5]["old"])
      for user in users
     ]
 
     points_changes = [
-        (user, user.points_history[-1]["new"]-user.points_history[-1]["old"])
+        (user, user.points_history[-1]["new"]-user.points_history[-5]["old"])
     for user in users
     ]
 
@@ -89,11 +88,8 @@ def index():
     biggest_losers = sorted_changes[-3:]
 
     biggest_point_changes = sorted_point_changes[:3]
-
+   
     modifier = 0
-
-
-
     for index, user in enumerate(users):
         if(index < 5):        
             query = sa.select(Prediction).join(Prediction.match).where(Game.kickoff  >= datetime.now(ZoneInfo("Europe/London")),Prediction.user_id == user.id).order_by(Game.kickoff.asc()).limit(5)
@@ -103,6 +99,7 @@ def index():
         if(user == current_user):
             modifier = 1
             continue
+        
 
         if(index < 3 + modifier):
             this_idx = index - modifier
