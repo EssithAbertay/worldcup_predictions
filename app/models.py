@@ -126,9 +126,14 @@ class User(UserMixin, db.Model):
                         to_award = 8
                     else:
                         to_award = 6
+                        
+                    if(prediction.match.id == 104):
+                        to_award = to_award * 2
 
                     prediction.points_awarded = to_award
                     self.points += to_award
+
+                  
                     continue # don't add anything on top of this
  
 
@@ -159,6 +164,10 @@ class User(UserMixin, db.Model):
                 if (home_correct or away_correct): # bonus point for getting either score correct
                     to_award += 1
                     prediction.bonus_points = True
+
+
+                if(prediction.match.id == 104):
+                    to_award = to_award * 2
 
                 prediction.points_awarded = to_award
                 self.points += to_award
