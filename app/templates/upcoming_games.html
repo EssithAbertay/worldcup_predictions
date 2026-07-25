@@ -6,72 +6,30 @@
 <form action="" method="post">
     {{ form.hidden_tag() }}
 
-    <div class="container">
+    <div class="container ">
 
-         <ul class="nav nav-tabs mb-3 nav-fill" role="tablist">
-            <li class="nav-item">
-                <button class="nav-link active"
-                        data-bs-toggle="tab"
-                        data-bs-target="#stillto"
-                        type="button">
-                    <h3>Still To Predict</h3>
-                </button>
-            </li>
-            <li class="nav-item">
-                <button class="nav-link"
-                        data-bs-toggle="tab"
-                        data-bs-target="#already"
-                        type="button">
-                    <h3>Already Predicted</h3>
-                </button>
-            </li>
-        </ul>
+        <div class="border d-flex justify-content-around align-items-center gap-2 mb-4 rounded">
+            <a class="btn btn-primary" style="width:30%" href="{{ url_for('upcoming_games', matchday=matchday-1) }}">
+                <i class="bi bi-arrow-left-square-fill"></i>
+            </a>
 
-        <div class="tab-content">
-            <div class="tab-pane show active" id="stillto">
-                {% set ns = namespace(curr_date=None) %}
-                
-                {% for id in unpredicted_games %}
-                <div class="row">
-                    <div class = "col-12">
-                        {% set prediction = form.predictions[id] %}
-                        
-                        {% if ns.curr_date != prediction.kickoff_time.date() %}
-                            {% set ns.curr_date = prediction.kickoff_time.date() %}
-                            <hr>
-                            <h4>{{ns.curr_date}}</h4> 
+            <h2 class="mb-0">Matchday <br> {{ matchday }}</h2>
 
-                            {% if ns.curr_date == today %}
-                            <h5 class="text-danger">Due Today!</h5> 
-                            {% endif %}
-                        {% endif %}  
-                        
-                        {% include '_to_predict.html' %}
-                    </div>
-                </div> 
-                {% endfor %}
-            </div>
-
-            <div class="tab-pane" id="already">
-                {% set ns = namespace(curr_date=None) %}
-
-                {% for id in predicted_games %}      
-                <div class="row">
-                    <div class = "col-12">
-                    {% set prediction = form.predictions[id] %}
-
-                    {% if ns.curr_date != prediction.kickoff_time.date() %}
-                        {% set ns.curr_date = prediction.kickoff_time.date() %}
-                        <hr>
-                        <h4>{{ns.curr_date}}</h4> 
-                    {% endif %}  
-                        {% include '_to_predict.html' %} 
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
+            <a class="btn btn-primary" style="width:30%" href="{{ url_for('upcoming_games', matchday=matchday+1) }}">
+                <i class="bi bi-arrow-right-square-fill"></i>
+            </a>
         </div>
+
+
+
+        {% for prediction in form.predictions %}
+            {% include '_to_predict.html' %}
+        {% endfor %}
+
+
     </div>
+
+    <input type="hidden" id="all_predictions" name="all_predictions">
 
     <div class="fixed-bottom p-3 bg-white border-top text-center">
         {{ form.submit(class="btn btn-primary fs-3") }}
@@ -80,6 +38,36 @@
 </div>
 
 <script>
+    const matchday = {{matchday}};
+</script>
+
+<script>
+    {% if request.args.get('saved') %}
+        sessionStorage.removeItem("predictions");
+    {% endif %}
+
+
+    window.addEventListener("DOMContentLoaded", () => {
+        const predictions = JSON.parse(sessionStorage.getItem("predictions")) || {};
+
+        if (!predictions[matchday]) return;
+
+        for (const id in predictions[matchday]) {
+            const p = predictions[matchday][id];
+
+            document.getElementById("home_score_" + id).value = p.home;
+            document.getElementById("away_score_" + id).value = p.away;
+
+            document.getElementById("home_value_" + id).textContent = p.home;
+            document.getElementById("away_value_" + id).textContent = p.away;
+        }
+    });
+
+    document.querySelector("form").addEventListener("submit", function () {
+        document.getElementById("all_predictions").value =
+            sessionStorage.getItem("predictions") || "{}";
+    });
+
     function checkPens(id){
         curr_home_score = parseInt(document.getElementById("home_score_" + id).value) || 0
         curr_away_score = parseInt(document.getElementById("away_score_" + id).value) || 0
@@ -126,9 +114,26 @@
             document.getElementById("away_score_" + id).value =  away_values[id];
         }
 
-        checkPens(id)
+        saveLocalPrediction(id);
     }
 
+
+    function saveLocalPrediction(id){
+        
+        const predictions = JSON.parse(sessionStorage.getItem("predictions")) || {};
+    
+        if (!predictions[matchday]){
+            predictions[matchday] = {};
+        }
+
+        predictions[matchday][id] = {
+            home: document.getElementById("home_score_" + id).value,
+            away: document.getElementById("away_score_" + id).value
+            || ""
+        };
+
+        sessionStorage.setItem("predictions", JSON.stringify(predictions));
+    }
 </script>
 
 {% endblock %}

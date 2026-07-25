@@ -17,6 +17,7 @@ class LoginForm(FlaskForm):
 class RegistrationForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     #email = StringField('Email', validators=[DataRequired(), Email()])
+    display_name = StringField('Display Name', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired(), Length(max=32)])
     password2 = PasswordField('Repeat Password', validators=[DataRequired(), EqualTo('password', message='Passwords must match'), Length(max=32)])
     pin = StringField('Pin', validators=[DataRequired()])
@@ -53,17 +54,22 @@ class EditUsernameForm(FlaskForm):
             if user is not None:
                 raise ValidationError('Already in use! Please use a different username.')
 
+class EditDisplayNameForm(FlaskForm):
+    displayName = StringField('Username', validators=[DataRequired()])
+    submit = SubmitField('Submit')
+
+    def __init__(self, original_displayName, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.original_displayName = original_displayName
+
 class EditPicForm(FlaskForm):
     profile = FileField('Select Profile Picture', validators=[FileAllowed(['jpg', 'jpeg', 'png'])])
     submit = SubmitField('Submit')
      
 class SinglePredictionForm(Form):
-    penalties_required = False
-
     game_id = IntegerField(validators=[DataRequired()])
     home_score = IntegerField('Home Score', validators=[Optional(), NumberRange(min=0, max=99)])
     away_score = IntegerField('Away Score', validators=[Optional(), NumberRange(min=0, max=99)])
-    penalty_winner = RadioField('Penalty Winner', choices=[('home','Home Team'),('away','Away Team')], default='home')
 
 class PredictionForm(FlaskForm):
     predictions = FieldList(FormField(SinglePredictionForm), min_entries=0)
@@ -71,25 +77,21 @@ class PredictionForm(FlaskForm):
 
 class AdminTeamSubmission(FlaskForm):
     team = StringField('Team', validators=[DataRequired()])
-    fifa_code = StringField('FIFA Code', validators=[DataRequired()])
-    flag_code = StringField('Flag Code', validators=[DataRequired()])
-    group = StringField('Group', validators=[DataRequired()])
+    short_name = StringField('Short Name', validators=[DataRequired()])
     submit = SubmitField('Add Team')
 
 class AdminGameSubmission(FlaskForm):
     home_team = SelectField('Home Team', validators=[DataRequired()], coerce=int)
     away_team = SelectField('Away Team', validators=[DataRequired()], coerce=int)
 
+    matchday  = IntegerField('Matchday', validators=[DataRequired()])
     kickoff = DateTimeLocalField('Kickoff DateTime',  format='%Y-%m-%dT%H:%M', validators=[DataRequired()])
-    is_penalty_game = BooleanField('Can go to penalties?')
     submit_game = SubmitField('Add Game')
 
 class AdminSingleResult(Form):
-
     game_id = IntegerField(validators=[DataRequired()])
     home_score = IntegerField('Home Team', validators=[Optional(), NumberRange(min=0, max=99)])
     away_score = IntegerField('Away Team', validators=[Optional(), NumberRange(min=0, max=99)])
-    penalty_winner = RadioField('Penalty Winner', choices=[('home','Home Team'),('away','Away Team'),('na','N/A')], default='na')
 
 class AdminResultForm(FlaskForm):
     results = FieldList(FormField(AdminSingleResult), min_entries=0)

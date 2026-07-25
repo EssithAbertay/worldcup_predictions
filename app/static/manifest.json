@@ -1,6 +1,6 @@
 {
-  "short_name": "WC26 Predictions",
-  "name": "World Cup 2026 Predictions",
+  "short_name": "SPFL 26/27 Predictions",
+  "name": "Scottish Premiership Predictions",
   "icons": [
     {
       "src": "/static/icons/icon_192x192.png",
@@ -20,6 +20,6 @@
   "display": "minimal-ui",
   "scope": "/",
   "theme_color": "#3367D6",
-  "description": "Predict World Cup 2026 results and compete with friends",
+  "description": "Predict Scottish Premiership results and compete with friends",
   "orientation": "portrait"
 }

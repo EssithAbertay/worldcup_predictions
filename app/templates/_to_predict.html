@@ -1,4 +1,4 @@
-<div class="prediction-row">
+<div class="prediction-row justify-content-center">
     <div class="card">
         <div class="row">
             <div class="col fs-5">
@@ -12,15 +12,14 @@
             {{ prediction.home_score(type="hidden",class="home_score", id="home_score_" ~ prediction.game_id.data) }}
             {{ prediction.away_score(type="hidden",class="away_score", id="away_score_" ~ prediction.game_id.data) }}
 
+            <img class="align-self-center fs-1" src="{{  prediction.home_team.logo() }}" alt="Home Logo" style="width: 36px; height: 36px;">
 
-            <span class="fi fi-{{ prediction.home_team.flag_code }} align-self-center fs-1 border"></span>
-            
             <div>
                 <button class="btn" type="button" onclick="changeScore(1, 'home' ,{{prediction.game_id.data}})">
                     <i class="fs-3 bi bi-plus-circle"></i>
                 </button>
                 
-                <p class="border m-0" id="home_value_{{prediction.game_id.data}}">{{ prediction.home_score.data if prediction.home_score.data is not none else "None" }}</p>
+                <p class="border border-black rounded m-0" id="home_value_{{prediction.game_id.data}}">{{ prediction.home_score.data if prediction.home_score.data is not none else "None" }}</p>
                 
                 <button class="btn" type="button" onclick="changeScore(-1, 'home' ,{{prediction.game_id.data}})">
                     <i class="fs-3 bi bi-dash-circle"></i>
@@ -34,14 +33,15 @@
                     <i class="fs-3 bi bi-plus-circle"></i>
                 </button>
                 
-                <p class="border m-0" id="away_value_{{prediction.game_id.data}}">{{prediction.away_score.data if prediction.away_score.data is not none else "None"}}</p>
+                <p class="border border-black rounded m-0" id="away_value_{{prediction.game_id.data}}">{{prediction.away_score.data if prediction.away_score.data is not none else "None"}}</p>
 
                 <button class="btn" type="button" onclick="changeScore(-1, 'away' ,{{prediction.game_id.data}})">
                     <i class="fs-3 bi bi-dash-circle"></i>
                 </button>
             </div>
 
-            <span class="fi fi-{{ prediction.away_team.flag_code }} align-self-center fs-1 border"></span>
+            <img class="align-self-center fs-1" src="{{prediction.away_team.logo()}}" alt="Home Logo" style="width: 36px; height: 36px;">
+
         </div>
 
         <div class="row mb-3">

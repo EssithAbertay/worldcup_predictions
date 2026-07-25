@@ -14,7 +14,7 @@ from zoneinfo import ZoneInfo
 from uuid import uuid4
 from pathlib import Path
 from PIL import Image, ImageOps
-
+import json
 
 @app.route('/')
 @app.route('/index')
@@ -51,6 +51,7 @@ def index():
         prediction_scores.append([home_percent,away_percent,draw_percent])
 
 
+
     users = db.session.scalars(sa.select(User).order_by(User.points.desc())).all()
 
     leaderboard = []
@@ -70,14 +71,24 @@ def index():
     # dates
     labels_data = []
 
+
+    def get_change(history):
+        if len(history) < 2:
+            return 0
+
+        old_index = max(0, len(history) - 5)
+        return history[-1]["new"] - history[old_index]["old"]
+
+
+
     # TODO: Actually make this last five games, rather than last five score updates
     rank_changes = [
-         (user, user.ranking_history[-1]["new"] - user.ranking_history[-5]["old"])
+        (user, get_change(user.ranking_history))
      for user in users
     ]
 
     points_changes = [
-        (user, user.points_history[-1]["new"]-user.points_history[-5]["old"])
+        (user, get_change(user.points_history))
     for user in users
     ]
 
@@ -121,8 +132,8 @@ def index():
 
     all_points = your_data + other_user_data[0] + other_user_data[1] + other_user_data[2]
 
-    max_points = max(all_points)
-    min_points = min(all_points)
+    max_points = max(all_points) if all_points else 0
+    min_points = min(all_points) if all_points else 0
 
     yesterday_scores = []
     yesterday_names = []
@@ -224,11 +235,12 @@ def register():
         return redirect(url_for('index'))
     form = RegistrationForm()
     if form.validate_on_submit():
-        new_user = User(username=form.username.data)
+        new_user = User(username=form.username.data, display_name=form.display_name.data)
 
         print("NEW USER OBJECT")
         print("id:", new_user.id)
         print("username:", new_user.username)
+        print("displayName:", new_user.display_name)
 
         new_user.set_password(form.password.data)
         db.session.add(new_user)
@@ -369,77 +381,89 @@ def edit_profile():
 def upcoming_games():
     right_now = datetime.now(ZoneInfo("Europe/London")) # we all love a little fatboy slim ;)
 
-    games = db.session.scalars(sa.select(Game).where(Game.kickoff  > right_now )).all()
+
+    next_game = db.session.scalar(
+        sa.select(Game)
+        .where(Game.kickoff > right_now)
+        .order_by(Game.kickoff)
+    )
+
+    default_matchday = next_game.matchday
+
+    matchday = request.args.get(
+        "matchday",
+        default_matchday,
+        type=int
+    )
+
+    if(matchday <= 0):
+        matchday = 1
+
+    largest_matchday = db.session.scalar(
+        sa.select(sa.func.max(Game.matchday))
+    )
+
+    if(matchday > largest_matchday):
+        matchday = largest_matchday
+
+    games = db.session.scalars(sa.select(Game).where( Game.matchday == matchday ).order_by(Game.kickoff)).all()
     predictions =  db.session.scalars(sa.select(Prediction).where(Prediction.user_id == current_user.id)).all()
 
     prediction_map = {
-    p.game_id: p
-    for p in predictions
+        p.game_id: p
+        for p in predictions
     }
 
     form = PredictionForm()
-    
-    predicted_games = []
-    unpredicted_games = []
 
     if request.method == 'GET':
-        for id, game in enumerate(games):
-            print(game)
-
-            existing_prediction = prediction_map.get(game.id)
-
+        for game in games:
             entry = form.predictions.append_entry()
+
             entry.game_id.data = game.id
-
-            entry.penalties_required = game.penalty_game
-
             entry.kickoff_time = game.kickoff
             entry.home_team = game.home_team
-            entry.away_team = game.away_team     
+            entry.away_team = game.away_team
 
-
-            entry.penalty_winner.choices = [
-                ('home', game.home_team.name),
-                ('away', game.away_team.name )
-            ]
-
-            # prepopulating the fields 
+            existing_prediction = prediction_map.get(game.id)
 
             if existing_prediction:
                 entry.home_score.data = existing_prediction.home_score_predicted
                 entry.away_score.data = existing_prediction.away_score_predicted
-                entry.penalty_winner.data = existing_prediction.penalty_winner_predicted
-                predicted_games.append(id)
-            else:
-                unpredicted_games.append(id)
                
     if request.method == 'POST' and form.validate_on_submit():
-        for field in form.predictions:
-            home_score = field.home_score.data
-            away_score = field.away_score.data
-            penalty_winner = field.penalty_winner.data
 
-            if home_score is None and away_score is None:
-                continue
+        all_predictions = json.loads(
+            request.form.get("all_predictions", "{}")
+        )
 
-            if home_score is None:
-                home_score = 0
 
-            if away_score is None:
-                away_score = 0
+        for matchday, games in all_predictions.items():
+            for game_id, prediction in games.items():
+              
+                home_score = int(prediction["home"])
+                away_score = int(prediction["away"])
 
-            existing_prediction = prediction_map.get(field.game_id.data)
 
-            if existing_prediction:
-                #flash('Prediction did exist, updating')
-                existing_prediction.home_score_predicted = home_score
-                existing_prediction.away_score_predicted = away_score
-                existing_prediction.penalty_winner_predicted = penalty_winner
-            else:
-                #flash('Prediction didn\'t exist, adding')
-                prediction = Prediction(user_id=current_user.id ,game_id=field.game_id.data, home_score_predicted=home_score, away_score_predicted=away_score, penalty_winner_predicted=penalty_winner)
-                prediction_map[prediction.game_id] = prediction # add it to the map so that we deal with low latency and duplicates aren't possible
-                db.session.add(prediction)
+                if home_score is None and away_score is None:
+                    continue
+
+                if home_score is None:
+                    home_score = 0
+
+                if away_score is None:
+                    away_score = 0
+
+                existing_prediction = prediction_map.get(int(game_id))
+                
+                if existing_prediction:
+                    existing_prediction.home_score_predicted = home_score
+                    existing_prediction.away_score_predicted = away_score
+                else:
+                    prediction = Prediction(user_id=current_user.id ,game_id=game_id, home_score_predicted=home_score, away_score_predicted=away_score)
+                    prediction_map[prediction.game_id] = prediction # add it to the map so that we deal with low latency and duplicates aren't possible
+                    db.session.add(prediction)
+
 
         print(
             "UPDATING USER predictions",
@@ -447,7 +471,7 @@ def upcoming_games():
             current_user.username
         )
 
-        try:
+        try:   
             db.session.commit()
         except:
             db.session.rollback()
@@ -455,11 +479,11 @@ def upcoming_games():
             return redirect(url_for('upcoming_games'))
 
         flash('Your predictions have been saved!')
-        return redirect(url_for('upcoming_games'))
+        return redirect(url_for('upcoming_games', saved=1))
     else:
         print(form.errors)
 
-    return render_template('upcoming_games.html', title='Upcoming Games', form = form, predicted_games = predicted_games, unpredicted_games = unpredicted_games, today=date.today())
+    return render_template('upcoming_games.html', title='Upcoming Games', form = form, today=date.today(), matchday=matchday)
 
 @app.route('/admin_panel', methods=['GET','POST'])
 @login_required
@@ -496,11 +520,10 @@ def admin_panel():
             entry.game_id.data = game.id
             entry.home_team = game.home_team.name
             entry.away_team = game.away_team.name
-            entry.penalty_game = game.penalty_game
 
     if request.method == 'POST':
         if add_team_form.submit.data and add_team_form.validate():
-            team = Team(name=add_team_form.team.data, fifa_code=add_team_form.fifa_code.data, flag_code=add_team_form.flag_code.data, group=add_team_form.group.data)
+            team = Team(name=add_team_form.team.data, short_name=add_team_form.short_name.data)
             db.session.add(team)
             db.session.commit()
             flash('Registered Team')
@@ -509,7 +532,7 @@ def admin_panel():
             print(add_team_form.errors)
 
         if add_game_form.submit_game.data and add_game_form.validate():
-            game = Game(home_team_id=add_game_form.home_team.data, away_team_id=add_game_form.away_team.data, kickoff=add_game_form.kickoff.data, penalty_game=add_game_form.is_penalty_game.data)
+            game = Game(home_team_id=add_game_form.home_team.data, away_team_id=add_game_form.away_team.data, kickoff=add_game_form.kickoff.data, matchday=add_game_form.matchday.data)
             db.session.add(game)
             db.session.commit()
             return redirect(url_for('admin_panel'))
@@ -528,7 +551,6 @@ def admin_panel():
 
                 g.home_score = field.home_score.data
                 g.away_score = field.away_score.data
-                g.penalty_winner = field.penalty_winner.data
                 flash('registered result')
 
             db.session.commit()
@@ -577,7 +599,7 @@ def admin_panel():
                 user.previous_ranking = current_rank # make current ranking the old ranking
 
                 new_rank = index+1 # +1 to account for 0
-                user.ranking = new_rank
+
 
                 rank_history = user.ranking_history or []
    
@@ -633,9 +655,3 @@ def leaderboard():
 @app.route('/faq')
 def faq():
     return render_template('faq.html', title='FAQ')
-
-@app.route('/results')
-def results():
-    games = db.session.scalars(sa.select(Game).options(selectinload(Game.predictions), selectinload(Game.home_team),selectinload(Game.away_team)).where(Game.kickoff <= datetime.now(ZoneInfo("Europe/London")),Game.home_score.is_not(None), Game.away_score.is_not(None))).all() # get all games that have started already, just to cut down on costs, rathter than all games as we know future ones dont have scores yet
-
-    return render_template('results.html', title='Results', results=games)

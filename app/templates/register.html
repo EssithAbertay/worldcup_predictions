@@ -8,11 +8,19 @@
 
         {{ form.username.label(class="form-label") }}
         {{ form.username(size=32, class="form-control") }}
-        <div id="help" class="form-text">This is your display name</div>
         {% for error in form.username.errors %}
         <span style="color: red;">[{{ error }}]</span>
         {% endfor %}
+
+        {{ form.display_name.label(class="form-label") }}
+        {{ form.display_name(size=32, class="form-control") }}
+        {% for error in form.display_name.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+
         <br>
+
+
         {{ form.password.label(class="form-label") }}
         {{ form.password(size=32, class="form-control") }}
         {% for error in form.password.errors %}

@@ -13,7 +13,6 @@
 
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.3.2/css/flag-icons.min.css" />
         <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
         {% block head %}
         {% endblock %}
@@ -23,7 +22,7 @@
         <nav class = "navbar navbar-expand-lg bg-body-tertiary">
             <div class="container">
 
-                <button class="btn btn-primary" type="button"><a class="navbar-brand text-white me-0" href="{{url_for('index')}}"><i class="bi bi-house-fill"></i> WC26 Predictions</a></button>
+                <button class="btn btn-primary" type="button"><a class="navbar-brand text-white me-0" href="{{url_for('index')}}"><i class="bi bi-house-fill"></i>SPFL 26/27 Predictions</a></button>
                 
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -32,13 +31,11 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item">
-                            <a class="nav-link" href="{{url_for('upcoming_games')}}">Upcoming Games</a>
+                            <a class="nav-link" href="{{url_for('upcoming_games')}}">Games</a>
                         </li>
+
                         <li class="nav-item">
-                            <a class="nav-link" href="{{url_for('results')}}">Results</a>  
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{url_for('leaderboard')}}">Leaderboard</a>  
+                            <a class="nav-link" href="{{url_for('leaderboard')}}">Leagues</a>  
                         </li>
 
                         <li class="nav-item">

@@ -16,24 +16,9 @@
             {% endfor %}
         </p>
         <p>
-            {{ add_team_form.fifa_code.label }}<br>
-            {{ add_team_form.fifa_code(size=10) }}<br>
-            {% for error in add_team_form.fifa_code.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p> 
-        </p> 
-        <p>
-            {{ add_team_form.flag_code.label }}<br>
-            {{ add_team_form.flag_code(size=10) }}<br>
-            {% for error in add_team_form.flag_code.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
-        <p>
-            {{ add_team_form.group.label }}<br>
-            {{ add_team_form.group(size=10) }}<br>
-            {% for error in add_team_form.group.errors %}
+            {{ add_team_form.short_name.label }}<br>
+            {{ add_team_form.short_name(size=10) }}<br>
+            {% for error in add_team_form.short_name.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
@@ -63,7 +48,10 @@
             {{ add_game_form.kickoff.label }} <br>
             {{ add_game_form.kickoff() }} 
         </p>
-        <p>{{ add_game_form.is_penalty_game() }} {{ add_game_form.is_penalty_game.label }}</p>
+        <p>
+            {{ add_game_form.matchday.label }} <br>
+            {{ add_game_form.matchday() }} 
+        </p>
         <p>{{ add_game_form.submit_game() }}</p>
     </form>
 
@@ -83,10 +71,6 @@
             
             {{result.away_score.label}}
             {{result.away_score()}}
-            
-            {%if result.penalty_game %}
-                {{result.penalty_winner()}}
-            {%endif%}
         </p>
         {% endfor %}
 
