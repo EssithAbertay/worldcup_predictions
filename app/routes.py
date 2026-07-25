@@ -380,8 +380,6 @@ def edit_profile():
 @login_required
 def upcoming_games():
     right_now = datetime.now(ZoneInfo("Europe/London")) # we all love a little fatboy slim ;)
-
-
     next_game = db.session.scalar(
         sa.select(Game)
         .where(Game.kickoff > right_now)
@@ -483,7 +481,8 @@ def upcoming_games():
     else:
         print(form.errors)
 
-    return render_template('upcoming_games.html', title='Upcoming Games', form = form, today=date.today(), matchday=matchday)
+    flash(prediction_map)
+    return render_template('upcoming_games.html', title='Upcoming Games', form = form, today=date.today(), matchday=matchday, predictionMap = prediction_map)
 
 @app.route('/admin_panel', methods=['GET','POST'])
 @login_required

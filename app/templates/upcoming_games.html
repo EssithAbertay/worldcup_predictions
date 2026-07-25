@@ -21,8 +21,13 @@
         </div>
 
 
-
         {% for prediction in form.predictions %}
+
+            <!--IF DATE CHANGE-->
+            {% set p = predictionMap[prediction.game_id] %}
+            {{p.match.game_id}}
+
+
             {% include '_to_predict.html' %}
         {% endfor %}
 
