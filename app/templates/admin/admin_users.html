@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <p>Edit User</p>
+    <p>Points Stuff</p>
+
+    <h3>Calculate Points</h3>
+
+    <form action="" method="post">
+        {{recalculate_points.hidden_tag()}}
+        <p>{{recalculate_points.recalculate_points()}}</p>
+    </form>
+{% endblock %}

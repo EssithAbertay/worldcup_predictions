@@ -1,40 +1,56 @@
 from flask import render_template, flash, redirect, url_for, request, abort
 from urllib.parse import urlsplit
 from app import app
-from app.forms import LoginForm, RegistrationForm, AdminGameSubmission, EditUsernameForm, PredictionForm, AdminResultForm, AdminRecalculatePoints, AdminTeamSubmission, EditPicForm
+from app.forms import LoginForm, RegistrationForm, AdminGameSubmission, EditUsernameForm, PredictionForm, AdminResultForm, AdminRecalculatePoints, AdminTeamSubmission, EditPicForm, AdminEditGameForm
 from flask_login import current_user, login_user, logout_user, login_required
 import sqlalchemy as sa
 from app import db
 from app.models import User, Game, Prediction, Team
 from datetime import datetime, date, timedelta, timezone
 from sqlalchemy import func
-from app.classes import TopUser
 from sqlalchemy.orm import selectinload
 from zoneinfo import ZoneInfo
 from uuid import uuid4
 from pathlib import Path
 from PIL import Image, ImageOps
 import json
+from app.helpers import getMatchday, getNowTime, getGamesForMatchday, getUsersByPointsDesc
+
+# TODO: make nowtime, matchday, matchday games, etc a seperate python file, as i keep writing the same fecking code
 
 @app.route('/')
 @app.route('/index')
+@app.route("/index/matchday-<int:matchday>")
 @login_required
-def index():
-    now_time = datetime.now(ZoneInfo("Europe/London"))
-    today_start = now_time.replace(hour=0, minute=0, second=0, microsecond=0)
-    yesterday_start = today_start - timedelta(days=1) 
-    tomorrow_start = today_start + timedelta(days=1) 
+def index(matchday=None):
 
-    # get all games
-    daily_games = db.session.scalars(sa.select(Game).options(selectinload(Game.predictions), selectinload(Game.home_team),selectinload(Game.away_team),).where(Game.kickoff >= today_start, Game.kickoff < tomorrow_start).order_by(Game.kickoff.asc())).all()
 
-    prediction_scores = []
+    # REQUIREMENTS FOR NEW INDEX PAGE
+    # 1. Stats by matchday
+    #       Points Earned
+    #       Positions Gained
+    # 2. Rank History by Matchday
+    # 3. Games by matchday
 
-    for today in daily_games:
+
+    # GET current matchday
+
+    matchday = getMatchday(matchday)
+    lastMatchday = db.session.scalar(sa.select(sa.func.max(Game.matchday))) # maybe make this a helper too?
+
+    # get games on the matchday indicated
+    matchdayGames = getGamesForMatchday(matchday)
+
+    # calculate prediction stats for this matchdays games, i.e. percent that predict each result
+    matchdayPredictions = []
+
+    # matchday game stats
+    for game in matchdayGames:
         home = 0
         away = 0
         draw = 0
-        for prediction in today.predictions:
+
+        for prediction in game.predictions:
             if(prediction.home_score_predicted > prediction.away_score_predicted):
                 home += 1
             elif (prediction.home_score_predicted < prediction.away_score_predicted):
@@ -42,161 +58,26 @@ def index():
             else:
                 draw +=1
 
-            total = home + away + draw
+        total = (home + away + draw) if (home + away + draw) != 0 else 1
 
         home_percent = round((home / total) * 100,1)
         away_percent = round((away / total) * 100,1)
         draw_percent = round((draw / total) * 100,1)
 
-        prediction_scores.append([home_percent,away_percent,draw_percent])
+        matchdayPredictions.append([home_percent,away_percent,draw_percent])
 
+    # matchday users stats, maybe divide by game?
 
+    context = {
+        "title": "Home",
+        "matchday": matchday,
+        "maxMatchday": lastMatchday,
+        "matchdayGames": matchdayGames,
+        "matchdayPredictions": matchdayPredictions,
+        "nowTime": getNowTime()
+    }
 
-    users = db.session.scalars(sa.select(User).order_by(User.points.desc())).all()
-
-    leaderboard = []
-
-    # what users gained the most positions - top3
-    biggest_gainers = [None] * 3
-
-    # what users lost the most positions - top3
-    biggest_losers = [None] * 3
-
-    # points changes of top 3 players and this user, if this user is in top 3 use 4th
-    your_data = []
-
-    other_user_data = [[], [], []]
-    other_usernames = [[], [], []]
-    
-    # dates
-    labels_data = []
-
-
-    def get_change(history):
-        if len(history) < 2:
-            return 0
-
-        old_index = max(0, len(history) - 5)
-        return history[-1]["new"] - history[old_index]["old"]
-
-
-
-    # TODO: Actually make this last five games, rather than last five score updates
-    rank_changes = [
-        (user, get_change(user.ranking_history))
-     for user in users
-    ]
-
-    points_changes = [
-        (user, get_change(user.points_history))
-    for user in users
-    ]
-
-    biggest_losers = sorted(rank_changes, key=lambda x: x[1], reverse=True)[:3]
-    biggest_gainers = sorted(rank_changes, key=lambda x: x[1])[:3]
-    sorted_point_changes = sorted(points_changes, key=lambda x: x[1], reverse=True)
-    
-
-    biggest_point_changes = sorted_point_changes[:3]
-   
-    modifier = 0
-    for index, user in enumerate(users):
-        if(index < 5):        
-            query = sa.select(Prediction).join(Prediction.match).where(Game.kickoff  >= datetime.now(ZoneInfo("Europe/London")),Prediction.user_id == user.id).order_by(Game.kickoff.asc()).limit(5)
-            predictions = db.session.scalars(query).all()
-            leaderboard.append(TopUser(user=user,predictions=predictions))
-
-        if(user == current_user):
-            modifier = 1
-            continue
-        
-
-        if(index < 3 + modifier):
-            this_idx = index - modifier
-
-            recent_points = user.points_history[-10:]
-
-            for point in recent_points:
-                other_user_data[this_idx].append(point["new"] or 0)
-                other_usernames[this_idx] = user.username
-                if(index == 0):
-                    timestamp = point.get("datetime")
-                    if not timestamp:
-                        continue
-                    labels_data.append(datetime.fromisoformat(timestamp).strftime("%d %b"))
-
-        
-    for point in current_user.points_history[-10:]:
-        your_data.append(point["new"] or 0)
-
-
-    all_points = your_data + other_user_data[0] + other_user_data[1] + other_user_data[2]
-
-    max_points = max(all_points) if all_points else 0
-    min_points = min(all_points) if all_points else 0
-
-    yesterday_scores = []
-    yesterday_names = []
-
-    # crazy query, i need to understand it better, gets all users and sums the points they earned yesterday
-
-
-    last_five_game_ids = (
-        db.session.query(Game.id)
-        .filter(Game.kickoff < (datetime.now(ZoneInfo("Europe/London"))).replace(tzinfo=None))
-        .order_by(Game.kickoff.desc())
-        .limit(5)
-        .subquery()
-    )
-
-    results = (
-        db.session.query(
-            User.username,
-            sa.func.coalesce(sa.func.sum(Prediction.points_awarded), 0).label("points")
-        )
-        .join(Prediction, Prediction.user_id == User.id)
-        .filter(Prediction.game_id.in_(last_five_game_ids))
-        .group_by(User.id, User.username)
-        .all()
-    )
-
-    for username, points in results:
-        yesterday_scores.append(points)
-        yesterday_names.append (username)
-
-    day_to_display = 0
-
-
-    users_ranks = []
-    users_ranks_labels = []
-    usernames_ranks = []
-
-    for index, user in enumerate(users):
-        usernames_ranks.append(user.username)
-        users_ranks.append([])
-
-        for rank in user.ranking_history[-10:]:
-            users_ranks[index].append(rank["new"])
-
-            if(index==0):
-                timestamp = rank.get("datetime")
-                if not timestamp:
-                    continue
-                users_ranks_labels.append(datetime.fromisoformat(timestamp).strftime("%d %b"))
-
-    max_len = max(len(history) for history in users_ranks)
-
-    users_ranks = [
-        [None] * (max_len - len(history)) + history
-        for history in users_ranks
-    ]
-
-    now_time = (datetime.now(ZoneInfo("Europe/London"))).replace(tzinfo=None)  # go a day into the future so that you can see todays games
-    today = now_time
-
-
-    #TODO: Put this in a struct or smthn please
-    return render_template('index.html', title='Home', day_to_display=day_to_display,daily_games=daily_games, leaderboard=leaderboard,biggest_gainers=biggest_gainers,biggest_losers=biggest_losers,your_data=your_data,other_user_data=other_user_data, labels_data=labels_data, max_points=max_points, other_usernames=other_usernames, prediction_scores=prediction_scores, yesterday_scores=yesterday_scores, yesterday_names=yesterday_names, min_points=min_points, biggest_point_changes=biggest_point_changes, users_ranks=users_ranks,users_ranks_labels=users_ranks_labels,usernames_ranks=usernames_ranks, today=today)
+    return render_template('index.html', **context)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -304,7 +185,6 @@ def user(username):
     now_time = (datetime.now(ZoneInfo("Europe/London"))).replace(tzinfo=None)  # go a day into the future so that you can see todays games
     today = now_time
 
-
     return render_template('user.html', user=user, games_total=games_total, scores_total=scores_total, results_total=results_total, bonus_total=bonus_total, ranks=ranks, labels=labels, user_count= user_count, special_text=special_text, today=today)
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
@@ -376,35 +256,17 @@ def edit_profile():
 
     return render_template('edit_profile.html', title='Edit Profile', username_form=username_form, profile_form = profile_form )
 
-@app.route('/upcoming_games', methods=['GET','POST'])
+@app.route('/matches', methods=['GET','POST'])
+@app.route('/matches/matchday-<int:matchday>', methods=['GET','POST'])
 @login_required
-def upcoming_games():
-    right_now = datetime.now(ZoneInfo("Europe/London")) # we all love a little fatboy slim ;)
-    next_game = db.session.scalar(
-        sa.select(Game)
-        .where(Game.kickoff > right_now)
-        .order_by(Game.kickoff)
-    )
+def matches(matchday=None):
+    nowTime = getNowTime()
 
-    default_matchday = next_game.matchday
+    matchday = getMatchday(matchday)
+    lastMatchday = db.session.scalar(sa.select(sa.func.max(Game.matchday))) # maybe make this a helper too?
+    
+    games = getGamesForMatchday(matchday)
 
-    matchday = request.args.get(
-        "matchday",
-        default_matchday,
-        type=int
-    )
-
-    if(matchday <= 0):
-        matchday = 1
-
-    largest_matchday = db.session.scalar(
-        sa.select(sa.func.max(Game.matchday))
-    )
-
-    if(matchday > largest_matchday):
-        matchday = largest_matchday
-
-    games = db.session.scalars(sa.select(Game).where( Game.matchday == matchday ).order_by(Game.kickoff)).all()
     predictions =  db.session.scalars(sa.select(Prediction).where(Prediction.user_id == current_user.id)).all()
 
     prediction_map = {
@@ -474,15 +336,55 @@ def upcoming_games():
         except:
             db.session.rollback()
             flash("Error Saving Predictions! Try again later!")
-            return redirect(url_for('upcoming_games'))
+            return redirect(url_for('matches'))
 
         flash('Your predictions have been saved!')
-        return redirect(url_for('upcoming_games', saved=1))
+        return redirect(url_for('matches', saved=1))
     else:
         print(form.errors)
 
-    flash(prediction_map)
-    return render_template('upcoming_games.html', title='Upcoming Games', form = form, today=date.today(), matchday=matchday, predictionMap = prediction_map)
+    return render_template('matches.html', title='Upcoming Games', form = form, today=date.today(), matchday=matchday, lastMatchday = lastMatchday)
+
+@app.route('/leaderboard', methods=['GET'])
+def leaderboard():
+    query = (
+        sa.select(User)
+        .order_by(User.points.desc(), User.number_of_scores.desc(), User.number_of_results.desc())
+        .options(
+            selectinload(User.predictions)
+            .selectinload(Prediction.match)
+            .selectinload(Game.home_team),
+
+            selectinload(User.predictions)
+            .selectinload(Prediction.match)
+            .selectinload(Game.away_team)
+        )
+    )
+
+    users = db.session.scalars(query).all()
+
+
+    podium = users[:3]
+    rest = users[3:]
+
+    last = len(users)
+
+    now_time = (datetime.now(ZoneInfo("Europe/London"))).replace(tzinfo=None)  # go a day into the future so that you can see todays games
+    cutoff = now_time - timedelta(days=1)
+    for user in rest:
+        user.upcoming_predictions = [
+            p for p in user.predictions
+            if p.match.kickoff >= cutoff
+        ]
+
+
+    today = now_time
+
+    return render_template('leaderboard.html', title='Leaderboard', podium=podium, rest=rest, last=last, today=today)
+
+@app.route('/faq')
+def faq():
+    return render_template('faq.html', title='FAQ')
 
 @app.route('/admin_panel', methods=['GET','POST'])
 @login_required
@@ -490,59 +392,113 @@ def admin_panel():
     if not current_user.is_admin:
         abort(403)
 
-    # adding teams
-    add_team_form = AdminTeamSubmission()
+    return render_template('admin_panel.html', title='Admin Panel')
 
+@app.route('/admin_panel/matches', methods=['GET','POST'])
+@login_required
+def adminMatches():
+    if not current_user.is_admin:
+            abort(403)
+
+    # IGNORE THIS ONE, IM GOING TO USE IT FOR DISPLAYING ALL MATCHES IN A TABLE
+
+    return render_template('admin/admin_matches.html', title='Admin Matches')
+
+@app.route('/admin_panel/matches/add', methods=['GET','POST'])
+@login_required
+def adminMatchesAdd():
+    if not current_user.is_admin:
+            abort(403)
 
     # adding games
-    add_game_form = AdminGameSubmission()
+    addGameForm = AdminGameSubmission()
     teams = db.session.scalars(sa.select(Team).order_by(Team.name)).all()
 
     # populate dropdown choices
-    add_game_form.home_team.choices = [(t.id, t.name) for t in teams]
-    add_game_form.away_team.choices = [(t.id, t.name) for t in teams]
-
-    # adding results to games
-    add_result_form = AdminResultForm() 
-
-    query = sa.select(Game).filter(Game.home_score == None)
-    games_query = db.session.scalars(query).all()
-
-    # recalculating points
-
-    recalculate_points = AdminRecalculatePoints()
-
-    if request.method == 'GET':
-        for game in games_query:
-            print(game)
-            entry = add_result_form.results.append_entry()
-            entry.game_id.data = game.id
-            entry.home_team = game.home_team.name
-            entry.away_team = game.away_team.name
+    addGameForm.home_team.choices = [(t.id, t.name) for t in teams]
+    addGameForm.away_team.choices = [(t.id, t.name) for t in teams]
 
     if request.method == 'POST':
-        if add_team_form.submit.data and add_team_form.validate():
-            team = Team(name=add_team_form.team.data, short_name=add_team_form.short_name.data)
-            db.session.add(team)
-            db.session.commit()
-            flash('Registered Team')
-            return redirect(url_for('admin_panel'))
-        else:
-            print(add_team_form.errors)
 
-        if add_game_form.submit_game.data and add_game_form.validate():
-            game = Game(home_team_id=add_game_form.home_team.data, away_team_id=add_game_form.away_team.data, kickoff=add_game_form.kickoff.data, matchday=add_game_form.matchday.data)
+
+        if addGameForm.submit_game.data and addGameForm.validate():
+            game = Game(home_team_id=addGameForm.home_team.data, away_team_id=addGameForm.away_team.data, kickoff=addGameForm.kickoff.data, matchday=addGameForm.matchday.data)
             db.session.add(game)
             db.session.commit()
             return redirect(url_for('admin_panel'))
         else:
-            print(add_game_form.errors)
+            print(addGameForm.errors)
 
-        if add_result_form.submit_results.data and add_result_form.validate():
+
+    return render_template('admin/add_match.html', title='Add Matches', addGameForm=addGameForm)
+
+@app.route('/admin_panel/matches/edit', methods=['GET','POST'])
+@login_required
+def adminMatchesEdit():
+    if not current_user.is_admin:
+            abort(403)
+   # edit games form
+    editGameForm = AdminEditGameForm()
+
+    allGames = db.session.scalars(sa.select(Game)).all()
+
+    # making it so that it is obvious which game i'm trying to change
+    editGameForm.game_id.choices = [ (0, "Select a game")] + [ (g.id, f"{g.id} - {g.home_team.name} vs {g.away_team.name} - {g.kickoff.date()}") for g in allGames]
+
+    if request.method == 'POST' and editGameForm.submitGameEdit.data and editGameForm.validate():
+        gameToEdit = db.session.get(Game, editGameForm.game_id.data)
+        flash("Before Edit:")
+        flash(str(gameToEdit))
+
+        if(editGameForm.home_score.data is not None):
+            gameToEdit.home_score = editGameForm.home_score.data
+
+        if(editGameForm.away_score.data is not None):
+            gameToEdit.away_score = editGameForm.away_score.data
+
+        if(editGameForm.kickoff.data is not None):
+            gameToEdit.kickoff = editGameForm.kickoff.data
+
+        if (editGameForm.status.data != "none"):
+            gameToEdit.status = editGameForm.status.data
+           
+        db.session.commit()
+
+        flash("After Edit:")
+        flash(str(gameToEdit))
+        return redirect(url_for('adminMatchesEdit'))
+    else:
+        print(editGameForm.errors)
+
+    return render_template('admin/edit_match.html', title='Edit Matches', editGameForm=editGameForm)
+
+@app.route('/admin_panel/matches/results', methods=['GET','POST'])
+@login_required
+def adminResults():
+    if not current_user.is_admin:
+            abort(403)
+
+    # adding results to games
+    addResultsForm = AdminResultForm() 
+
+    query = sa.select(Game).filter(Game.home_score == None)
+    games_query = db.session.scalars(query).all()
+
+    if request.method == 'GET':
+        for game in games_query:
+            print(game)
+            entry = addResultsForm.results.append_entry()
+            entry.game_id.data = game.id
+            entry.home_team = game.home_team.name
+            entry.away_team = game.away_team.name
+
+
+    if request.method == 'POST':
+        if addResultsForm.submit_results.data and addResultsForm.validate():
             print('adding games')
             flash('registering')
 
-            for field in add_result_form.results:
+            for field in addResultsForm.results:
                 g = db.session.get(Game, field.game_id.data)
 
                 if field.home_score is None and field.away_score is None:
@@ -555,8 +511,53 @@ def admin_panel():
             db.session.commit()
             return redirect(url_for('admin_panel'))
         else:
-            print(add_result_form.errors)
+            print(addResultsForm.errors)
 
+    
+    return render_template('admin/add_results.html', title='Add Results', addResultsForm=addResultsForm)
+
+@app.route('/admin_panel/teams', methods=['GET','POST'])
+@login_required
+def adminTeams():
+    if not current_user.is_admin:
+            abort(403)
+
+    # IGNORE THIS ONE, IM GOING TO USE IT FOR DISPLAYING ALL TEAMS IN A TABLE
+
+    return render_template('admin/admin_teams.html', title='Admin Teams')
+
+@app.route('/admin_panel/teams/register', methods=['GET','POST'])
+@login_required
+def adminTeamsRegister():
+    if not current_user.is_admin:
+            abort(403)
+
+        # adding teams
+    addTeamForm = AdminTeamSubmission()
+
+    if request.method == 'POST':
+
+        if addTeamForm.submit.data and addTeamForm.validate():
+            team = Team(name=addTeamForm.team.data, short_name=addTeamForm.short_name.data)
+            db.session.add(team)
+            db.session.commit()
+            flash('Registered Team')
+            return redirect(url_for('admin_panel'))
+        else:
+            print(addTeamForm.errors)
+
+    return render_template('admin/register_team.html', title='Teams', addTeamForm=addTeamForm)
+
+@app.route('/admin_panel/users', methods=['GET','POST'])
+@login_required
+def adminUsers():
+    if not current_user.is_admin:
+            abort(403)
+
+    # recalculating points    
+    recalculate_points = AdminRecalculatePoints()
+
+    if request.method == 'POST':
         if recalculate_points.recalculate_points.data and recalculate_points.validate():
             
             #get users and update scores
@@ -601,56 +602,13 @@ def admin_panel():
 
 
                 rank_history = user.ranking_history or []
-   
+    
                 rank_history.append({"old": current_rank, "new": new_rank, "datetime": now.isoformat()})
 
                 user.ranking_history = rank_history
 
             db.session.commit()
-
-            
-
             return redirect(url_for('admin_panel'))
 
-    return render_template('admin_panel.html', title='Admin Panel', add_game_form=add_game_form, add_result_form=add_result_form, recalculate_points = recalculate_points, add_team_form=add_team_form)
 
-@app.route('/leaderboard', methods=['GET'])
-def leaderboard():
-    query = (
-        sa.select(User)
-        .order_by(User.points.desc(), User.number_of_scores.desc(), User.number_of_results.desc())
-        .options(
-            selectinload(User.predictions)
-            .selectinload(Prediction.match)
-            .selectinload(Game.home_team),
-
-            selectinload(User.predictions)
-            .selectinload(Prediction.match)
-            .selectinload(Game.away_team)
-        )
-    )
-
-    users = db.session.scalars(query).all()
-
-
-    podium = users[:3]
-    rest = users[3:]
-
-    last = len(users)
-
-    now_time = (datetime.now(ZoneInfo("Europe/London"))).replace(tzinfo=None)  # go a day into the future so that you can see todays games
-    cutoff = now_time - timedelta(days=1)
-    for user in rest:
-        user.upcoming_predictions = [
-            p for p in user.predictions
-            if p.match.kickoff >= cutoff
-        ]
-
-
-    today = now_time
-
-    return render_template('leaderboard.html', title='Leaderboard', podium=podium, rest=rest, last=last, today=today)
-
-@app.route('/faq')
-def faq():
-    return render_template('faq.html', title='FAQ')
+    return render_template('admin/admin_users.html', title='Admin Users', recalculate_points=recalculate_points)

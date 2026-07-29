@@ -6,30 +6,43 @@
 <form action="" method="post">
     {{ form.hidden_tag() }}
 
-    <div class="container ">
-
-        <div class="border d-flex justify-content-around align-items-center gap-2 mb-4 rounded">
-            <a class="btn btn-primary" style="width:30%" href="{{ url_for('upcoming_games', matchday=matchday-1) }}">
-                <i class="bi bi-arrow-left-square-fill"></i>
-            </a>
-
-            <h2 class="mb-0">Matchday <br> {{ matchday }}</h2>
-
-            <a class="btn btn-primary" style="width:30%" href="{{ url_for('upcoming_games', matchday=matchday+1) }}">
-                <i class="bi bi-arrow-right-square-fill"></i>
-            </a>
+    
+        <div class="m-0 mb-3 p-3 bg-body-tertiary border rounded">
+            <div class="row justify-content-around align-items-center">
+                <div class = "col-3">
+                    {% if matchday > 1 %}
+                        <a class="btn btn-primary w-100" href="{{ url_for('matches', matchday=matchday-1) }}">
+                            <i class="bi bi-arrow-left"></i>
+                        </a>
+                    {% endif %}
+                </div>
+                
+                <div class = "col">
+                    <h4 class="mb-0 card-title">Matchday {{ matchday }}</h4>
+                </div>
+                
+                <div class = "col-3">
+                    {% if matchday < lastMatchday %}
+                        <a class="btn btn-primary w-100" href="{{ url_for('matches', matchday=matchday+1) }}">
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
         </div>
+    
 
+    {% set ns = namespace(curr_date=None) %}
 
-        {% for prediction in form.predictions %}
+    {% for prediction in form.predictions %}
+        {% if ns.curr_date != prediction.kickoff_time.date() %}
+            {% set ns.curr_date = prediction.kickoff_time.date() %}
 
-            <!--IF DATE CHANGE-->
-            {% set p = predictionMap[prediction.game_id] %}
-            {{p.match.game_id}}
-
-
-            {% include '_to_predict.html' %}
-        {% endfor %}
+            <h4 class="m-0 mb-3 p-0 d-flex justify-content-start"><span class = "badge text-bg-light"> {{ns.curr_date.strftime("%d %B, %Y")}}  </span></h4>
+        {% endif %}  
+        
+        {% include '_to_predict.html' %}
+    {% endfor %}
 
 
     </div>
@@ -40,7 +53,7 @@
         {{ form.submit(class="btn btn-primary fs-3") }}
     </div>
 </form>
-</div>
+
 
 <script>
     const matchday = {{matchday}};
@@ -86,26 +99,29 @@
     function changeScore(value, team, id) {
         console.log("changing " + id + " " + team);
 
-        if(team == "home")
-        {
+        // there must be a way of making this all one function but meh idk maybe smthn like    current_score = parseInt(document.getElementById(team + "_score_" + id).value) || 0
+        if(team == "home") {
             current_score = parseInt(document.getElementById("home_score_" + id).value) || 0
 
             home_values[id] = current_score + value 
 
-            //console.log(current_score " to " + home_values[id])
-
-            
             if (home_values[id] < 0)
             {
                 home_values[id]=0;
             }
 
+            // after changin the score check if other score was none, if so set it to 0 :)
+            let other_score = parseInt(document.getElementById("away_score_" + id).value) 
+            if(isNaN(other_score)) {
+                document.getElementById("away_value_" + id).innerHTML =  0;
+                document.getElementById("away_score_" + id).value =  0;
+            }
+
+
             document.getElementById("home_value_" + id).innerHTML =  home_values[id];
             document.getElementById("home_score_" + id).value =  home_values[id];
         }
-        else if(team == "away")
-        {
-
+        else if(team == "away") {
             current_score = parseInt(document.getElementById("away_score_" + id).value) || 0
 
             away_values[id] = current_score + value 
@@ -113,6 +129,13 @@
             if (away_values[id] < 0)
             {
                 away_values[id]=0;
+            }
+
+            // after changin the score check if other score was none, if so set it to 0 :)
+            let other_score = parseInt(document.getElementById("home_score_" + id).value) 
+            if(isNaN(other_score)) {
+                document.getElementById("home_value_" + id).innerHTML =  0;
+                document.getElementById("home_score_" + id).value =  0;
             }
 
             document.getElementById("away_value_" + id).innerHTML =  away_values[id];

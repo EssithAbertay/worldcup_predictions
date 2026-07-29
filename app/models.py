@@ -183,10 +183,13 @@ class Game(db.Model):
     )
 
     def __repr__(self):
-        return '<Game {} vs {} @ {}>'.format(
+        return '<Game: {} vs {} Kickoff: {} Score: {}-{} Status: {}>'.format(
             self.home_team,
             self.away_team,
             self.kickoff.isoformat(),
+            self.home_score,
+            self.away_score,
+            self.status
     )
 
     def get_average_home_score(self):
@@ -223,11 +226,12 @@ class Prediction(db.Model):
     match: so.Mapped[Game] = so.relationship(back_populates='predictions')
 
     def __repr__(self):
-        return '<Prediction user={} game={} {}-{}>'.format(
+        return '<Prediction user={} game={} {}-{} {}>'.format(
             self.user_id,
             self.game_id,
             self.home_score_predicted,
-            self.away_score_predicted
+            self.away_score_predicted,
+            self.match.kickoff.isoformat()
     )
 
 class League(db.Model):

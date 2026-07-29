@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+ <h3>Register Game</h3>
+
+    <form action="" method="post">
+        {{addGameForm.hidden_tag()}}
+        <p>
+            {{ addGameForm.home_team.label }}<br>
+            {{ addGameForm.home_team() }}<br>
+            {% for error in addGameForm.home_team.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ addGameForm.away_team.label }}<br>
+            {{ addGameForm.away_team() }}<br>
+            {% for error in addGameForm.away_team.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p> 
+        <p>
+            {{ addGameForm.kickoff.label }} <br>
+            {{ addGameForm.kickoff() }} 
+        </p>
+        <p>
+            {{ addGameForm.matchday.label }} <br>
+            {{ addGameForm.matchday() }} 
+        </p>
+        <p>{{ addGameForm.submit_game() }}</p>
+    </form>
+   <hr>
+{% endblock %}
