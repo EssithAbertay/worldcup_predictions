@@ -5,12 +5,11 @@
 <div class="container">
     {% for user in users %}
         {% set rank = loop.index%}
-        {% include '_leaderboard_user.html'%}
+        {% include 'components/_leaderboard_user.html'%}
     {% endfor %}
 </div>
 
 {% endblock %}
-
 
 {% block footer %}
    {%include '_footer.html'%}

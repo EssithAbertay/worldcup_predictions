@@ -52,9 +52,9 @@
                 {% for prediction in user.predictions %}
                 <div class = "mt-2">
                     {% if prediction.match.kickoff <= today or prediction.author.username == current_user.username %}
-                        {% include '_prediction.html' %} 
+                        {% include 'components/_prediction.html' %} 
                     {% else %}
-                        {% include '_hidden_prediction.html'%}
+                        {% include 'components/_hidden_prediction.html'%}
                     {% endif %}
                 </div>
                 {% endfor %}
@@ -78,9 +78,9 @@
                 {% for prediction in user.predictions %}
                 <div class = "mt-2">
                     {% if prediction.match.kickoff <= today or prediction.author.username == current_user.username %}
-                        {% include '_prediction.html' %} 
+                        {% include 'components/_prediction.html' %} 
                     {% else %}
-                        {% include '_hidden_prediction.html'%}
+                        {% include 'components/_hidden_prediction.html'%}
                     {% endif %}
                 </div>
                 {% endfor %}

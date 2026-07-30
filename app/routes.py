@@ -14,7 +14,7 @@ from uuid import uuid4
 from pathlib import Path
 from PIL import Image, ImageOps
 import json
-from app.helpers import getMatchday, getNowTime, getGamesForMatchday, getUsersByPointsDesc
+from app.helpers import getMatchday, getNowTime, getGamesForMatchday, getUsersByPointsDesc, getUsers
 
 # TODO: make nowtime, matchday, matchday games, etc a seperate python file, as i keep writing the same fecking code
 
@@ -23,8 +23,6 @@ from app.helpers import getMatchday, getNowTime, getGamesForMatchday, getUsersBy
 @app.route("/index/matchday-<int:matchday>")
 @login_required
 def index(matchday=None):
-
-
     # REQUIREMENTS FOR NEW INDEX PAGE
     # 1. Stats by matchday
     #       Points Earned
@@ -32,9 +30,7 @@ def index(matchday=None):
     # 2. Rank History by Matchday
     # 3. Games by matchday
 
-
     # GET current matchday
-
     matchday = getMatchday(matchday)
     lastMatchday = db.session.scalar(sa.select(sa.func.max(Game.matchday))) # maybe make this a helper too?
 
@@ -68,12 +64,29 @@ def index(matchday=None):
 
     # matchday users stats, maybe divide by game?
 
+    # matchday points, who got the most points on x day!, This is kinda bad as it's an N+1 Query Problem, but whatever it works and we only have 10 users anyway
+    users = getUsers()
+
+    matchdayPointsEarned = []
+
+    for user in users:
+        matchdayPointsEarned.append([user.display_name, user.getMatchdayPoints(matchday), user.colour])
+
+    matchdayPointsEarned.sort(key=lambda x: x[1], reverse=True)
+
+
+
+    # create an average table based on our predictions
+
+
+
     context = {
         "title": "Home",
         "matchday": matchday,
         "maxMatchday": lastMatchday,
         "matchdayGames": matchdayGames,
         "matchdayPredictions": matchdayPredictions,
+        "matchdayPointsEarned": matchdayPointsEarned,
         "nowTime": getNowTime()
     }
 
@@ -286,7 +299,7 @@ def matches(matchday=None):
 
     missedGames= db.session.scalars(sa.select(Game).where(Game.status == "postponed")).all()
 
-    if (missedGames is not None):
+    if (missedGames == ''):
         postponed = True
 
 

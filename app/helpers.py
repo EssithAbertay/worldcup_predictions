@@ -47,3 +47,4 @@ def getUsers() -> list[User]:
 
 def getUsersByPointsDesc() -> list[User]:
     return db.session.scalars(sa.select(User).order_by(User.points.desc())).all()
+
