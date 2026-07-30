@@ -308,7 +308,6 @@ def matches(matchday=None):
             request.form.get("all_predictions", "{}")
         )
 
-
         for game_id, prediction in predictions.items():
             home_score = int(prediction["home"])
             away_score = int(prediction["away"])
@@ -433,7 +432,7 @@ def adminMatchesAdd():
             game = Game(home_team_id=addGameForm.home_team.data, away_team_id=addGameForm.away_team.data, kickoff=addGameForm.kickoff.data, matchday=addGameForm.matchday.data)
             db.session.add(game)
             db.session.commit()
-            return redirect(url_for('admin_panel'))
+            return redirect(url_for('adminMatchesAdd'))
         else:
             print(addGameForm.errors)
 
@@ -517,7 +516,7 @@ def adminResults():
                 flash('registered result')
 
             db.session.commit()
-            return redirect(url_for('admin_panel'))
+            return redirect(url_for('adminResults'))
         else:
             print(addResultsForm.errors)
 
@@ -550,7 +549,7 @@ def adminTeamsRegister():
             db.session.add(team)
             db.session.commit()
             flash('Registered Team')
-            return redirect(url_for('admin_panel'))
+            return redirect(url_for('adminTeamsRegister'))
         else:
             print(addTeamForm.errors)
 
@@ -616,7 +615,7 @@ def adminUsers():
                 user.ranking_history = rank_history
 
             db.session.commit()
-            return redirect(url_for('admin_panel'))
+            return redirect(url_for('adminUsers'))
 
 
     return render_template('admin/admin_users.html', title='Admin Users', recalculate_points=recalculate_points)
