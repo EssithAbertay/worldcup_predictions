@@ -1,0 +1,15 @@
+<div class="border rounded p-2">
+    <img class="align-self-center" src="{{prediction.match.home_team.logo()}}" alt="Home Logo" style="width: 36px; height: 36px;">
+
+    <span class="" style="width: 2rem;">
+        ?
+    </span>
+
+    <i class="bi bi-x-diamond-fill {{ "text-success" if prediction.score_points else "text-warning" if prediction.result_points else ""}}"></i>
+    
+    <span class="" style="width: 2rem;">
+        ?
+    </span>
+    
+    <img class="align-self-center" src="{{prediction.match.away_team.logo()}}" alt="Home Logo" style="width: 36px; height: 36px;">
+</div>

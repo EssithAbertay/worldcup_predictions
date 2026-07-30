@@ -67,30 +67,32 @@
                 </div>
 
                 <div class="collapse" id="collapse{{game.id}}">
-                    <div class="card-body m-2">       
+                    <div class="card-body m-1">       
                         {% for prediction in game.predictions %}
-                            {% if prediction.match.kickoff <= nowTime or prediction.author.username == current_user.username %}
-                                <div class="d-flex justify-content-center align-items-center gap-2 fs-4 border rounded">
+                            <div class="d-flex justify-content-center align-items-center gap-2 fs-4 border rounded mb-1 p-1">
                                     
-                                    <img src="{{ prediction.author.avatar(48) }}" alt="User Avatar" class="m-0 border border-secondary rounded align-self-start" style="width: 48px; height: 48px;">
+                            <img src="{{ prediction.author.avatar(48) }}" alt="User Avatar" class="m-0 border border-secondary rounded align-self-center" style="width: 48px; height: 48px;">
                             
-                                    <span class="fi fi-{{ prediction.match.home_team.flag_code }} align-self-center fs-1 border"></span>
-                                    
-                                    <span class="text-center" style="width: 2rem;">
+                            {% if prediction.match.kickoff <= nowTime or prediction.author.username == current_user.username %}
+                                <div class="border rounded p-1">
+                                    <img class="align-self-center" src="{{prediction.match.home_team.logo()}}" alt="Home Logo" style="width: 36px; height: 36px;">
+
+                                    <span class="" style="width: 2rem;">
                                         {{ prediction.home_score_predicted }}
                                     </span>
 
-                                    <i class="bi bi-x-diamond-fill {{ "text-success" if prediction.score_points else "text-warning" if prediction.result_points else "" }}"></i>
+                                    <i class="bi bi-x-diamond-fill {{ "text-success" if prediction.score_points else "text-warning" if prediction.result_points else ""}}"></i>
                                     
-                                    <span class="text-center" style="width: 2rem;">
+                                    <span class="" style="width: 2rem;">
                                         {{ prediction.away_score_predicted }}
                                     </span>
                                     
-                                    <span class="fi fi-{{ prediction.match.away_team.flag_code }} align-self-center fs-1 border"></span>
-                                </div>   
+                                    <img class="align-self-center" src="{{prediction.match.away_team.logo()}}" alt="Home Logo" style="width: 36px; height: 36px;">
+                                </div>
                             {% else %}
-                                {% include '_hidden_prediction.html'%}
+                                {% include 'components/_hidden_prediction.html'%}
                             {% endif %}
+                            </div>
                         {% endfor %}
                     </div>
                 </div>
