@@ -15,7 +15,7 @@
         <span style="color: red;">[{{ error }}]</span>
         {% endfor %}
     </p>
-    <p>{{ username_form.submit(class="btn btn-primary") }}</p>
+    <p>{{ username_form.submitUsername(class="btn btn-primary") }}</p>
 </form>
 <hr>
 <h3>Change display name</h3>
@@ -28,7 +28,7 @@
         <span style="color: red;">[{{ error }}]</span>
         {% endfor %}
     </p>
-    <p>{{ displayNameForm.submit(class="btn btn-primary") }}</p>
+    <p>{{ displayNameForm.submitDisplayName(class="btn btn-primary") }}</p>
 </form>
 <hr>
 <h3>Change user colour</h3>
@@ -41,7 +41,7 @@
         <span style="color: red;">[{{ error }}]</span>
         {% endfor %}
     </p>
-    <p>{{ userColourForm.submit(class="btn btn-primary") }}</p>
+    <p>{{ userColourForm.submitUserColour(class="btn btn-primary") }}</p>
 </form>
 <hr>
 <h3>Change profile picture</h3>
@@ -54,7 +54,7 @@
         <span style="color: red;">[{{ error }}]</span>
         {% endfor %}
     </p>
-    <p>{{ profile_form.submit(class="btn btn-primary") }}</p>
+    <p>{{ profile_form.submitProfilePic(class="btn btn-primary") }}</p>
 </form>
 
 

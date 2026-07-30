@@ -41,7 +41,7 @@ class RegistrationForm(FlaskForm):
         
 class EditUsernameForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
-    submit = SubmitField('Submit')
+    submitUsername = SubmitField('Submit')
 
     def __init__(self, original_username, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -56,7 +56,7 @@ class EditUsernameForm(FlaskForm):
 
 class EditDisplayNameForm(FlaskForm):
     displayName = StringField('Display Name', validators=[DataRequired()])
-    submit = SubmitField('Submit')
+    submitDisplayName = SubmitField('Submit')
 
     def __init__(self, original_displayName, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -64,7 +64,7 @@ class EditDisplayNameForm(FlaskForm):
 
 class EditUserColourForm(FlaskForm):
     userColour = ColorField('Colour', validators=[DataRequired()])
-    submit = SubmitField('Submit')
+    submitUserColour = SubmitField('Submit')
 
     def __init__(self, original_userColour, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -72,7 +72,7 @@ class EditUserColourForm(FlaskForm):
 
 class EditPicForm(FlaskForm):
     profile = FileField('Select Profile Picture', validators=[FileAllowed(['jpg', 'jpeg', 'png'])])
-    submit = SubmitField('Submit')
+    submitProfilePic = SubmitField('Submit')
      
 class SinglePredictionForm(Form):
     game_id = IntegerField(validators=[DataRequired()])
