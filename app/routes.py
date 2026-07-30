@@ -261,14 +261,16 @@ def edit_profile():
 @login_required
 def matches(matchday=None):
     nowTime = getNowTime()
-
     matchday = getMatchday(matchday)
     lastMatchday = db.session.scalar(sa.select(sa.func.max(Game.matchday))) # maybe make this a helper too?
     
     games = getGamesForMatchday(matchday) # Need to remove all entries that are postponed from this, as otherwise get double filed when missed games are added
 
+    postponed = False
+
     for game in games:
         if game.status == "postponed":
+            postponed = True
             games.remove(game)
 
     predictions =  db.session.scalars(sa.select(Prediction).where(Prediction.user_id == current_user.id)).all()
@@ -283,6 +285,10 @@ def matches(matchday=None):
     # get games that were postponed in the past, or were missed for some reason, i.e. rescheduled due to cup games, could also just consider them postponed? might be easier
 
     missedGames= db.session.scalars(sa.select(Game).where(Game.status == "postponed")).all()
+
+    if (missedGames is not None):
+        postponed = True
+
 
     if request.method == 'GET':
         for game in games +  missedGames: # prepopulate all the games
@@ -350,7 +356,7 @@ def matches(matchday=None):
     else:
         print(form.errors)
 
-    return render_template('matches.html', title='Upcoming Games', form = form, today=date.today(), matchday=matchday, lastMatchday = lastMatchday)
+    return render_template('matches.html', title='Upcoming Games', form = form, today=date.today(), matchday=matchday, postponed=postponed, lastMatchday = lastMatchday)
 
 @app.route('/leaderboard', methods=['GET'])
 def leaderboard():
