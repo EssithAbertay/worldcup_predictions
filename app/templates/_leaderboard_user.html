@@ -1,27 +1,16 @@
+
+{% set rankInfo = namespace(current_rank = user.currentRank ) %}
+
+
 <div class="card bg-light mb-1">
     <div class="card-body">
         <div class="row justify-content-center align-items-center">
             
             <div class="col-1 fs-6 p-0 me-1">
-                {% if user.ranking == last%}
-                    🥄
-                {%else%}
-                    {{ user.ranking  }}.
-                {%endif%}
+                    {{ rankInfo.current_rank}}.
             </div>
 
-            <div class="col-1 fs-6 p-0">
-                {% set change =  (user.previous_ranking - user.ranking) %}
-                <div class="badge bg-light text-dark border">
-                    {% if change > 0 %}
-                    <i class="bi bi-caret-up-fill text-success"></i> {{change | abs}}
-                    {% elif change < 0 %}
-                    <i class="bi bi-caret-down-fill text-danger"></i> {{change | abs}}
-                    {% else %}
-                    <i class="bi bi-caret-left-fill text-warning"></i> {{change | abs}}
-                    {%endif%}
-                </div>
-            </div>
+
 
             <div class="col-3 fs-6 p-0 ms-1">
                 {{user.points}} pts
