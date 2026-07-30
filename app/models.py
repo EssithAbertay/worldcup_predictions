@@ -30,6 +30,8 @@ class User(UserMixin, db.Model):
     number_of_scores: so.Mapped[int] = so.mapped_column(nullable=True, default=0)
     number_of_results: so.Mapped[int] = so.mapped_column(nullable=True, default=0)
 
+    colour: so.Mapped[str] = so.mapped_column(sa.String(7),default="#e82a2a")
+
     predictions: so.Mapped[list['Prediction']] = so.relationship(back_populates='author')
     
     def __repr__(self):
@@ -51,11 +53,24 @@ class User(UserMixin, db.Model):
           return url_for('static',filename=f'profile_pics/{self.profile_pic_file}')
 
     @property
-    def currentRank(self):
+    def getCurrentRank(self):
         if self.ranking_history:
             return self.ranking_history[-1].get("new", 1)
         return "NC"
 
+    def getMatchdayPoints(self, matchday):
+        return (
+            db.session.scalar(
+                sa.select(func.coalesce(func.sum(Prediction.points_awarded), 0))
+                .join(Prediction.match)
+                .where(
+                    Prediction.user_id == self.id,
+                    Game.matchday == matchday,
+                )
+            )
+            or 0
+        )    
+    
     def getGlobalRankingText(self):
         if not self.ranking_history:
             return "Global Rank: Unranked"
@@ -171,9 +186,6 @@ class User(UserMixin, db.Model):
                 prediction.bonus_points = True
                 self.points += 1
             
-
-            
-
 class Team(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
 

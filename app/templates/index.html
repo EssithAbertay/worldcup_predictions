@@ -2,110 +2,30 @@
 
 {% block content %}
 <div class="text-center "> 
-    <div class="card mb-3">
-        <div class="card-header">
-            <div class="row justify-content-around align-items-center">
-                <div class = "col-3">
-                    {% if matchday > 1 %}
-                        <a class="btn btn-primary w-100" href="{{ url_for('index', matchday=matchday-1) }}">
-                            <i class="bi bi-arrow-left"></i>
-                        </a>
-                    {% endif %}
-                </div>
-                
-                <div class = "col">
-                    <h4 class="mb-0 card-title">Matchday {{ matchday }}</h4>
-                    <p class = "card-subtitle text-muted">Predict in <a href="{{url_for('matches', matchday=matchday)}}">Games</a></p>
-                </div>
-                
-                <div class = "col-3">
-                    {% if matchday < maxMatchday %}
-                        <a class="btn btn-primary w-100" href="{{ url_for('index', matchday=matchday+1) }}">
-                            <i class="bi bi-arrow-right"></i>
-                        </a>
-                    {% endif %}
-                </div>
+    <div class = "row">
+        <div class="col-5">
+           {% include 'components/_index_matchday_info.html'%}
+        </div>
+
+        <div class="col">
+            <div class="card mb-3">
+                Average Prediction Table <br>
+                <i> Coming Soon! </i>
             </div>
-        </div>
 
-        <div class="card-body">
-            {% for game in matchdayGames %}
-                <div class="card  {{ 'mb-0' if loop.last else 'mb-3' }} p-1 pt-2" data-bs-toggle="collapse" data-bs-target="#collapse{{game.id}}" aria-expanded="false" aria-controls="collapse{{rank}}">                 
-                    <div class="d-flex justify-content-center align-items-center gap-2 fs-4">
-                        <img class="align-self-center" src="{{game.home_team.logo()}}" alt="Home Logo" style="width: 64px; height: 64px;">
+            <div class="card mb-3">
+                Points by Matchday <br>
+                <i> Coming Soon! </i>
+            </div>
 
-                            <span class="badge bg-secondary-subtle text-dark m-0">
-                                {% if game.home_score is none or game.away_score is none %}
-                                    {{ game.kickoff.strftime('%H:%M') }}
-                                {%else%}
-                                    {{ game.home_score }} - {{ game.away_score }}
-                                {%endif%}
-                            </span>
+            <div class="card mb-3">
+                Best/Worst Performing Teams <br>
+                <i> Coming Soon! </i>
+            </div>
 
-                        <img class="align-self-center" src="{{game.away_team.logo()}}" alt="Away Logo" style="width: 64px; height: 64px;">
-                    </div>
-
-                    <!--{% set avg_home = game.get_average_home_score() %}
-                    {% set avg_away = game.get_average_away_score() %}
-
-                    <span>{{avg_home | float | round(2) if avg_home is not none else "?" }} - {{avg_away | float | round(2) if avg_away is not none else "?"}}</span>-->
-
-                    <div class="container d-flex w-100 p-1 align-items-center" >
-                        <div class="bg-primary rounded-start text-light border border-end-0" style="width: {{matchdayPredictions[loop.index-1][0]}}%; min-height: 26px;">
-                            {% if matchdayPredictions[loop.index-1][0] >= 12 %}
-                            <span>  {{matchdayPredictions[loop.index-1][0]}}%</span>
-                            {% endif %}
-                        </div>
-                        
-                        <div class="bg-secondary text-light border border-start-0 border-end-0"  style="width: {{matchdayPredictions[loop.index-1][2]}}%; min-height: 26px;">
-                            {% if matchdayPredictions[loop.index-1][2] >= 12 %}
-                            <span>  {{matchdayPredictions[loop.index-1][2]}}% </span>
-                            {% endif %}
-                        </div>
-
-                        <div class="bg-danger rounded-end text-light border border-start-0" style="width: {{matchdayPredictions[loop.index-1][1]}}%; min-height: 26px;">
-                            {% if matchdayPredictions[loop.index-1][1] >= 12 %}
-                            <span>  {{matchdayPredictions[loop.index-1][1]}}%</span>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <div class="collapse" id="collapse{{game.id}}">
-                        <div class="card-body m-2">       
-                            {% for prediction in game.predictions %}
-                                {% if prediction.match.kickoff <= nowTime or prediction.author.username == current_user.username %}
-                                    <div class="d-flex justify-content-center align-items-center gap-2 fs-4 border rounded">
-                                        
-                                        <img src="{{ prediction.author.avatar(48) }}" alt="User Avatar" class="m-0 border border-secondary rounded align-self-start" style="width: 48px; height: 48px;">
-                                
-                                        <span class="fi fi-{{ prediction.match.home_team.flag_code }} align-self-center fs-1 border"></span>
-                                        
-                                        <span class="text-center" style="width: 2rem;">
-                                            {{ prediction.home_score_predicted }}
-                                        </span>
-
-                                        <i class="bi bi-x-diamond-fill {{ "text-success" if prediction.score_points else "text-warning" if prediction.result_points else "" }}"></i>
-                                        
-                                        <span class="text-center" style="width: 2rem;">
-                                            {{ prediction.away_score_predicted }}
-                                        </span>
-                                        
-                                        <span class="fi fi-{{ prediction.match.away_team.flag_code }} align-self-center fs-1 border"></span>
-                                    </div>   
-                                {% else %}
-                                    {% include '_hidden_prediction.html'%}
-                                {% endif %}
-                            {% endfor %}
-                        </div>
-                    </div>
-
-                </div>
-            {% endfor %}
-        
-        </div>
-    </div> 
+        </div>  
+    </div>
 </div>
-
 {% endblock %}
 
 {% block footer %}
