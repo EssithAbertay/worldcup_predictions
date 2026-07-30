@@ -50,6 +50,12 @@ class User(UserMixin, db.Model):
         else:
           return url_for('static',filename=f'profile_pics/{self.profile_pic_file}')
 
+    @property
+    def currentRank(self):
+        if self.ranking_history:
+            return self.ranking_history[-1].get("new", 1)
+        return "NC"
+
     def getGlobalRankingText(self):
         if not self.ranking_history:
             return "Global Rank: Unranked"
@@ -116,7 +122,6 @@ class User(UserMixin, db.Model):
                 else "away"
             )
 
-
             # check if user has correct score
             if(home_correct and away_correct): # correct score + results
                 prediction.points_awarded = 5
@@ -130,11 +135,44 @@ class User(UserMixin, db.Model):
                 prediction.result_points = True
                 self.number_of_results += 1
                 self.points += 2
+
+            # checking bonuses
             
+            # correct score bonus
             if(home_correct or away_correct): # bonus point for a correct score
                 prediction.points_awarded += 1
                 prediction.bonus_points = True
                 self.points += 1
+
+
+            predictedHomeGoals = prediction.home_score_predicted
+            predictedAwayGoals = prediction.away_score_predicted
+
+            actualHomeGoals = prediction.match.home_score
+            actualAwayGoals = prediction.match.away_score
+
+            predictedGoalCount = predictedHomeGoals + predictedAwayGoals
+            predictedGoalMargin = abs(predictedHomeGoals - predictedAwayGoals)
+
+            actualGoalCount = actualHomeGoals +actualAwayGoals
+            actualGoalMargin = abs(actualHomeGoals - actualAwayGoals)
+
+            # correct number of goals bonus
+
+            if(predictedGoalCount == actualGoalCount):
+                prediction.points_awarded += 1
+                prediction.bonus_points = True
+                self.points += 1
+
+            # correct score margin bonus
+
+            if(predictedGoalMargin == actualGoalMargin):
+                prediction.points_awarded += 1
+                prediction.bonus_points = True
+                self.points += 1
+            
+
+            
 
 class Team(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)

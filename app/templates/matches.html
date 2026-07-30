@@ -30,6 +30,7 @@
             </div>
         </div>
     </div>
+    {% if postponed %}
     
     {% set ns = namespace(curr_date=None) %}
     
@@ -53,7 +54,7 @@
             {% endfor %}
         </div>
     </div>
-
+    {%endif%}
     {% set ns = namespace(curr_date=None) %}
     
     {% for prediction in form.predictions %}

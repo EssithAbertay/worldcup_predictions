@@ -261,14 +261,16 @@ def edit_profile():
 @login_required
 def matches(matchday=None):
     nowTime = getNowTime()
-
     matchday = getMatchday(matchday)
     lastMatchday = db.session.scalar(sa.select(sa.func.max(Game.matchday))) # maybe make this a helper too?
     
     games = getGamesForMatchday(matchday) # Need to remove all entries that are postponed from this, as otherwise get double filed when missed games are added
 
+    postponed = False
+
     for game in games:
         if game.status == "postponed":
+            postponed = True
             games.remove(game)
 
     predictions =  db.session.scalars(sa.select(Prediction).where(Prediction.user_id == current_user.id)).all()
@@ -283,6 +285,10 @@ def matches(matchday=None):
     # get games that were postponed in the past, or were missed for some reason, i.e. rescheduled due to cup games, could also just consider them postponed? might be easier
 
     missedGames= db.session.scalars(sa.select(Game).where(Game.status == "postponed")).all()
+
+    if (missedGames is not None):
+        postponed = True
+
 
     if request.method == 'GET':
         for game in games +  missedGames: # prepopulate all the games
@@ -350,7 +356,7 @@ def matches(matchday=None):
     else:
         print(form.errors)
 
-    return render_template('matches.html', title='Upcoming Games', form = form, today=date.today(), matchday=matchday, lastMatchday = lastMatchday)
+    return render_template('matches.html', title='Upcoming Games', form = form, today=date.today(), matchday=matchday, postponed=postponed, lastMatchday = lastMatchday)
 
 @app.route('/leaderboard', methods=['GET'])
 def leaderboard():
@@ -371,14 +377,9 @@ def leaderboard():
     users = db.session.scalars(query).all()
 
 
-    podium = users[:3]
-    rest = users[3:]
-
-    last = len(users)
-
     now_time = (datetime.now(ZoneInfo("Europe/London"))).replace(tzinfo=None)  # go a day into the future so that you can see todays games
     cutoff = now_time - timedelta(days=1)
-    for user in rest:
+    for user in users:
         user.upcoming_predictions = [
             p for p in user.predictions
             if p.match.kickoff >= cutoff
@@ -387,7 +388,7 @@ def leaderboard():
 
     today = now_time
 
-    return render_template('leaderboard.html', title='Leaderboard', podium=podium, rest=rest, last=last, today=today)
+    return render_template('leaderboard.html', title='Leaderboard', users=users, today=today)
 
 @app.route('/faq')
 def faq():
@@ -602,11 +603,13 @@ def adminUsers():
 
             #sort users
             for index, user in enumerate(users):
-                current_rank = user.ranking
+                rank_history = user.ranking_history or []
+
+                current_rank = user.ranking_history[-1]["new"] or (index + 1)
+
                 user.previous_ranking = current_rank # make current ranking the old ranking
 
                 new_rank = index+1 # +1 to account for 0
-
 
                 rank_history = user.ranking_history or []
     
