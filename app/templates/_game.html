@@ -2,8 +2,8 @@
 
 <div class="d-flex justify-content-center align-items-center gap-2 fs-4">
 
-    <span class="fi fi-{{ game.home_team.flag_code }} align-self-center fs-1 border"></span>
-    
+    <img class="align-self-center" src="{{game.home_team.logo()}}" alt="Home Logo" style="width: 36px; height: 36px;">
+
     <span class="text-center" style="width: 2rem;">
     {% if game.home_score is none %}
         ?
@@ -20,7 +20,7 @@
         {{ game.away_score }}
     {%endif%}
     </span>
+    <img class="align-self-center" src="{{game.away_team.logo()}}" alt="Home Logo" style="width: 36px; height: 36px;">
 
-    <span class="fi fi-{{ game.away_team.flag_code }} align-self-center fs-1 border"></span>
 
 </div>

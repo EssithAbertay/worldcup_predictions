@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+ <h3>Register Team</h3>
+
+    <form action="" method="post">
+        {{addTeamForm.hidden_tag()}}
+        <p>
+            {{ addTeamForm.team.label }}<br>
+            {{ addTeamForm.team(size=32) }}<br>
+            {% for error in addTeamForm.team.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ addTeamForm.short_name.label }}<br>
+            {{ addTeamForm.short_name(size=10) }}<br>
+            {% for error in addTeamForm.short_name.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>{{ addTeamForm.submit() }}</p>
+    </form>
+{% endblock %}

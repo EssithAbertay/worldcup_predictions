@@ -1,7 +1,8 @@
 <div class="card p-1"> 
      <div class="row g-0">
         <div class="col-9 fs-4">
-            <span class="fi fi-{{ prediction.match.home_team.flag_code }} border rounded"></span>
+
+            <img class="align-self-center" src="{{prediction.match.home_team.logo()}}" alt="Home Logo" style="width: 36px; height: 36px;">
 
             <span class="" style="width: 2rem;">
                 {{ prediction.home_score_predicted }}
@@ -13,7 +14,7 @@
                 {{ prediction.away_score_predicted }}
             </span>
 
-            <span class="fi fi-{{ prediction.match.away_team.flag_code}} border rounded"></span>
+            <img class="align-self-center" src="{{prediction.match.away_team.logo()}}" alt="Home Logo" style="width: 36px; height: 36px;">
         </div>
 
         <div class="col-3 fs-4 border-start">

@@ -2,104 +2,10 @@
 {% block content %}
 <div class="container text-start min-vh-100 mb-100" style="padding-bottom: 120px;"> 
     <h1>Admin Panel</h1>
-    <hr>
-    
-    <h3>Register Team</h3>
+   
+    <a href="{{url_for('adminTeams')}}">Teams</a>
+    <a href="{{url_for('adminMatches')}}">Matches</a>
+    <a href="{{url_for('adminUsers')}}">Users</a>
 
-    <form action="" method="post">
-        {{add_team_form.hidden_tag()}}
-        <p>
-            {{ add_team_form.team.label }}<br>
-            {{ add_team_form.team(size=32) }}<br>
-            {% for error in add_team_form.team.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
-        <p>
-            {{ add_team_form.fifa_code.label }}<br>
-            {{ add_team_form.fifa_code(size=10) }}<br>
-            {% for error in add_team_form.fifa_code.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p> 
-        </p> 
-        <p>
-            {{ add_team_form.flag_code.label }}<br>
-            {{ add_team_form.flag_code(size=10) }}<br>
-            {% for error in add_team_form.flag_code.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
-        <p>
-            {{ add_team_form.group.label }}<br>
-            {{ add_team_form.group(size=10) }}<br>
-            {% for error in add_team_form.group.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
-        <p>{{ add_team_form.submit() }}</p>
-    </form>
-
-    <hr>
-    <h3>Register Game</h3>
-
-    <form action="" method="post">
-        {{add_game_form.hidden_tag()}}
-        <p>
-            {{ add_game_form.home_team.label }}<br>
-            {{ add_game_form.home_team() }}<br>
-            {% for error in add_game_form.home_team.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
-        <p>
-            {{ add_game_form.away_team.label }}<br>
-            {{ add_game_form.away_team() }}<br>
-            {% for error in add_game_form.away_team.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p> 
-        <p>
-            {{ add_game_form.kickoff.label }} <br>
-            {{ add_game_form.kickoff() }} 
-        </p>
-        <p>{{ add_game_form.is_penalty_game() }} {{ add_game_form.is_penalty_game.label }}</p>
-        <p>{{ add_game_form.submit_game() }}</p>
-    </form>
-
-    <hr>
-
-    <h3>Register Result</h3>
-
-    <form action="" method="post">
-        {{add_result_form.hidden_tag()}}
-        {% for result in add_result_form.results %}
-        <p>
-            {{result.game_id(type="hidden") }}
-            {{result.home_team}} vs {{result.away_team}}
-  
-            {{result.home_score.label}} 
-            {{result.home_score()}} 
-            
-            {{result.away_score.label}}
-            {{result.away_score()}}
-            
-            {%if result.penalty_game %}
-                {{result.penalty_winner()}}
-            {%endif%}
-        </p>
-        {% endfor %}
-
-        <p>{{add_result_form.submit_results()}}</p>
-    </form>
-
-    <hr>
-
-    <h3>Calculate Points</h3>
-
-    <form action="" method="post">
-        {{recalculate_points.hidden_tag()}}
-        <p>{{recalculate_points.recalculate_points()}}</p>
-    </form>
 </div>
 {% endblock %}

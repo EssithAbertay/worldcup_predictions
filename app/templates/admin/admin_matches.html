@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %} 
+
+<h1>Admin Panel</h1>
+   
+
+<a href="{{url_for('adminResults')}}">Add Results</a>
+<a href="{{url_for('adminMatchesAdd')}}">Add Matches</a>
+<a href="{{url_for('adminMatchesEdit')}}">Edit Matches</a>
+
+{% endblock %}

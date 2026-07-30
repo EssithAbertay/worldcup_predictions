@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+
+{% block content %} 
+
+<div style="margin-bottom:100px">
+<form action="" method="post">
+    {{ form.hidden_tag() }}
+
+
+    <div class="m-0 mb-3 p-3 bg-body-tertiary border rounded">
+        <div class="row justify-content-around align-items-center">
+            <div class = "col-3">
+                {% if matchday > 1 %}
+                    <a class="btn btn-primary w-100" href="{{ url_for('matches', matchday=matchday-1) }}">
+                        <i class="bi bi-arrow-left"></i>
+                    </a>
+                {% endif %}
+            </div>
+            
+            <div class = "col">
+                <h4 class="mb-0 card-title">Matchday {{ matchday }}</h4>
+            </div>
+            
+            <div class = "col-3">
+                {% if matchday < lastMatchday %}
+                    <a class="btn btn-primary w-100" href="{{ url_for('matches', matchday=matchday+1) }}">
+                        <i class="bi bi-arrow-right"></i>
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    {% set ns = namespace(curr_date=None) %}
+    
+    <div id="postponed_matches" class=" card text-bg-warning mb-3">
+        <!--Putting the Postponed games into a section here, as they won't show up with the rest of this matchdays games-->
+
+        <div class = "card-header">
+            <strong>Postponed/Rescheduled Matches</strong>
+        </div>
+        
+        <div class = "card-body text-bg-light">
+            {% for prediction in form.predictions %}
+                {% if prediction.status == "postponed" %}
+                    {% set ns.curr_date = prediction.kickoff_time.date() %}
+
+                    <h5 class="m-0 mb-3 p-0 d-flex justify-content-start"><span class = "badge text-bg-secondary me-1"> From Matchday {{prediction.matchday}} </span><span class = "badge text-bg-secondary "> {{ns.curr_date.strftime("%d %B, %Y")}}  </span></h5>
+                   
+                    {% set postponed_section = true %}
+                    {% include 'components/_to_predict.html' with context %}
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+
+    {% set ns = namespace(curr_date=None) %}
+    
+    {% for prediction in form.predictions %}
+        {% if prediction.matchday == matchday %}
+            {% if ns.curr_date != prediction.kickoff_time.date() %}
+                {% set ns.curr_date = prediction.kickoff_time.date() %}
+
+                <h4 class="m-0 mb-3 p-0 d-flex justify-content-start"><span class = "badge text-bg-light"> {{ns.curr_date.strftime("%d %B, %Y")}}  </span></h4>
+            {% endif %}  
+            
+            {% set postponed_section = false %}
+            {% include 'components/_to_predict.html' with context %}
+        {% endif %}
+    {% endfor %}
+
+
+    <input type="hidden" id="all_predictions" name="all_predictions">
+
+    <div class="fixed-bottom p-3 bg-white border-top text-center">
+        {{ form.submit(class="btn btn-primary fs-3") }}
+    </div>
+</form>
+
+
+<script>
+    const matchday = {{matchday}};
+</script>
+
+<script>
+    {% if request.args.get('saved') %}
+        sessionStorage.removeItem("predictions");
+    {% endif %}
+
+
+    window.addEventListener("DOMContentLoaded", () => {
+        const predictions = JSON.parse(sessionStorage.getItem("predictions")) || {};
+
+        for (const id in predictions) {
+            const p = predictions[id];
+
+            const homeScore = document.getElementById("home_score_" + id);
+            if (!homeScore) continue;   // Match isn't on this page
+
+            homeScore.value = p.home;
+            document.getElementById("away_score_" + id).value = p.away;
+
+            document.getElementById("home_value_" + id).textContent = p.home;
+            document.getElementById("away_value_" + id).textContent = p.away;
+        }
+    });
+
+    document.querySelector("form").addEventListener("submit", function () {
+        document.getElementById("all_predictions").value =
+            sessionStorage.getItem("predictions") || "{}";
+    });
+
+    function checkPens(id){
+        curr_home_score = parseInt(document.getElementById("home_score_" + id).value) || 0
+        curr_away_score = parseInt(document.getElementById("away_score_" + id).value) || 0
+        pens_box = document.getElementById("penalty_" + id)
+        pens_box.style.display = curr_home_score == curr_away_score ?'block' : 'none'
+    }
+
+    let home_values = {}
+    let away_values = {}
+
+    function changeScore(value, team, id) {
+        console.log("changing " + id + " " + team);
+
+        // there must be a way of making this all one function but meh idk maybe smthn like    current_score = parseInt(document.getElementById(team + "_score_" + id).value) || 0
+        if(team == "home") {
+            current_score = parseInt(document.getElementById("home_score_" + id).value) || 0
+
+            home_values[id] = current_score + value 
+
+            if (home_values[id] < 0)
+            {
+                home_values[id]=0;
+            }
+
+            // after changin the score check if other score was none, if so set it to 0 :)
+            let other_score = parseInt(document.getElementById("away_score_" + id).value) 
+            if(isNaN(other_score)) {
+                document.getElementById("away_value_" + id).innerHTML =  0;
+                document.getElementById("away_score_" + id).value =  0;
+            }
+
+
+            document.getElementById("home_value_" + id).innerHTML =  home_values[id];
+            document.getElementById("home_score_" + id).value =  home_values[id];
+        }
+        else if(team == "away") {
+            current_score = parseInt(document.getElementById("away_score_" + id).value) || 0
+
+            away_values[id] = current_score + value 
+
+            if (away_values[id] < 0)
+            {
+                away_values[id]=0;
+            }
+
+            // after changin the score check if other score was none, if so set it to 0 :)
+            let other_score = parseInt(document.getElementById("home_score_" + id).value) 
+            if(isNaN(other_score)) {
+                document.getElementById("home_value_" + id).innerHTML =  0;
+                document.getElementById("home_score_" + id).value =  0;
+            }
+
+            document.getElementById("away_value_" + id).innerHTML =  away_values[id];
+            document.getElementById("away_score_" + id).value =  away_values[id];
+        }
+
+
+        saveLocalPrediction(id);
+    }
+
+
+    function saveLocalPrediction(id){    
+        const predictions = JSON.parse(sessionStorage.getItem("predictions")) || {};
+    
+        predictions[id] = {
+            home: document.getElementById("home_score_" + id).value,
+            away: document.getElementById("away_score_" + id).value
+        };
+
+        sessionStorage.setItem("predictions", JSON.stringify(predictions));
+    }
+</script>
+
+{% endblock %}

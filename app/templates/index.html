@@ -2,395 +2,109 @@
 
 {% block content %}
 <div class="text-center "> 
-    <div class = "row">
-        <div class = "col-12 col-md-6">
-            <div class="card mb-3">
-                <div class="card-header d-flex align-items-center justify-content-center">
-                   <!--<button type="button" class="btn btn-secondary" onclick=""><i class="bi bi-caret-left-square-fill fs-3"></i></button>--> 
-                    <div>
-                    <h4 class = "card-title">Today's Games</h4>
-                    <h6 class = "card-subtitle text-muted">
-                        Go to <a href="{{url_for('upcoming_games')}}">Upcoming Games</a> to predict
-                    </h6>
-                    </div>
-                    <!--<button type="button" class="btn btn-secondary" onclick=""><i class="bi bi-caret-right-square-fill fs-3"></i></button>--> 
+    <div class="card mb-3">
+        <div class="card-header">
+            <div class="row justify-content-around align-items-center">
+                <div class = "col-3">
+                    {% if matchday > 1 %}
+                        <a class="btn btn-primary w-100" href="{{ url_for('index', matchday=matchday-1) }}">
+                            <i class="bi bi-arrow-left"></i>
+                        </a>
+                    {% endif %}
                 </div>
+                
+                <div class = "col">
+                    <h4 class="mb-0 card-title">Matchday {{ matchday }}</h4>
+                    <p class = "card-subtitle text-muted">Predict in <a href="{{url_for('matches', matchday=matchday)}}">Games</a></p>
+                </div>
+                
+                <div class = "col-3">
+                    {% if matchday < maxMatchday %}
+                        <a class="btn btn-primary w-100" href="{{ url_for('index', matchday=matchday+1) }}">
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
 
-                <div class="card-body">
-                    {% if not daily_games %}
-                        No games today!
-                    {%endif%}
+        <div class="card-body">
+            {% for game in matchdayGames %}
+                <div class="card  {{ 'mb-0' if loop.last else 'mb-3' }} p-1 pt-2" data-bs-toggle="collapse" data-bs-target="#collapse{{game.id}}" aria-expanded="false" aria-controls="collapse{{rank}}">                 
+                    <div class="d-flex justify-content-center align-items-center gap-2 fs-4">
+                        <img class="align-self-center" src="{{game.home_team.logo()}}" alt="Home Logo" style="width: 64px; height: 64px;">
 
-                    {% for game in daily_games %}
-                    
-                    <div class="card  {{ 'mb-0' if loop.last else 'mb-3' }} p-1 pt-2" data-bs-toggle="collapse" data-bs-target="#collapse{{game.id}}" aria-expanded="false" aria-controls="collapse{{rank}}">                 
-                        <div class="d-flex justify-content-center align-items-center gap-2 fs-4">
-                            <span class="fi fi-{{ game.home_team.flag_code }} align-self-center fs-1 border"></span>
-                            
-                                <span class="badge bg-light text-dark border">
-                                    {% if game.home_score is none or game.away_score is none %}
-                                        {{ game.kickoff.strftime('%H:%M') }}
-                                    {%else%}
-                                        {{ game.home_score }} - {{ game.away_score }}
-                                    {%endif%}
-                                </span>
-                                
-                            <span class="fi fi-{{ game.away_team.flag_code }} align-self-center fs-1 border"></span>
+                            <span class="badge bg-secondary-subtle text-dark m-0">
+                                {% if game.home_score is none or game.away_score is none %}
+                                    {{ game.kickoff.strftime('%H:%M') }}
+                                {%else%}
+                                    {{ game.home_score }} - {{ game.away_score }}
+                                {%endif%}
+                            </span>
+
+                        <img class="align-self-center" src="{{game.away_team.logo()}}" alt="Away Logo" style="width: 64px; height: 64px;">
+                    </div>
+
+                    <!--{% set avg_home = game.get_average_home_score() %}
+                    {% set avg_away = game.get_average_away_score() %}
+
+                    <span>{{avg_home | float | round(2) if avg_home is not none else "?" }} - {{avg_away | float | round(2) if avg_away is not none else "?"}}</span>-->
+
+                    <div class="container d-flex w-100 p-1 align-items-center" >
+                        <div class="bg-primary rounded-start text-light border border-end-0" style="width: {{matchdayPredictions[loop.index-1][0]}}%; min-height: 26px;">
+                            {% if matchdayPredictions[loop.index-1][0] >= 12 %}
+                            <span>  {{matchdayPredictions[loop.index-1][0]}}%</span>
+                            {% endif %}
                         </div>
                         
-                        {% set avg_home = game.get_average_home_score() %}
-                        {% set avg_away = game.get_average_away_score() %}
-
-                        <span>{{avg_home | float | round(2) if avg_home is not none else "?" }} - {{avg_away | float | round(2) if avg_away is not none else "?"}}</span>
-
-                        <div class="container d-flex w-100 p-1 align-items-center" >
-                            <div class="bg-primary rounded-start text-light border border-end-0" style="width: {{prediction_scores[loop.index-1][0]}}%; min-height: 26px;">
-                                {% if prediction_scores[loop.index-1][0] >= 12 %}
-                                <span>  {{prediction_scores[loop.index-1][0]}}%</span>
-                                {% endif %}
-                            </div>
-                            
-                            <div class="bg-secondary text-light border border-start-0 border-end-0"  style="width: {{prediction_scores[loop.index-1][2]}}%; min-height: 26px;">
-                                {% if prediction_scores[loop.index-1][2] >= 12 %}
-                                <span>  {{prediction_scores[loop.index-1][2]}}% </span>
-                                {% endif %}
-                            </div>
-
-                            <div class="bg-danger rounded-end text-light border border-start-0" style="width: {{prediction_scores[loop.index-1][1]}}%; min-height: 26px;">
-                                {% if prediction_scores[loop.index-1][1] >= 12 %}
-                                <span>  {{prediction_scores[loop.index-1][1]}}%</span>
-                                {% endif %}
-                            </div>
+                        <div class="bg-secondary text-light border border-start-0 border-end-0"  style="width: {{matchdayPredictions[loop.index-1][2]}}%; min-height: 26px;">
+                            {% if matchdayPredictions[loop.index-1][2] >= 12 %}
+                            <span>  {{matchdayPredictions[loop.index-1][2]}}% </span>
+                            {% endif %}
                         </div>
 
-                        <div class="collapse" id="collapse{{game.id}}">
-                            <div class="card-body m-2">       
-                                {% for prediction in game.predictions %}
-                                    {% if prediction.match.kickoff <= today or prediction.author.username == current_user.username %}
-                                        <div class="d-flex justify-content-center align-items-center gap-2 fs-4 border rounded">
-                                            
-                                            <img src="{{ prediction.author.avatar(48) }}" alt="User Avatar" class="m-0 border border-secondary rounded align-self-start" style="width: 48px; height: 48px;">
-                                    
-                                            <span class="fi fi-{{ prediction.match.home_team.flag_code }} align-self-center fs-1 border"></span>
-                                            
-                                            <span class="text-center" style="width: 2rem;">
-                                                {{ prediction.home_score_predicted }}
-                                            </span>
-
-                                            <i class="bi bi-x-diamond-fill {{ "text-success" if prediction.score_points else "text-warning" if prediction.result_points else "" }}"></i>
-                                            
-                                            <span class="text-center" style="width: 2rem;">
-                                                {{ prediction.away_score_predicted }}
-                                            </span>
-                                            
-                                            <span class="fi fi-{{ prediction.match.away_team.flag_code }} align-self-center fs-1 border"></span>
-                                        </div>   
-                                    {% else %}
-                                        {% include '_hidden_prediction.html'%}
-                                    {% endif %}
-                                {% endfor %}
-                            </div>
+                        <div class="bg-danger rounded-end text-light border border-start-0" style="width: {{matchdayPredictions[loop.index-1][1]}}%; min-height: 26px;">
+                            {% if matchdayPredictions[loop.index-1][1] >= 12 %}
+                            <span>  {{matchdayPredictions[loop.index-1][1]}}%</span>
+                            {% endif %}
                         </div>
-
                     </div>
-                    {% endfor %}
-                
-                </div>
-            </div> 
 
-            <div class="card mb-3">
-                <div class="card-header">
-                    <h4 class = "card-title">In the last five games...</h4>
-                </div>
-
-                <div class="list-group list-group-flush pt-2">
-                    <li class="list-group-item">
-                        <div class="row">
-                            <div class="col-4">
-                                <span class="fs-6 d-md-none"> 
-                                    <i class="bi bi-graph-up-arrow"></i> 
-                                    <u>Positions Gained</u>
-                                </span>
-
-                                <span class="fs-5 d-none d-md-inline"> 
-                                    <i class="bi bi-graph-up-arrow"></i> 
-                                    <u>Positions Gained</u>
-                                </span>
-
-                                {%for gainer in biggest_gainers %}
-                                <div class="text-start text-truncate">
-                                        <i class="bi bi-caret-up-fill text-success"></i>
-                                        {{gainer[1] | abs}}
-                                    
-                                    <a href="{{ url_for('user', username=gainer[0].username) }}"> {{gainer[0].username}}</a>
-                                </div>
-                                {%endfor%}
-                            </div>
-
-                            <div class="col-4">
-                                <span class="fs-6 d-md-none"> 
-                                    <i class="bi bi-graph-down-arrow"></i> 
-                                    <u>Positions Lost</u>
-                                </span>
-
-                                <span class="fs-5 d-none d-md-inline"> 
-                                    <i class="bi bi-graph-down-arrow"></i> 
-                                    <u>Positions Lost</u>
-                                </span>
-
-                                {%for loser in biggest_losers %}
-                                <div class="text-start text-truncate">
-        
-                                        <i class="bi bi-caret-down-fill text-danger"></i> 
-                                        {{loser[1] | abs}}
-                                    
-
-                                    <a href="{{ url_for('user', username=loser[0].username) }}"> {{loser[0].username}}</a>                     
-                                </div>
-                                {%endfor%}
-                            </div>
-
-                            <div class="col-4">
-                                <span class="fs-6 d-md-none"> 
-                                    <u>Points Earned</u>
-                                </span>
-
-                                <span class="fs-5 d-none d-md-inline"> 
-                                    <u>Points Earned</u>
-                                </span>
-
-                                {%for change in biggest_point_changes %}
-                                    <div class="text-start text-truncate">
-                                            <i class="bi bi-plus-circle-fill text-success"></i>
-                                            {{change[1] | abs}}
+                    <div class="collapse" id="collapse{{game.id}}">
+                        <div class="card-body m-2">       
+                            {% for prediction in game.predictions %}
+                                {% if prediction.match.kickoff <= nowTime or prediction.author.username == current_user.username %}
+                                    <div class="d-flex justify-content-center align-items-center gap-2 fs-4 border rounded">
                                         
-                                        <a href="{{ url_for('user', username=change[0].username) }}"> {{change[0].username}}</a>                     
-                                    </div>
-                                {%endfor%}
-                            </div>
+                                        <img src="{{ prediction.author.avatar(48) }}" alt="User Avatar" class="m-0 border border-secondary rounded align-self-start" style="width: 48px; height: 48px;">
+                                
+                                        <span class="fi fi-{{ prediction.match.home_team.flag_code }} align-self-center fs-1 border"></span>
+                                        
+                                        <span class="text-center" style="width: 2rem;">
+                                            {{ prediction.home_score_predicted }}
+                                        </span>
+
+                                        <i class="bi bi-x-diamond-fill {{ "text-success" if prediction.score_points else "text-warning" if prediction.result_points else "" }}"></i>
+                                        
+                                        <span class="text-center" style="width: 2rem;">
+                                            {{ prediction.away_score_predicted }}
+                                        </span>
+                                        
+                                        <span class="fi fi-{{ prediction.match.away_team.flag_code }} align-self-center fs-1 border"></span>
+                                    </div>   
+                                {% else %}
+                                    {% include '_hidden_prediction.html'%}
+                                {% endif %}
+                            {% endfor %}
                         </div>
-                    </li>
-                </div>
-                <li class="list-group-item">
-                    <div class = "card-body">
-                        <p>Table from last five<br>
-                        Under Construction!</p>
                     </div>
-                </li>
-            </div> 
+
+                </div>
+            {% endfor %}
+        
         </div>
-
-        <div class = "col-12 col-md-6">
-            <div class="card mb-3">
-                <div class="card-header">
-                    <h4 class = "card-title">How's the leaderboard looking?</h4>
-                </div>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item"> 
-                        <div>
-                            <canvas class="points_chart"></canvas>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-
-            <!--<div class="card mb-3">
-                <div class="card-header">
-                    <h4 class = "card-title">Who earned points yesterday?</h4>
-                </div>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item"> 
-                        <div>
-                            <canvas class="yesterday_chart"></canvas>
-                        </div>
-                    </li>
-                </ul>
-            </div>-->
-
-            <div class="card">
-                <div class="card-header">
-                    <h4 class = "card-title">Recent Leaderboard History</h4>
-                </div>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item"> 
-                        <div style="height: 300px;">
-                            <canvas class="leaderboard_chart"></canvas>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
+    </div> 
 </div>
-
-<script>
-    const yesterday_scores = {{ yesterday_scores | tojson }};
-    const yesterday_names = {{ yesterday_names | tojson }};
-</script>
-
-<script>
-    const your_data = {{ your_data | tojson }};
-    console.log(your_data);
-    const first_data = {{ other_user_data[0] | tojson }};
-    console.log(first_data);
-    const second_data = {{ other_user_data[1] | tojson }};
-    console.log(second_data);
-    const third_data = {{ other_user_data[2] | tojson }};
-    console.log(third_data);
-    const labels_data = {{ labels_data | tojson }};
-    const max_value = {{max_points}} + 2;
-    const min_value = {{min_points}} - 2;
-    const names = {{other_usernames | tojson}}  
-</script>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<script>
-        const pointsChartConfig = {
-        type: 'line',
-        data: {
-            labels: labels_data,
-            datasets: [{
-                label: 'You',
-                data: your_data,
-                fill: false,
-                borderColor: 'rgb(255, 104, 104)',
-                tension: 0.3,
-                borderWidth:3
-            },
-            {
-                label: names.at(0),
-                data: first_data,
-                fill: false,
-                borderColor: 'rgb(0, 100, 0)',
-                tension: 0.3,
-                borderWidth:1
-            },
-           {
-                label: names.at(1),
-                data: second_data,
-                fill: false,
-                borderColor: 'rgb(255, 166, 0)',
-                tension: 0.3,
-                borderWidth:1
-            },
-           {
-                label: names.at(2),
-                data: third_data,
-                fill: false,
-                borderColor: 'rgb(44, 44, 255)',
-                tension: 0.3,
-                borderWidth:1
-            }]
-        },
-        options: {
-            scales: {
-                y: {
-                    min: min_value,
-                    max: max_value,
-                    title: {
-                        display: true,
-                        text: 'Points'
-                    }
-                }
-            }
-        }
-    };
-
-    document.querySelectorAll('.points_chart').forEach(canvas => {
-        new Chart(canvas, pointsChartConfig);
-    });
-</script>
-
-<script>
-    const avg = yesterday_scores.reduce((sum, value) => sum + value, 0) / yesterday_scores.length;
-
-    const borderColours = yesterday_names.map((_, i) => {
-        const hue = (i * 360 / yesterday_names.length);
-        return `hsl(${hue}, 70%, 50%)`;
-    });
-
-    const backgroundColours = yesterday_names.map((_, i) => {
-        const hue = (i * 360 / yesterday_names.length);
-        return `hsla(${hue}, 70%, 50%, 0.2)`;
-    });
-
-    const yesterdayChartConfig = {
-    type: 'bar',
-    data: {
-        labels: yesterday_names,
-        datasets: [{
-            data: yesterday_scores,
-            backgroundColor: backgroundColours,
-            borderColor: borderColours,
-            borderWidth: 1
-        },
-        {
-                type: 'line',
-                label: 'Average',
-                data: Array(yesterday_scores.length).fill(avg),
-                borderColor: 'rgb(42, 0, 194)',
-                borderWidth: 2,
-                pointRadius: 0,
-                fill: false
-        }]
-    },
-    options: {
-        plugins: {
-            legend: {
-                display: false
-            }
-        }
-    } 
-    };
-
-    document.querySelectorAll('.yesterday_chart').forEach(canvas => {
-        new Chart(canvas, yesterdayChartConfig);
-    });
-</script>
-
-<script>
-    const rank_labels = {{ users_ranks_labels | tojson }};
-    const user_ranks = {{ users_ranks | tojson }};
-    const usernames = {{ usernames_ranks | tojson }};
-    
-    const datasets = user_ranks.map((series, i) => ({
-        label: usernames[i],
-        data: series,
-        borderWidth: 2,
-        spanGaps: false,
-        tension: 0.3
-    }));
-</script>
-
-<script>
-    const ranksChartConfig = {
-        type: 'line',
-        data: {
-            labels: rank_labels,
-            datasets: datasets
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    reverse: true,   // IMPORTANT: rank 1 = top
-                    beginAtZero: false
-                }
-            },
-            plugins: {
-                legend: {
-                    display: false
-                }
-            }   
-        }
-    };
-
-    document.querySelectorAll('.leaderboard_chart').forEach(canvas => {
-        new Chart(canvas, ranksChartConfig);
-    });
-</script>
 
 {% endblock %}
 

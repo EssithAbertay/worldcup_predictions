@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h3>Edit Game</h3>
+
+    <form action="" method="post">
+        {{ editGameForm.hidden_tag() }}
+
+        <p>
+            {{ editGameForm.game_id.label }}<br>
+            {{ editGameForm.game_id() }}<br>
+            {% for error in editGameForm.game_id.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+        <p>
+            {{ editGameForm.home_score.label }}<br>
+            {{ editGameForm.home_score() }}<br>
+            {% for error in editGameForm.home_score.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+        <p>
+            {{ editGameForm.away_score.label }}<br>
+            {{ editGameForm.away_score() }}<br>
+            {% for error in editGameForm.away_score.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+        <p>
+            {{ editGameForm.kickoff.label }}<br>
+            {{ editGameForm.kickoff() }}<br>
+            {% for error in editGameForm.kickoff.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+        <p>
+            {{ editGameForm.status.label }}<br>
+            {{ editGameForm.status() }}<br>
+            {% for error in editGameForm.status.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+        <p>{{ editGameForm.submitGameEdit() }}</p>
+    </form>
+{% endblock %}

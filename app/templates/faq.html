@@ -15,7 +15,7 @@
             <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#FAQaccordion">
                 <div class="accordion-body">
                     <p>
-                    For every game in the 2026 World Cup, predict the result on the  <a href="{{url_for('upcoming_games')}}">"Upcoming Games"</a> page.
+                    For every game in the 2026 World Cup, predict the result on the  <a href="{{url_for('matches')}}">"Upcoming Games"</a> page.
                     <br>
                     Simply enter a number into the correct boxes then hit "Submit Predictions", we'll handle the rest!
                     <br>
@@ -51,7 +51,7 @@
             <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#FAQaccordion">
                 <div class="accordion-body">
                     <p>
-                    At the bottom of the <a href="{{url_for('upcoming_games')}}">"Upcoming Games"</a> page, games that you've already predicted that haven't yet happened can be updated.
+                    At the bottom of the <a href="{{url_for('matches')}}">"Upcoming Games"</a> page, games that you've already predicted that haven't yet happened can be updated.
                     </p>
                 </div>
             </div>
@@ -75,95 +75,70 @@
         <div class="accordion-item">
             <h3 class="accordion-header">
                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
-                How are my scores calculated? (Group Stage)
+                How are my scores calculated?
                 </button>
             </h3>
             <div id="collapseFive" class="accordion-collapse collapse" data-bs-parent="#FAQaccordion">
                 <div class="accordion-body">
-                    <h5>For group games</h5>
+                    
+                    <table class="table">
+                        <thead>
+                            <tr>
+                            <th scope="col">Prediction</th>
+                            <th scope="col">Scoring</th>
+
+                            </tr>
+                        </thead>
+                        <tbody class="table-group-divider">
+                            <tr>
+                            <th scope="row">Correct Score</th>
+                            <td>5pts</td>
+
+                            </tr>
+                            <tr>
+                            <th scope="row">Correct Result</th>
+                            <td>2pts</td>
+                            </tr>
+
+                            <tr>
+                                <th colspan="2" class="text-center">Non-Draw Prediction Bonuses</th>
+                            </tr>
+
+                            <tr>
+                            <th scope="row">Correct Individual Score</th>
+                            <td>+1pts</td>
+                            </tr>
+
+                            <tr>
+                            <th scope="row">Correct Score Margin</th>
+                            <td>+1pts</td>
+                            </tr>
+
+                            <tr>
+                            <th scope="row">Correct Number of Goals</th>
+                            <td>+1pts</td>
+                            </tr>
+                        </tbody>
+                    </table>    
                     <p>
-                    <ul>
-                    <li>5 points for correct score</li>
-                    <li>2 points for the correct result</li>
-                    <li>1 bonus point if you predict one of the correct scores</li>
-                    </ul>
                     <u>Examples:</u><br>
-                    Prediction: Scotland 5 - 0 England<br>
-                    Actual Score: Scotland 5 - 0 England<br>
+                    Prediction: Queen's Park 5 - 0 Partick Thistle<br>
+                    Actual Score: Queen's Park 5 - 0 Partick Thistle<br>
                     Awarded: 5 points (Correct Score)<br>
                     <br>
-                    Prediction: Scotland 2 - 1 England<br>
-                    Actual Score: Scotland 5 - 0 England<br>
+                    Prediction: Queen's Park 2 - 1 Partick Thistle<br>
+                    Actual Score: Queen's Park 5 - 0 Partick Thistle<br>
                     Awarded: 2 points (Correct result)<br>
                     <br>
-                    Prediction: Scotland 5 - 0 England<br>
-                    Actual Score: Scotland 3 - 0 England<br>
-                    Awarded: 3 points (Correct result and a bonus point for a correct score, 0 England)<br>
+                    Prediction: Queen's Park 5 - 0 Partick Thistle<br>
+                    Actual Score: Queen's Park 3 - 0 Partick Thistle<br>
+                    Awarded: 3 points (Correct result and a bonus point for a correct score, 0 Partick Thistle)<br>
                     <br>
-                    Prediction: Scotland 1 - 1 England<br>
-                    Actual Score: Scotland 2 - 2 England<br>
-                    Awarded: 2 points (Correct result)<br>
+                    Prediction: Queen's Park 1 - 1 Partick Thistle<br>
+                    Actual Score: Queen's Park 2 - 2 Partick Thistle<br>
+                    Awarded: 23 points (Correct result)<br>
                     <br>
                     </p>
-                </div>
-            </div>
-        </div>
-
-        <div class="accordion-item">
-            <h3 class="accordion-header">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseNine" aria-expanded="false" aria-controls="collapseNine">
-                How are my scores calculated? (Knockouts)
-                </button>
-            </h3>
-            <div id="collapseNine" class="accordion-collapse collapse" data-bs-parent="#FAQaccordion">
-                <div class="accordion-body">
-                <p>
-                    Knockout matches use a different scoring system to the group stage. <br>
-                    <strong>Method</strong> refers to whether the winning team qualifies in
-                    regular/additional time or via a penalty shootout.
-                </p>
-
-                <table class="table table-sm">
-                    <thead>
-                        <tr>
-                            <th>Prediction</th>
-                            <th class="text-end">Points</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Exact</td>
-                            <td class="text-end"><strong>8</strong></td>
-                        </tr>
-                        <tr>
-                            <td>Exact score + wrong penalty winner</td>
-                            <td class="text-end"><strong>6</strong></td>
-                        </tr>
-                        <tr>
-                            <td>Correct result + correct method</td>
-                            <td class="text-end"><strong>5</strong></td>
-                        </tr>
-                        <tr>
-                            <td>Correct result + incorrect method</td>
-                            <td class="text-end"><strong>3</strong></td>
-                        </tr>
-                        <tr>
-                            <td>Correct draw (after regular/additional time)</td>
-                            <td class="text-end"><strong>2</strong></td>
-                        </tr>
-                        <tr>
-                            <td>Correct penalty winner (when predicting a draw)</td>
-                            <td class="text-end"><strong>+3</strong></td>
-                        </tr>
-                        <tr>
-                            <td>Bonus for either score being correct (does not apply in exact predictions)</td>
-                            <td class="text-end"><strong>+1</strong></td>
-                        </tr>
-                    </tbody>
-                </table>
-
-
-                   
                 </div>
             </div>
         </div>

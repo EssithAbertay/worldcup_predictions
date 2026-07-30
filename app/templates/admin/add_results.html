@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+<hr>
+
+    <h3>Register Result</h3>
+
+    <form action="" method="post">
+        {{addResultsForm.hidden_tag()}}
+        {% for result in addResultsForm.results %}
+        <p>
+            <p>GAME ID {{result.game_id() }} DON'T EDIT </p>
+            {{result.home_team}} vs {{result.away_team}}
+  
+            {{result.home_score.label}} 
+            {{result.home_score()}} 
+            
+            {{result.away_score.label}}
+            {{result.away_score()}}
+        </p>
+        <hr>
+        {% endfor %}
+
+        <p>{{addResultsForm.submit_results()}}</p>
+    </form>
+
+    <hr>
+{% endblock %}
