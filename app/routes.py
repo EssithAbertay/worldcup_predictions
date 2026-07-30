@@ -144,22 +144,10 @@ def register():
     return render_template('register.html', title='Register', form=form)
 
 @app.route('/user/<username>')
+@app.route('/user/<username>/matchday-<int:matchday>')
 @login_required
 def user(username):
     user = db.first_or_404(sa.select(User).where(User.username == username))
-
-    special_text = ""
-
-    if user.id == 4 or user.id == 8:
-        other = 8 if user.id == 4 else 4
-        other_user = db.session.get(User, other)
-
-        if other_user.points > user.points:
-            special_text = f"Gap to {other_user.username}: {other_user.points - user.points} pts"
-        elif other_user.points < user.points:
-            special_text = f"Lead over {other_user.username}: {user.points - other_user.points} pts"
-        else:
-            special_text = f"Tied with {other_user.username}"
 
     # get total prediction count
     # get number of predicitons awarded 5 points - correct score
@@ -178,27 +166,8 @@ def user(username):
     scores_total = stats.scores
     results_total = stats.results
     bonus_total = stats.bonus
-
-    ranks = []
-    labels = []
-
-    for rank in user.ranking_history:
-        timestamp = rank.get("datetime")
-
-        if not timestamp:
-            continue
-
-        ranks.append(rank["new"])
-        labels.append(datetime.fromisoformat(timestamp).strftime("%d %b"))
     
-    query = sa.select(User)
-    users = db.session.scalars(query).all()
-    user_count = len(users)
-
-    now_time = (datetime.now(ZoneInfo("Europe/London"))).replace(tzinfo=None)  # go a day into the future so that you can see todays games
-    today = now_time
-
-    return render_template('user.html', user=user, games_total=games_total, scores_total=scores_total, results_total=results_total, bonus_total=bonus_total, ranks=ranks, labels=labels, user_count= user_count, special_text=special_text, today=today)
+    return render_template('user.html', user=user, games_total=games_total, scores_total=scores_total, results_total=results_total, bonus_total=bonus_total)
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
