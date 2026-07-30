@@ -1,7 +1,7 @@
 from flask import render_template, flash, redirect, url_for, request, abort
 from urllib.parse import urlsplit
 from app import app
-from app.forms import LoginForm, RegistrationForm, AdminGameSubmission, EditUsernameForm, PredictionForm, AdminResultForm, AdminRecalculatePoints, AdminTeamSubmission, EditPicForm, AdminEditGameForm
+from app.forms import LoginForm, RegistrationForm, AdminGameSubmission, EditUsernameForm, PredictionForm, AdminResultForm, AdminRecalculatePoints, AdminTeamSubmission, EditPicForm, AdminEditGameForm, EditDisplayNameForm, EditUserColourForm
 from flask_login import current_user, login_user, logout_user, login_required
 import sqlalchemy as sa
 from app import db
@@ -175,6 +175,10 @@ def edit_profile():
     username_form = EditUsernameForm(current_user.username)
     profile_form = EditPicForm()
 
+    displayNameForm = EditDisplayNameForm(current_user.display_name)
+    userColourForm = EditUserColourForm(current_user.colour)
+
+
     if request.method == 'GET':
         username_form.username.data = current_user.username
 
@@ -236,7 +240,7 @@ def edit_profile():
             
             return redirect(url_for('edit_profile'))
 
-    return render_template('edit_profile.html', title='Edit Profile', username_form=username_form, profile_form = profile_form )
+    return render_template('edit_profile.html', title='Edit Profile', username_form=username_form, profile_form = profile_form, displayNameForm=displayNameForm,userColourForm=userColourForm)
 
 @app.route('/matches', methods=['GET','POST'])
 @app.route('/matches/matchday-<int:matchday>', methods=['GET','POST'])

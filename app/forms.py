@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, DateTimeLocalField, FieldList, FormField, RadioField, IntegerField, Form, SelectField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, DateTimeLocalField, FieldList, FormField, RadioField, IntegerField, Form, SelectField, ColorField
 from wtforms.validators import ValidationError, DataRequired, EqualTo, NumberRange, Optional, InputRequired, Length
 import sqlalchemy as sa
 from app import db
@@ -55,12 +55,20 @@ class EditUsernameForm(FlaskForm):
                 raise ValidationError('Already in use! Please use a different username.')
 
 class EditDisplayNameForm(FlaskForm):
-    displayName = StringField('Username', validators=[DataRequired()])
+    displayName = StringField('Display Name', validators=[DataRequired()])
     submit = SubmitField('Submit')
 
     def __init__(self, original_displayName, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.original_displayName = original_displayName
+
+class EditUserColourForm(FlaskForm):
+    userColour = ColorField('Colour', validators=[DataRequired()])
+    submit = SubmitField('Submit')
+
+    def __init__(self, original_userColour, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.original_displayName = original_userColour
 
 class EditPicForm(FlaskForm):
     profile = FileField('Select Profile Picture', validators=[FileAllowed(['jpg', 'jpeg', 'png'])])
