@@ -265,7 +265,11 @@ def matches(matchday=None):
     matchday = getMatchday(matchday)
     lastMatchday = db.session.scalar(sa.select(sa.func.max(Game.matchday))) # maybe make this a helper too?
     
-    games = getGamesForMatchday(matchday)
+    games = getGamesForMatchday(matchday) # Need to remove all entries that are postponed from this, as otherwise get double filed when missed games are added
+
+    for game in games:
+        if game.status == "postponed":
+            games.remove(game)
 
     predictions =  db.session.scalars(sa.select(Prediction).where(Prediction.user_id == current_user.id)).all()
 
@@ -276,14 +280,21 @@ def matches(matchday=None):
 
     form = PredictionForm()
 
+    # get games that were postponed in the past, or were missed for some reason, i.e. rescheduled due to cup games, could also just consider them postponed? might be easier
+
+    missedGames= db.session.scalars(sa.select(Game).where(Game.status == "postponed")).all()
+
     if request.method == 'GET':
-        for game in games:
+        for game in games +  missedGames: # prepopulate all the games
             entry = form.predictions.append_entry()
 
             entry.game_id.data = game.id
             entry.kickoff_time = game.kickoff
             entry.home_team = game.home_team
             entry.away_team = game.away_team
+            entry.status = game.status
+            entry.matchday = game.matchday
+
 
             existing_prediction = prediction_map.get(game.id)
 
@@ -293,36 +304,33 @@ def matches(matchday=None):
                
     if request.method == 'POST' and form.validate_on_submit():
 
-        all_predictions = json.loads(
+        predictions = json.loads(
             request.form.get("all_predictions", "{}")
         )
 
 
-        for matchday, games in all_predictions.items():
-            for game_id, prediction in games.items():
-              
-                home_score = int(prediction["home"])
-                away_score = int(prediction["away"])
+        for game_id, prediction in predictions.items():
+            home_score = int(prediction["home"])
+            away_score = int(prediction["away"])
 
+            if home_score is None and away_score is None:
+                continue
 
-                if home_score is None and away_score is None:
-                    continue
+            if home_score is None:
+                home_score = 0
 
-                if home_score is None:
-                    home_score = 0
+            if away_score is None:
+                away_score = 0
 
-                if away_score is None:
-                    away_score = 0
-
-                existing_prediction = prediction_map.get(int(game_id))
-                
-                if existing_prediction:
-                    existing_prediction.home_score_predicted = home_score
-                    existing_prediction.away_score_predicted = away_score
-                else:
-                    prediction = Prediction(user_id=current_user.id ,game_id=game_id, home_score_predicted=home_score, away_score_predicted=away_score)
-                    prediction_map[prediction.game_id] = prediction # add it to the map so that we deal with low latency and duplicates aren't possible
-                    db.session.add(prediction)
+            existing_prediction = prediction_map.get(int(game_id))
+            
+            if existing_prediction:
+                existing_prediction.home_score_predicted = home_score
+                existing_prediction.away_score_predicted = away_score
+            else:
+                prediction = Prediction(user_id=current_user.id ,game_id=game_id, home_score_predicted=home_score, away_score_predicted=away_score)
+                prediction_map[prediction.game_id] = prediction # add it to the map so that we deal with low latency and duplicates aren't possible
+                db.session.add(prediction)
 
 
         print(

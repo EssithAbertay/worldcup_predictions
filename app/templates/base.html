@@ -119,6 +119,13 @@ document.addEventListener("DOMContentLoaded", () => {
     // handle links
     document.querySelectorAll("a[href]").forEach(link => {
         link.addEventListener("click", function () {
+            const href = this.getAttribute("href");
+
+            // Ignore page anchors
+            if (href.startsWith("#")) {
+                return;
+            }
+            
             showLoading();
         });
     });

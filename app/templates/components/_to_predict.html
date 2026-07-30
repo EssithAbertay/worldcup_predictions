@@ -1,0 +1,68 @@
+
+<div class="prediction-row justify-content-center">
+    <div class="card bg-light mb-3">
+        <div class="d-flex justify-content-center align-items-center gap-2">
+            {{ prediction.game_id(type="hidden") }}
+            {{ prediction.home_score(type="hidden",class="home_score", id="home_score_" ~ prediction.game_id.data) }}
+            {{ prediction.away_score(type="hidden",class="away_score", id="away_score_" ~ prediction.game_id.data) }}
+            
+            <div class="d-flex flex-column align-items-center" style="width: 100px;">
+                <img src="{{prediction.home_team.logo()}}" alt="Home Logo" style="width: 64px; height: 64px;">
+                <p class="d-flex align-items-center text-break text-muted mb-0 lh-1"  style="height:32px;">{{prediction.home_team.name}}</p>
+            </div>
+            
+            <div class="d-flex align-items-center gap-1  ">
+                {% if not postponed_section and prediction.status == "postponed" %}
+
+                <div class="text-center">
+                    <span class="badge bg-warning text-dark">
+                        Postponed
+                    </span>
+
+                    <div class="small text-muted mt-2">
+                        Prediction available in the
+                        <a href="#postponed_matches"><strong>Postponed/Rescheduled Matches</strong></a>
+                        section above
+                    </div>
+                </div>
+
+                {% else %}
+                
+                <div>
+                    <button class="btn" type="button" onclick="changeScore(1, 'home', {{prediction.game_id.data}})">
+                        <i class="fs-3 bi bi-plus-circle"></i>
+                    </button>
+                    
+                    <p class="border border-2 border-black rounded m-0" id="home_value_{{prediction.game_id.data}}">{{ prediction.home_score.data if prediction.home_score.data is not none else "None" }}</p>
+                    
+                    <button class="btn" type="button" onclick="changeScore(-1, 'home', {{prediction.game_id.data}})">
+                        <i class="fs-3 bi bi-dash-circle"></i>
+                    </button>
+                </div>
+
+                <span class="badge bg-secondary-subtle text-dark m-0">
+                    {{ prediction.kickoff_time.strftime('%H:%M') }}
+                </span>
+
+                <div>
+                    <button class="btn" type="button" onclick="changeScore(1, 'away', {{prediction.game_id.data}})">
+                        <i class="fs-3 bi bi-plus-circle"></i>
+                    </button>
+                    
+                    <p class="border border-2 border-black rounded m-0" id="away_value_{{prediction.game_id.data}}">{{prediction.away_score.data if prediction.away_score.data is not none else "None"}}</p>
+
+                    <button class="btn" type="button" onclick="changeScore(-1, 'away', {{prediction.game_id.data}})">
+                        <i class="fs-3 bi bi-dash-circle"></i>
+                    </button>
+                </div>
+            
+                {%endif%}
+            </div>
+
+            <div class="d-flex flex-column align-items-center" style="width: 100px;">
+                <img class="align-self-center" src="{{prediction.away_team.logo()}}" alt="Away Logo" style="width: 64px; height: 64px;">
+                <p class="d-flex align-items-center text-break text-muted mb-0 lh-1" style="height:32px;">{{prediction.away_team.name}}</p> 
+            </div>
+        </div>
+    </div>
+</div>
