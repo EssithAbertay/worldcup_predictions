@@ -9,7 +9,7 @@ from hashlib import md5
 from flask import url_for
 from sqlalchemy import func, JSON
 from sqlalchemy.ext.mutable import MutableList
-
+from pathlib import Path
 
 # TODO: Readd email support
 # TODO: Add display names
@@ -46,12 +46,17 @@ class User(UserMixin, db.Model):
         return check_password_hash(self.password_hash, password)    
     
     def avatar(self, size):
-        if(self.profile_pic_file == 'none'):
+        # get the supposed path to a users profile picture
+        path = Path(f'profile_pics/{self.profile_pic_file}')
+
+        # if a file exists at the path, return it, otherwise return a gravatar
+        if(path.is_file()):
+            return url_for('static',filename=f'profile_pics/{self.profile_pic_file}')
+        else:
             digest = md5(self.username.lower().encode('utf-8')).hexdigest()
             return f'https://www.gravatar.com/avatar/{digest}?d=identicon&s={size}'
-        else:
-          return url_for('static',filename=f'profile_pics/{self.profile_pic_file}')
-
+       
+     
     @property
     def getCurrentRank(self):
         if self.ranking_history:
