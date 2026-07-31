@@ -169,7 +169,7 @@ def user(username, matchday=None):
     results_total = stats.results
     bonus_total = stats.bonus
 
-    # super unsafe method of getting the machdays user has predicted, as ignores that user might've missed a matchday ...somehow
+    # super unsafe method of getting the machdays user has predicted, as ignores that user might've missed a matchday ...somehow also ignores that user might not have any predictions
     largestPredictedMatchday = user.predictions[-1].match.matchday + 1 or 0
 
 
