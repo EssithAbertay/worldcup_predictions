@@ -56,7 +56,12 @@ class User(UserMixin, db.Model):
             digest = md5(self.username.lower().encode('utf-8')).hexdigest()
             return f'https://www.gravatar.com/avatar/{digest}?d=identicon&s={size}'
        
-     
+    def getMatchdayPredictions(self, matchday: int):
+        return [
+            p for p in self.predictions
+            if p.match.matchday == matchday
+        ]
+
     @property
     def getCurrentRank(self):
         if self.ranking_history:

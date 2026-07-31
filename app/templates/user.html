@@ -22,8 +22,7 @@
                 </div>
             </div>
         </div>
-        
-        <hr>
+         <hr class = "d-none d-md-flex">
     </div>
 
     <!--On Small screen-->
@@ -49,15 +48,39 @@
 
         <div class="tab-content">
             <div class="tab-pane show active text-center" id="predictions">
-                {% for prediction in user.predictions %}
-                <div class = "mt-2">
-                    {% if prediction.match.status == "completed" or prediction.author.username == current_user.username %}
-                        {% include 'components/_prediction.html' %} 
+  
+               <div id="carouselExample" class="carousel slide">
+                <div class="carousel-inner">
+
+                    {% for x in predictedMatchdays %}
+
+                    {% if x == matchday %}
+                    <div class="carousel-item active">
                     {% else %}
-                        {% include 'components/_hidden_prediction.html'%}
+                        <div class="carousel-item">
                     {% endif %}
+                            {% for prediction in user.getMatchdayPredictions(x) %}
+                                <div class = "mt-2">
+                                    {% if prediction.match.status == "completed" or prediction.author.username == current_user.username %}
+                                        {% include 'components/_prediction.html' %} 
+                                    {% else %}
+                                        {% include 'components/_hidden_prediction.html'%}
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endfor%}
+
                 </div>
-                {% endfor %}
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+                </div>
             </div>
 
             <div class="tab-pane" id="stats">
@@ -69,9 +92,10 @@
 
      <!--On Big screen-->
     <div class = "row d-none d-md-flex">
-
+   
     <!--Predicted Games-->
         <div class="col-md-4 mb-2">
+            
             <div class="text-center fs-5"> 
                 <h2>Predictions</h2>
                 <hr>

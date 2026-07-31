@@ -146,8 +146,10 @@ def register():
 @app.route('/user/<username>')
 @app.route('/user/<username>/matchday-<int:matchday>')
 @login_required
-def user(username):
+def user(username, matchday=None):
     user = db.first_or_404(sa.select(User).where(User.username == username))
+
+    matchday = getMatchday(matchday)
 
     # get total prediction count
     # get number of predicitons awarded 5 points - correct score
@@ -166,8 +168,13 @@ def user(username):
     scores_total = stats.scores
     results_total = stats.results
     bonus_total = stats.bonus
+
+    # super unsafe method of getting the machdays user has predicted, as ignores that user might've missed a matchday ...somehow
+    largestPredictedMatchday = user.predictions[-1].match.matchday + 1 or 0
+
+
     
-    return render_template('user.html', user=user, games_total=games_total, scores_total=scores_total, results_total=results_total, bonus_total=bonus_total)
+    return render_template('user.html', user=user, matchday=matchday, games_total=games_total, scores_total=scores_total, results_total=results_total, bonus_total=bonus_total, predictedMatchdays=range(1,largestPredictedMatchday))
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
