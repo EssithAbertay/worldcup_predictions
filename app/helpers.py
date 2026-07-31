@@ -2,7 +2,7 @@ from app import app
 from datetime import datetime, date, timedelta, timezone
 from zoneinfo import ZoneInfo
 from app import db
-from app.models import Game, User
+from app.models import Game, User, Prediction
 import sqlalchemy as sa
 from app import db
 from sqlalchemy import func
@@ -48,3 +48,6 @@ def getUsers() -> list[User]:
 def getUsersByPointsDesc() -> list[User]:
     return db.session.scalars(sa.select(User).order_by(User.points.desc())).all()
 
+# might not work but until I use it we won't know 
+def getUserPredictions(userID) -> list[Prediction]:
+    return db.first_or_404(sa.select(User).where(User.id == userID)).predictions

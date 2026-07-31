@@ -1,7 +1,7 @@
 from flask import render_template, flash, redirect, url_for, request, abort
 from urllib.parse import urlsplit
 from app import app
-from app.forms import LoginForm, RegistrationForm, AdminGameSubmission, EditUsernameForm, PredictionForm, AdminResultForm, AdminRecalculatePoints, AdminTeamSubmission, EditPicForm, AdminEditGameForm
+from app.forms import LoginForm, RegistrationForm, AdminGameSubmission, EditUsernameForm, PredictionForm, AdminResultForm, AdminRecalculatePoints, AdminTeamSubmission, EditPicForm, AdminEditGameForm, EditDisplayNameForm, EditUserColourForm
 from flask_login import current_user, login_user, logout_user, login_required
 import sqlalchemy as sa
 from app import db
@@ -144,22 +144,12 @@ def register():
     return render_template('register.html', title='Register', form=form)
 
 @app.route('/user/<username>')
+@app.route('/user/<username>/matchday-<int:matchday>')
 @login_required
-def user(username):
+def user(username, matchday=None):
     user = db.first_or_404(sa.select(User).where(User.username == username))
 
-    special_text = ""
-
-    if user.id == 4 or user.id == 8:
-        other = 8 if user.id == 4 else 4
-        other_user = db.session.get(User, other)
-
-        if other_user.points > user.points:
-            special_text = f"Gap to {other_user.username}: {other_user.points - user.points} pts"
-        elif other_user.points < user.points:
-            special_text = f"Lead over {other_user.username}: {user.points - other_user.points} pts"
-        else:
-            special_text = f"Tied with {other_user.username}"
+    matchday = getMatchday(matchday)
 
     # get total prediction count
     # get number of predicitons awarded 5 points - correct score
@@ -179,26 +169,12 @@ def user(username):
     results_total = stats.results
     bonus_total = stats.bonus
 
-    ranks = []
-    labels = []
+    # super unsafe method of getting the machdays user has predicted, as ignores that user might've missed a matchday ...somehow also ignores that user might not have any predictions
+    largestPredictedMatchday = user.predictions[-1].match.matchday + 1 or 0
 
-    for rank in user.ranking_history:
-        timestamp = rank.get("datetime")
 
-        if not timestamp:
-            continue
-
-        ranks.append(rank["new"])
-        labels.append(datetime.fromisoformat(timestamp).strftime("%d %b"))
     
-    query = sa.select(User)
-    users = db.session.scalars(query).all()
-    user_count = len(users)
-
-    now_time = (datetime.now(ZoneInfo("Europe/London"))).replace(tzinfo=None)  # go a day into the future so that you can see todays games
-    today = now_time
-
-    return render_template('user.html', user=user, games_total=games_total, scores_total=scores_total, results_total=results_total, bonus_total=bonus_total, ranks=ranks, labels=labels, user_count= user_count, special_text=special_text, today=today)
+    return render_template('user.html', user=user, matchday=matchday, games_total=games_total, scores_total=scores_total, results_total=results_total, bonus_total=bonus_total, predictedMatchdays=range(1,largestPredictedMatchday))
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
@@ -206,12 +182,16 @@ def edit_profile():
     username_form = EditUsernameForm(current_user.username)
     profile_form = EditPicForm()
 
+    displayNameForm = EditDisplayNameForm(current_user.display_name)
+    userColourForm = EditUserColourForm(current_user.colour)
+
     if request.method == 'GET':
         username_form.username.data = current_user.username
+        displayNameForm.displayName.data = current_user.display_name
+        userColourForm.userColour.data = current_user.colour
 
     if request.method == 'POST':
-
-        if username_form.submit.data and username_form.validate_on_submit():
+        if username_form.submitUsername.data and username_form.validate_on_submit():
             current_user.username = username_form.username.data
             print(
                 "UPDATING USER username",
@@ -222,8 +202,9 @@ def edit_profile():
             db.session.commit()
             flash('Your changes have been saved.')
             return redirect( url_for('user', username=current_user.username))
-    
-        if profile_form.submit.data and profile_form.validate_on_submit():
+
+
+        if profile_form.submitProfilePic.data and profile_form.validate_on_submit():
             picture = profile_form.profile.data
 
             if picture:
@@ -267,7 +248,22 @@ def edit_profile():
             
             return redirect(url_for('edit_profile'))
 
-    return render_template('edit_profile.html', title='Edit Profile', username_form=username_form, profile_form = profile_form )
+
+        if displayNameForm.submitDisplayName.data and displayNameForm.validate_on_submit():
+            current_user.display_name = displayNameForm.displayName.data
+            db.session.commit()
+            flash('Your changes have been saved.')
+            return redirect( url_for('user', username=current_user.username))
+
+
+        if userColourForm.submitUserColour.data and userColourForm.validate_on_submit():
+            current_user.colour = userColourForm.userColour.data
+            db.session.commit()
+            flash('Your changes have been saved.')
+            return redirect( url_for('user', username=current_user.username))
+
+
+    return render_template('edit_profile.html', title='Edit Profile', username_form=username_form, profile_form = profile_form, displayNameForm=displayNameForm,userColourForm=userColourForm)
 
 @app.route('/matches', methods=['GET','POST'])
 @app.route('/matches/matchday-<int:matchday>', methods=['GET','POST'])

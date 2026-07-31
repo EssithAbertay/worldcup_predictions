@@ -6,12 +6,12 @@
     <div class="text-start"> 
         <div class="row">
             <div class="col-6">
-                <h2 class="text-break"><u>{{user.username}}</u></h2>
+                <h2 class="text-break"><u>{{user.display_name}}</u></h2>
                 <h3><i>{{user.points}}pts</i></h3>   
                 <h3>{{user.getGlobalRankingText()}}</h3>   
                 
                 {% if user == current_user %}
-                <p><a href="{{ url_for('edit_profile') }}">Edit Username or Profile Picture</a></p>
+                <p><a href="{{ url_for('edit_profile') }}">User Settings</a></p>
                 {% endif %}
             </div>
             <div class="col-6 text-end">
@@ -22,8 +22,7 @@
                 </div>
             </div>
         </div>
-        
-        <hr>
+         <hr class = "d-none d-md-flex">
     </div>
 
     <!--On Small screen-->
@@ -49,19 +48,41 @@
 
         <div class="tab-content">
             <div class="tab-pane show active text-center" id="predictions">
-                {% for prediction in user.predictions %}
-                <div class = "mt-2">
-                    {% if prediction.match.kickoff <= today or prediction.author.username == current_user.username %}
-                        {% include 'components/_prediction.html' %} 
+  
+               <div id="carouselExample" class="carousel slide">
+                <div class="carousel-inner">
+
+                    {% for x in predictedMatchdays %}
+
+                    {% if x == matchday %}
+                    <div class="carousel-item active">
                     {% else %}
-                        {% include 'components/_hidden_prediction.html'%}
+                        <div class="carousel-item">
                     {% endif %}
+                            {% for prediction in user.getMatchdayPredictions(x) %}
+                                <div class = "mt-2">
+                                    {% if prediction.match.status == "completed" or prediction.author.username == current_user.username %}
+                                        {% include 'components/_prediction.html' %} 
+                                    {% else %}
+                                        {% include 'components/_hidden_prediction.html'%}
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endfor%}
+
                 </div>
-                {% endfor %}
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+                    <span class="visually-hidden">Next</span>
+                </button>
+                </div>
             </div>
 
             <div class="tab-pane" id="stats">
-                {%include '_user_stats.html' %}
+                {%include 'components/_user_stats.html' %}
             </div>
         </div>
     </div>
@@ -69,15 +90,16 @@
 
      <!--On Big screen-->
     <div class = "row d-none d-md-flex">
-
+   
     <!--Predicted Games-->
         <div class="col-md-4 mb-2">
+            
             <div class="text-center fs-5"> 
                 <h2>Predictions</h2>
                 <hr>
                 {% for prediction in user.predictions %}
                 <div class = "mt-2">
-                    {% if prediction.match.kickoff <= today or prediction.author.username == current_user.username %}
+                    {% if prediction.match.status == "completed" or prediction.author.username == current_user.username %}
                         {% include 'components/_prediction.html' %} 
                     {% else %}
                         {% include 'components/_hidden_prediction.html'%}
@@ -91,47 +113,11 @@
         <div class="col-md-8">
             <h2 class="text-center">Stats</h2>
             <hr>
-            {%include '_user_stats.html' %}
+            {%include 'components/_user_stats.html' %}
         </div>
     </div>
 </div>
 
-<script>
-    const ranks_data = {{ ranks | tojson }};
-    const labels_data = {{ labels | tojson }};
-    const num_user = {{user_count}};
-</script>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<script>
-        const chartConfig = {
-        type: 'line',
-        data: {
-            labels: labels_data,
-            datasets: [{
-                label: 'Ranking History',
-                data: ranks_data,
-                fill: false,
-                borderColor: 'rgb(75, 192, 192)',
-                tension: 0.1
-            }]
-        },
-        options: {
-            scales: {
-                y: {
-                    reverse: true,
-                    min: 1,
-                    max: num_user
-                }
-            }
-        }
-    };
-
-    document.querySelectorAll('.ranking_chart').forEach(canvas => {
-        new Chart(canvas, chartConfig);
-    });
-</script>
 {% endblock %}
 
 

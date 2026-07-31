@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, DateTimeLocalField, FieldList, FormField, RadioField, IntegerField, Form, SelectField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, DateTimeLocalField, FieldList, FormField, RadioField, IntegerField, Form, SelectField, ColorField
 from wtforms.validators import ValidationError, DataRequired, EqualTo, NumberRange, Optional, InputRequired, Length
 import sqlalchemy as sa
 from app import db
@@ -41,7 +41,7 @@ class RegistrationForm(FlaskForm):
         
 class EditUsernameForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
-    submit = SubmitField('Submit')
+    submitUsername = SubmitField('Submit')
 
     def __init__(self, original_username, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -55,16 +55,24 @@ class EditUsernameForm(FlaskForm):
                 raise ValidationError('Already in use! Please use a different username.')
 
 class EditDisplayNameForm(FlaskForm):
-    displayName = StringField('Username', validators=[DataRequired()])
-    submit = SubmitField('Submit')
+    displayName = StringField('Display Name', validators=[DataRequired()])
+    submitDisplayName = SubmitField('Submit')
 
     def __init__(self, original_displayName, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.original_displayName = original_displayName
 
+class EditUserColourForm(FlaskForm):
+    userColour = ColorField('Colour', validators=[DataRequired()])
+    submitUserColour = SubmitField('Submit')
+
+    def __init__(self, original_userColour, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.original_displayName = original_userColour
+
 class EditPicForm(FlaskForm):
     profile = FileField('Select Profile Picture', validators=[FileAllowed(['jpg', 'jpeg', 'png'])])
-    submit = SubmitField('Submit')
+    submitProfilePic = SubmitField('Submit')
      
 class SinglePredictionForm(Form):
     game_id = IntegerField(validators=[DataRequired()])
