@@ -183,11 +183,8 @@ def edit_profile():
         displayNameForm.displayName.data = current_user.display_name
         userColourForm.userColour.data = current_user.colour
 
-    flash(userColourForm.userColour.data)
-
     if request.method == 'POST':
         if username_form.submitUsername.data and username_form.validate_on_submit():
-            flash("In the username form")
             current_user.username = username_form.username.data
             print(
                 "UPDATING USER username",
@@ -199,7 +196,6 @@ def edit_profile():
             flash('Your changes have been saved.')
             return redirect( url_for('user', username=current_user.username))
 
-        flash("username!")
 
         if profile_form.submitProfilePic.data and profile_form.validate_on_submit():
             picture = profile_form.profile.data
@@ -245,18 +241,20 @@ def edit_profile():
             
             return redirect(url_for('edit_profile'))
 
-        flash("profilepic!")
 
         if displayNameForm.submitDisplayName.data and displayNameForm.validate_on_submit():
-            flash(displayNameForm.displayName.data)
+            current_user.display_name = displayNameForm.displayName.data
+            db.session.commit()
+            flash('Your changes have been saved.')
+            return redirect( url_for('user', username=current_user.username))
 
-        flash("displayname")
 
         if userColourForm.submitUserColour.data and userColourForm.validate_on_submit():
-            flash("Colour:")
-            flash(userColourForm.userColour.data)
+            current_user.colour = userColourForm.userColour.data
+            db.session.commit()
+            flash('Your changes have been saved.')
+            return redirect( url_for('user', username=current_user.username))
 
-        flash("colour!")
 
     return render_template('edit_profile.html', title='Edit Profile', username_form=username_form, profile_form = profile_form, displayNameForm=displayNameForm,userColourForm=userColourForm)
 
