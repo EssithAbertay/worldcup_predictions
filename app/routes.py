@@ -14,7 +14,7 @@ from uuid import uuid4
 from pathlib import Path
 from PIL import Image, ImageOps
 import json
-from app.helpers import getMatchday, getNowTime, getGamesForMatchday, getUsersByPointsDesc, getUsers, getGameFromID
+from app.helpers import getMatchday, getNowTime, getGamesForMatchday, getUsersByPointsDesc, getUsers, getGameFromID, getUserbyUsername
 
 # TODO: make nowtime, matchday, matchday games, etc a seperate python file, as i keep writing the same fecking code
 
@@ -200,9 +200,9 @@ def user(username, matchday=None):
 
 
     for prediction in user.predictions:
-        if(prediction.match.kickoff > getNowTime()):
+        if(prediction.match.kickoff > getNowTime() and current_user.id != user.id):
             continue
-        
+
         home_id = prediction.match.home_team_id 
         away_id = prediction.match.away_team_id
 

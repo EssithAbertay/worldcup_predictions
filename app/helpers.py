@@ -48,6 +48,13 @@ def getUsers() -> list[User]:
 def getUsersByPointsDesc() -> list[User]:
     return db.session.scalars(sa.select(User).order_by(User.points.desc())).all()
 
+def getUserByID(userID) -> User:
+    return db.first_or_404(sa.select(User).where(User.id == userID))
+
+def getUserbyUsername(username) -> User:
+    return db.first_or_404(sa.select(User).where(User.username == username))
+
+
 # might not work but until I use it we won't know 
 def getUserPredictions(userID) -> list[Prediction]:
     return db.first_or_404(sa.select(User).where(User.id == userID)).predictions
