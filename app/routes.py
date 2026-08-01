@@ -674,11 +674,11 @@ def adminUsers():
             users = db.session.scalars(query).all()
             flash('got users')
 
-            #sort users
+            #sort users TODO: FIX to only do by matchday
             for index, user in enumerate(users):
                 rank_history = user.ranking_history or []
 
-                current_rank = user.ranking_history[-1]["new"] or (index + 1)
+                current_rank = (index + 1)
 
                 user.previous_ranking = current_rank # make current ranking the old ranking
 

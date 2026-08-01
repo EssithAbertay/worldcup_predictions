@@ -77,7 +77,8 @@ class User(UserMixin, db.Model):
     def actualPoints(self) -> float:
         return self.points / 2 
 
-    def getMatchdayPoints(self, matchday):
+    #Accounts for point dividing
+    def getMatchdayPoints(self, matchday) -> float:
         return (
             db.session.scalar(
                 sa.select(func.coalesce(func.sum(Prediction.points_awarded), 0))
@@ -86,7 +87,7 @@ class User(UserMixin, db.Model):
                     Prediction.user_id == self.id,
                     Game.matchday == matchday,
                 )
-            )
+            ) / 2
             or 0
         )    
     
