@@ -200,6 +200,9 @@ def user(username, matchday=None):
 
 
     for prediction in user.predictions:
+        if(prediction.match.kickoff > getNowTime()):
+            continue
+        
         home_id = prediction.match.home_team_id 
         away_id = prediction.match.away_team_id
 
