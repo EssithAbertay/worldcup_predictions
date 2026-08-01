@@ -173,8 +173,62 @@ def user(username, matchday=None):
     largestPredictedMatchday = user.predictions[-1].match.matchday + 1 or 0
 
 
+    # this is so stupid
+    query = sa.select(User)
+    users = db.session.scalars(query).all()
+    user_count = len(users)
+
+    now_time = (datetime.now(ZoneInfo("Europe/London"))).replace(tzinfo=None)  # go a day into the future so that you can see todays games
+    today = now_time
+
+    # get all teams
+    # get all user predictions
     
-    return render_template('user.html', user=user, matchday=matchday, games_total=games_total, scores_total=scores_total, results_total=results_total, bonus_total=bonus_total, predictedMatchdays=range(1,largestPredictedMatchday))
+    # for each prediction check result expected then assign points GD GF GA for each team, then sort!
+
+    teams = db.session.scalars(sa.select(Team)).all()
+  
+    team_map = {
+        t.id: t
+        for t in teams
+    }
+
+    flash(team_map)
+
+
+    data = {}
+
+    for team in teams:
+        data[team.id] = 0
+
+
+    for prediction in user.predictions:
+        home_id = prediction.match.home_team_id 
+        away_id = prediction.match.away_team_id
+
+        home = prediction.home_score_predicted
+        away = prediction.away_score_predicted
+
+        if(home > away):
+            data[home_id] +=3
+        elif(away >home):
+            data[away_id] +=3
+        else:
+            data[home_id] +=1
+            data[away_id] +=1
+
+
+    listData = []
+
+    for team in teams:
+        listData.append([team.id, data[team.id]])
+
+    flash(listData)
+    listData.sort(key=lambda x: x[1], reverse=True)
+    flash(listData)
+
+
+    return render_template('user.html', user=user, games_total=games_total, scores_total=scores_total, results_total=results_total, bonus_total=bonus_total, ranks=ranks, labels=labels, user_count= user_count, special_text=special_text, today=today)
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
