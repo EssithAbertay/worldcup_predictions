@@ -9,8 +9,7 @@ from hashlib import md5
 from flask import url_for
 from sqlalchemy import func, JSON
 from sqlalchemy.ext.mutable import MutableList
-from pathlib import Path
-from flask import  flash
+
 
 
 # TODO: Readd email support
@@ -50,15 +49,14 @@ class User(UserMixin, db.Model):
     # TODO: Fix bug in avatar function that always returns the gravatar
 
     def avatar(self, size):
-        # get the supposed path to a users profile picture
-        path = Path(f'app/static/profile_pics/{self.profile_pic_file}')
-        # if a file exists at the path, return it, otherwise return a gravatar
-        if(path.is_file()):
-            return url_for('static',filename=f'profile_pics/{self.profile_pic_file}')
-        else:
+
+        # I HATE THIS
+        if(self.profile_pic_file == 'none'):
             digest = md5(self.username.lower().encode('utf-8')).hexdigest()
             return f'https://www.gravatar.com/avatar/{digest}?d=identicon&s={size}'
-       
+        else:
+          return url_for('static',filename=f'profile_pics/{self.profile_pic_file}')
+
     def getMatchdayPredictions(self, matchday: int):
         return [
             p for p in self.predictions
