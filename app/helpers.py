@@ -51,3 +51,6 @@ def getUsersByPointsDesc() -> list[User]:
 # might not work but until I use it we won't know 
 def getUserPredictions(userID) -> list[Prediction]:
     return db.first_or_404(sa.select(User).where(User.id == userID)).predictions
+
+def getGameFromID(gameID) -> Game:
+    return db.first_or_404(sa.select(Game).where(Game.id == gameID))

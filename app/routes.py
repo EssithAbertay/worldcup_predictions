@@ -14,7 +14,7 @@ from uuid import uuid4
 from pathlib import Path
 from PIL import Image, ImageOps
 import json
-from app.helpers import getMatchday, getNowTime, getGamesForMatchday, getUsersByPointsDesc, getUsers
+from app.helpers import getMatchday, getNowTime, getGamesForMatchday, getUsersByPointsDesc, getUsers, getGameFromID
 
 # TODO: make nowtime, matchday, matchday games, etc a seperate python file, as i keep writing the same fecking code
 
@@ -188,18 +188,15 @@ def user(username, matchday=None):
 
     teams = db.session.scalars(sa.select(Team)).all()
   
-    team_map = {
-        t.id: t
-        for t in teams
-    }
-
-    flash(team_map)
-
-
     data = {}
 
     for team in teams:
-        data[team.id] = 0
+        data[team.id] = {
+        "points": 0,
+        "gf": 0,
+        "ga": 0,
+        "gd": 0,
+    }
 
 
     for prediction in user.predictions:
@@ -209,26 +206,34 @@ def user(username, matchday=None):
         home = prediction.home_score_predicted
         away = prediction.away_score_predicted
 
+        data[home_id]["gf"] += home
+        data[away_id]["gf"] += away
+
+        data[home_id]["ga"] += away
+        data[away_id]["ga"] += home
+
         if(home > away):
-            data[home_id] +=3
+            data[home_id]["points"] +=3
         elif(away >home):
-            data[away_id] +=3
+            data[away_id]["points"] +=3
         else:
-            data[home_id] +=1
-            data[away_id] +=1
+            data[home_id]["points"] +=1
+            data[away_id]["points"] +=1
 
 
-    listData = []
+    # TODO: Account for top 6 split .... somehow
+    predictedTableData = []
 
     for team in teams:
-        listData.append([team.id, data[team.id]])
+        data[team.id]["gd"] =  data[team.id]["gf"] -  data[team.id]["ga"]
+        predictedTableData.append([team, data[team.id]])
 
-    flash(listData)
-    listData.sort(key=lambda x: x[1], reverse=True)
-    flash(listData)
+    flash(predictedTableData)
+    predictedTableData.sort(key=lambda x: (x[1]["points"],x[1]["gd"],x[1]["gf"],), reverse=True)
+    flash(predictedTableData)
 
 
-    return render_template('user.html', user=user, games_total=games_total, scores_total=scores_total, results_total=results_total, bonus_total=bonus_total, ranks=ranks, labels=labels, user_count= user_count, special_text=special_text, today=today)
+    return render_template('user.html', user=user, games_total=games_total, scores_total=scores_total, results_total=results_total, bonus_total=bonus_total, today=today, predictedMatchdays=range(1,largestPredictedMatchday), predictedTableData=predictedTableData)
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
@@ -378,6 +383,11 @@ def matches(matchday=None):
         )
 
         for game_id, prediction in predictions.items():
+
+            if(getGameFromID(game_id).kickoff < getNowTime()):
+                flash("Cannot change games that have already started!")
+                continue
+
             home_score = int(prediction["home"])
             away_score = int(prediction["away"])
 

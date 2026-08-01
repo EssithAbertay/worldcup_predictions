@@ -37,7 +37,7 @@ def upgrade():
         batch_op.drop_column('fifa_code')
 
     with op.batch_alter_table('user', schema=None) as batch_op:
-        batch_op.add_column(sa.Column('display_name', sa.String(length=64), nullable=False))
+        batch_op.add_column(sa.Column('display_name', sa.String(length=64), nullable=False,server_default='' ))
         batch_op.create_index(batch_op.f('ix_user_display_name'), ['display_name'], unique=True)
         batch_op.drop_column('ranking')
         batch_op.drop_column('previous_ranking')
