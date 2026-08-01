@@ -11,6 +11,8 @@ from sqlalchemy import func, JSON
 from sqlalchemy.ext.mutable import MutableList
 from pathlib import Path
 
+
+
 # TODO: Readd email support
 # TODO: Add display names
 # TODO: Add leagues, use ranking history in user for global ranks, store local ranking history within custom league
@@ -21,7 +23,7 @@ class User(UserMixin, db.Model):
        
     #email: so.Mapped[str] = so.mapped_column(sa.String(120), index=True, unique=True)
     password_hash: so.Mapped[Optional[str]] = so.mapped_column(sa.String(256))
-    points: so.Mapped[int] = so.mapped_column(default=0)
+    points: so.Mapped[int] = so.mapped_column(default=0) # all scores awarded are multiplied by 2, to account for half points
     ranking_history: so.Mapped[list[dict]] = so.mapped_column(MutableList.as_mutable(JSON))
     points_history: so.Mapped[list[dict]] = so.mapped_column(MutableList.as_mutable(JSON))
     is_admin: so.Mapped[bool] = so.mapped_column(default=False)
@@ -45,6 +47,8 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)    
     
+    # TODO: Fix bug in avatar function that always returns the gravatar
+
     def avatar(self, size):
         # get the supposed path to a users profile picture
         path = Path(f'profile_pics/{self.profile_pic_file}')
@@ -67,6 +71,11 @@ class User(UserMixin, db.Model):
         if self.ranking_history:
             return self.ranking_history[-1].get("new", 1)
         return "NC"
+
+    # this is used whenever i get points that need displayed
+    @property
+    def actualPoints(self) -> float:
+        return self.points / 2 
 
     def getMatchdayPoints(self, matchday):
         return (
@@ -149,25 +158,24 @@ class User(UserMixin, db.Model):
 
             # check if user has correct score
             if(home_correct and away_correct): # correct score + results
-                prediction.points_awarded = 5
+                prediction.points_awarded = 10
                 prediction.score_points = True
-                self.points += 5
+                self.points += 10
                 self.number_of_scores += 1
                 continue # continue as max points is 5
 
             if(actual_result == predicted_result): # if predicted correct result
-                prediction.points_awarded = 2
+                prediction.points_awarded = 4
                 prediction.result_points = True
                 self.number_of_results += 1
-                self.points += 2
-
+                self.points += 4
             # checking bonuses
             
             # correct score bonus
             if(home_correct or away_correct): # bonus point for a correct score
-                prediction.points_awarded += 1
+                prediction.points_awarded += 2
                 prediction.bonus_points = True
-                self.points += 1
+                self.points += 2
 
 
             predictedHomeGoals = prediction.home_score_predicted
@@ -182,6 +190,13 @@ class User(UserMixin, db.Model):
             actualGoalCount = actualHomeGoals +actualAwayGoals
             actualGoalMargin = abs(actualHomeGoals - actualAwayGoals)
 
+            # correct winning margin bonus
+
+            if(predictedGoalMargin == actualGoalMargin and actual_result == predicted_result):
+                prediction.points_awarded += 2
+                prediction.bonus_points = True
+                self.points += 2
+
             # correct number of goals bonus
 
             if(predictedGoalCount == actualGoalCount):
@@ -189,13 +204,6 @@ class User(UserMixin, db.Model):
                 prediction.bonus_points = True
                 self.points += 1
 
-            # correct score margin bonus
-
-            if(predictedGoalMargin == actualGoalMargin):
-                prediction.points_awarded += 1
-                prediction.bonus_points = True
-                self.points += 1
-            
 class Team(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
 
