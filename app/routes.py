@@ -192,7 +192,7 @@ def user(username, matchday=None):
 
     for team in teams:
         data[team.id] = {
-        "points": 0,
+        "pts": 0,
         "gf": 0,
         "ga": 0,
         "gd": 0,
@@ -213,12 +213,12 @@ def user(username, matchday=None):
         data[away_id]["ga"] += home
 
         if(home > away):
-            data[home_id]["points"] +=3
+            data[home_id]["pts"] +=3
         elif(away >home):
-            data[away_id]["points"] +=3
+            data[away_id]["pts"] +=3
         else:
-            data[home_id]["points"] +=1
-            data[away_id]["points"] +=1
+            data[home_id]["pts"] +=1
+            data[away_id]["pts"] +=1
 
 
     # TODO: Account for top 6 split .... somehow
@@ -228,11 +228,8 @@ def user(username, matchday=None):
         data[team.id]["gd"] =  data[team.id]["gf"] -  data[team.id]["ga"]
         predictedTableData.append([team, data[team.id]])
 
-    flash(predictedTableData)
-    predictedTableData.sort(key=lambda x: (x[1]["points"],x[1]["gd"],x[1]["gf"],), reverse=True)
-    flash(predictedTableData)
-
-
+    predictedTableData.sort(key=lambda x: (x[1]["pts"],x[1]["gd"],x[1]["gf"],), reverse=True)
+  
     return render_template('user.html', user=user, games_total=games_total, scores_total=scores_total, results_total=results_total, bonus_total=bonus_total, today=today, predictedMatchdays=range(1,largestPredictedMatchday), predictedTableData=predictedTableData)
 
 @app.route('/edit_profile', methods=['GET', 'POST'])

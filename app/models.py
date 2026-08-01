@@ -10,7 +10,7 @@ from flask import url_for
 from sqlalchemy import func, JSON
 from sqlalchemy.ext.mutable import MutableList
 from pathlib import Path
-
+from flask import  flash
 
 
 # TODO: Readd email support
@@ -51,8 +51,7 @@ class User(UserMixin, db.Model):
 
     def avatar(self, size):
         # get the supposed path to a users profile picture
-        path = Path(f'profile_pics/{self.profile_pic_file}')
-
+        path = Path(f'app/static/profile_pics/{self.profile_pic_file}')
         # if a file exists at the path, return it, otherwise return a gravatar
         if(path.is_file()):
             return url_for('static',filename=f'profile_pics/{self.profile_pic_file}')

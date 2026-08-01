@@ -1,6 +1,42 @@
 <div class="card mb-3">
-    Average Prediction Table <br>
-    <i> Coming Soon! </i>
+    
+    <div class="card-header">
+    <strong> Prediction Table </strong>
+    </div>
+
+    <div class="card-body">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                <th scope="col">#</th>
+                <th scope="col">Team</th>
+                <th scope="col">Points</th>
+                <th scope="col">GD</th>
+                <th scope="col">GF</th>
+                <th scope="col">GA</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                {% for teamData in predictedTableData%}
+
+
+                <tr>
+                <th scope="row">{{loop.index}}</th>
+                <td>
+                    <img src="{{teamData[0].logo()}}" alt="Home Logo" style="width: 32px; height: 32px;">
+                    {{teamData[0].name}}
+                </td>
+                <td>{{teamData[1]["pts"]}}</td>
+                <td>{{teamData[1]["gd"]}}</td>
+                <td>{{teamData[1]["gf"]}}</td>
+                <td>{{teamData[1]["ga"]}}</td>
+                </tr>
+
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>  
 </div>
 
 <div class="card mb-3">
