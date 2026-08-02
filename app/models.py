@@ -69,10 +69,6 @@ class User(UserMixin, db.Model):
             return self.ranking_history[-1].get("new", 1)
         return "NC"
 
-    # this is used whenever i get points that need displayed
-    @property
-    def actualPoints(self) -> float:
-        return self.points / 2 
 
     #Accounts for point dividing
     def getMatchdayPoints(self, matchday) -> float:
@@ -84,7 +80,7 @@ class User(UserMixin, db.Model):
                     Prediction.user_id == self.id,
                     Game.matchday == matchday,
                 )
-            ) / 2
+            )
             or 0
         )    
     
@@ -156,24 +152,24 @@ class User(UserMixin, db.Model):
 
             # check if user has correct score
             if(home_correct and away_correct): # correct score + results
-                prediction.points_awarded = 10
+                prediction.points_awarded =5
                 prediction.score_points = True
-                self.points += 10
+                self.points += 5
                 self.number_of_scores += 1
                 continue # continue as max points is 5
 
             if(actual_result == predicted_result): # if predicted correct result
-                prediction.points_awarded = 4
+                prediction.points_awarded = 2
                 prediction.result_points = True
                 self.number_of_results += 1
-                self.points += 4
+                self.points += 2
             # checking bonuses
             
             # correct score bonus
             if(home_correct or away_correct): # bonus point for a correct score
-                prediction.points_awarded += 2
+                prediction.points_awarded += 1
                 prediction.bonus_points = True
-                self.points += 2
+                self.points += 1
 
 
             predictedHomeGoals = prediction.home_score_predicted
@@ -191,16 +187,10 @@ class User(UserMixin, db.Model):
             # correct winning margin bonus
 
             if(predictedGoalMargin == actualGoalMargin and actual_result == predicted_result):
-                prediction.points_awarded += 2
-                prediction.bonus_points = True
-                self.points += 2
-
-            # correct number of goals bonus
-
-            if(predictedGoalCount == actualGoalCount):
                 prediction.points_awarded += 1
                 prediction.bonus_points = True
                 self.points += 1
+
 
 class Team(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
