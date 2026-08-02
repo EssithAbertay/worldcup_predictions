@@ -1,0 +1,31 @@
+<table class="table table-hover">
+    <thead>
+        <tr>
+        <th scope="col">#</th>
+        <th scope="col" class="text-start">Team</th>
+        <th scope="col">Points</th>
+        <th scope="col">Record (W-L-D)</th>
+        <th scope="col">GD</th>
+        <th scope="col">GF</th>
+        <th scope="col">GA</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        {% for teamData in predictedTableData%}
+        <tr>
+        <th scope="row">{{loop.index}}</th>
+        <td class="text-start">
+            <img src="{{teamData[0].logo()}}" alt="Home Logo" style="width: 32px; height: 32px;">
+            {{teamData[0].name}}
+        </td>
+        <td>{{teamData[1]["pts"]}}</td>
+        <td>{{teamData[1]["w"]}}-{{teamData[1]["l"]}}-{{teamData[1]["d"]}}</td>
+        <td>{{teamData[1]["gd"]}}</td>
+        <td>{{teamData[1]["gf"]}}</td>
+        <td>{{teamData[1]["ga"]}}</td>
+        </tr>
+
+        {% endfor %}
+    </tbody>
+</table>

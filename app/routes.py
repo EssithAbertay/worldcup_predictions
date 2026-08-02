@@ -93,6 +93,9 @@ def index(matchday=None):
         "gf": 0,
         "ga": 0,
         "gd": 0,
+        "w": 0,
+        "l": 0,
+        "d": 0,
         }
 
         cumulativePredictionTableData[team.id] = {
@@ -100,6 +103,9 @@ def index(matchday=None):
         "gf": 0,
         "ga": 0,
         "gd": 0,
+        "w": 0,
+        "l": 0,
+        "d": 0,
         }
 
 
@@ -125,11 +131,18 @@ def index(matchday=None):
 
         if(home > away):
             cumulativePredictionTableData[home_id]["pts"] +=3
+            cumulativePredictionTableData[home_id]["w"] +=1
+            cumulativePredictionTableData[away_id]["l"] +=1
         elif(away >home):
             cumulativePredictionTableData[away_id]["pts"] +=3
+            cumulativePredictionTableData[away_id]["w"] +=1
+            cumulativePredictionTableData[home_id]["l"] +=1
         else:
             cumulativePredictionTableData[home_id]["pts"] +=1
             cumulativePredictionTableData[away_id]["pts"] +=1
+            cumulativePredictionTableData[home_id]["d"] +=1
+            cumulativePredictionTableData[away_id]["d"] +=1
+
 
     for matchPredictions in predictionsByMatch.values():
         match = matchPredictions[0].match
@@ -153,11 +166,17 @@ def index(matchday=None):
 
         if avg_home > avg_away:
             averagePredictionTableData[home_id]["pts"] += 3
+            averagePredictionTableData[home_id]["w"] +=1
+            averagePredictionTableData[away_id]["l"] +=1
         elif avg_away > avg_home:
             averagePredictionTableData[away_id]["pts"] += 3
+            averagePredictionTableData[away_id]["w"] +=1
+            averagePredictionTableData[home_id]["l"] +=1
         else:
             averagePredictionTableData[home_id]["pts"] += 1
             averagePredictionTableData[away_id]["pts"] += 1
+            averagePredictionTableData[home_id]["d"] +=1
+            averagePredictionTableData[away_id]["d"] +=1
 
 
 
@@ -298,6 +317,9 @@ def user(username, matchday=None):
         "gf": 0,
         "ga": 0,
         "gd": 0,
+        "w": 0,
+        "l": 0,
+        "d": 0,
     }
 
 
@@ -319,11 +341,17 @@ def user(username, matchday=None):
 
         if(home > away):
             data[home_id]["pts"] +=3
+            data[home_id]["w"] +=1
+            data[away_id]["l"] +=1
         elif(away >home):
             data[away_id]["pts"] +=3
+            data[away_id]["w"] +=1
+            data[home_id]["l"] +=1
         else:
             data[home_id]["pts"] +=1
             data[away_id]["pts"] +=1
+            data[home_id]["d"] +=1
+            data[away_id]["d"] +=1
 
 
     # TODO: Account for top 6 split .... somehow
