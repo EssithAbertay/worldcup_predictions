@@ -15,6 +15,8 @@ from pathlib import Path
 from PIL import Image, ImageOps
 import json
 from app.helpers import getMatchday, getNowTime, getGamesForMatchday, getUsersByPointsDesc, getUsers, getGameFromID, getUserbyUsername
+from collections import defaultdict
+from math import floor
 
 # TODO: make nowtime, matchday, matchday games, etc a seperate python file, as i keep writing the same fecking code
 
@@ -77,7 +79,105 @@ def index(matchday=None):
 
 
     # create an average table based on our predictions
+    # create a cumulative table based on our predictions
+    # both is more fun!
 
+    teams = db.session.scalars(sa.select(Team)).all()
+  
+    averagePredictionTableData = {}
+    cumulativePredictionTableData = {}
+
+    for team in teams:
+        averagePredictionTableData[team.id] = {
+        "pts": 0,
+        "gf": 0,
+        "ga": 0,
+        "gd": 0,
+        }
+
+        cumulativePredictionTableData[team.id] = {
+        "pts": 0,
+        "gf": 0,
+        "ga": 0,
+        "gd": 0,
+        }
+
+
+    predictions = db.session.scalars(sa.select(Prediction)).all()
+
+    # Group predictions by match for the average table
+    predictionsByMatch = defaultdict(list)
+
+    for prediction in predictions:
+        predictionsByMatch[prediction.game_id].append(prediction)
+
+        home_id = prediction.match.home_team_id 
+        away_id = prediction.match.away_team_id
+
+        home = prediction.home_score_predicted
+        away = prediction.away_score_predicted
+
+        cumulativePredictionTableData[home_id]["gf"] += home
+        cumulativePredictionTableData[away_id]["gf"] += away
+
+        cumulativePredictionTableData[home_id]["ga"] += away
+        cumulativePredictionTableData[away_id]["ga"] += home
+
+        if(home > away):
+            cumulativePredictionTableData[home_id]["pts"] +=3
+        elif(away >home):
+            cumulativePredictionTableData[away_id]["pts"] +=3
+        else:
+            cumulativePredictionTableData[home_id]["pts"] +=1
+            cumulativePredictionTableData[away_id]["pts"] +=1
+
+    for matchPredictions in predictionsByMatch.values():
+        match = matchPredictions[0].match
+
+        home_id = match.home_team_id
+        away_id = match.away_team_id
+
+        avg_home = floor(sum(
+            p.home_score_predicted for p in matchPredictions
+        ) / len(matchPredictions))
+
+        avg_away = floor(sum(
+            p.away_score_predicted for p in matchPredictions
+        ) / len(matchPredictions))
+
+        averagePredictionTableData[home_id]["gf"] += avg_home
+        averagePredictionTableData[away_id]["gf"] += avg_away
+
+        averagePredictionTableData[home_id]["ga"] += avg_away
+        averagePredictionTableData[away_id]["ga"] += avg_home
+
+        if avg_home > avg_away:
+            averagePredictionTableData[home_id]["pts"] += 3
+        elif avg_away > avg_home:
+            averagePredictionTableData[away_id]["pts"] += 3
+        else:
+            averagePredictionTableData[home_id]["pts"] += 1
+            averagePredictionTableData[away_id]["pts"] += 1
+
+
+
+    # TODO: Account for top 6 split .... somehow
+    cumulativePredictedTableList = []
+
+    for team in teams:
+        cumulativePredictionTableData[team.id]["gd"] =  cumulativePredictionTableData[team.id]["gf"] -  cumulativePredictionTableData[team.id]["ga"]
+        cumulativePredictedTableList.append([team, cumulativePredictionTableData[team.id]])
+
+    cumulativePredictedTableList.sort(key=lambda x: (x[1]["pts"],x[1]["gd"],x[1]["gf"],), reverse=True)
+
+
+    averagePredictedTableList = []
+
+    for team in teams:
+        averagePredictionTableData[team.id]["gd"] = (averagePredictionTableData[team.id]["gf"]- averagePredictionTableData[team.id]["ga"])
+        averagePredictedTableList.append([team, averagePredictionTableData[team.id]])
+
+    averagePredictedTableList.sort(key=lambda x: (x[1]["pts"],x[1]["gd"],x[1]["gf"],),reverse=True,)
 
 
     context = {
@@ -87,7 +187,9 @@ def index(matchday=None):
         "matchdayGames": matchdayGames,
         "matchdayPredictions": matchdayPredictions,
         "matchdayPointsEarned": matchdayPointsEarned,
-        "nowTime": getNowTime()
+        "nowTime": getNowTime(),
+        "cumulativeTable": cumulativePredictedTableList,
+        "averageTable": averagePredictedTableList
     }
 
     return render_template('index.html', **context)
