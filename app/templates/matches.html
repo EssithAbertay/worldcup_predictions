@@ -37,21 +37,33 @@
     <div id="postponed_matches" class=" card text-bg-warning mb-3">
         <!--Putting the Postponed games into a section here, as they won't show up with the rest of this matchdays games-->
 
-        <div class = "card-header">
-            <strong>Postponed/Rescheduled Matches</strong>
+        <div class = "card-header" data-bs-toggle="collapse" data-bs-target="#postponedGames" aria-expanded="true" aria-controls="postponedGames">
+            <strong>Postponed/Rescheduled Matches</strong> 
         </div>
         
-        <div class = "card-body text-bg-light">
-            {% for prediction in form.predictions %}
-                {% if prediction.status == "postponed" %}
-                    {% set ns.curr_date = prediction.kickoff_time.date() %}
+        <div class="collapse show" id="postponedGames">
+            <div class = "card-body text-bg-light">
+                {% for prediction in form.predictions %}
+                    {% if prediction.status == "postponed" %}
+                        {% set ns.curr_date = prediction.original_kickoff_time.date() %}
 
-                    <h5 class="m-0 mb-3 p-0 d-flex justify-content-start"><span class = "badge text-bg-secondary me-1"> From Matchday {{prediction.matchday}} </span><span class = "badge text-bg-secondary "> {{ns.curr_date.strftime("%d %B, %Y")}}  </span></h5>
-                   
-                    {% set postponed_section = true %}
-                    {% include 'components/_to_predict.html' with context %}
-                {% endif %}
-            {% endfor %}
+                        <h5 class="m-0 mb-3 p-0 d-flex justify-content-start"><span class = "badge text-bg-secondary "> New Date: 
+                            
+                        {% if prediction.original_kickoff_time.date() == prediction.kickoff_time.date()%} <!--If the kickoff hasn't been updated yet-->
+                        Unkown! </br> Check again later 
+                        {% else %}
+                        {{prediction.kickoff_time.date().strftime("%d %B, %Y")}}  
+                        {% endif%}
+                        </span></h5>
+                    
+                        <h5 class="m-0 mb-3 p-0 d-flex justify-content-start"><span class = "badge text-bg-secondary me-1"> From Matchday {{prediction.matchday}} </span><span class = "badge text-bg-secondary "> {{ns.curr_date.strftime("%d %B, %Y")}}  </span></h5>
+                    
+
+                        {% set postponed_section = true %}
+                        {% include 'components/_to_predict.html' with context %}
+                    {% endif %}
+                {% endfor %}
+            </div>
         </div>
     </div>
     {% endif %}

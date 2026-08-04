@@ -494,6 +494,7 @@ def matches(matchday=None):
 
             entry.game_id.data = game.id
             entry.kickoff_time = game.kickoff
+            entry.original_kickoff_time = game.original_kickoff
             entry.home_team = game.home_team
             entry.away_team = game.away_team
             entry.status = game.status
@@ -631,9 +632,8 @@ def adminMatchesAdd():
 
     if request.method == 'POST':
 
-
         if addGameForm.submit_game.data and addGameForm.validate():
-            game = Game(home_team_id=addGameForm.home_team.data, away_team_id=addGameForm.away_team.data, kickoff=addGameForm.kickoff.data, matchday=addGameForm.matchday.data)
+            game = Game(home_team_id=addGameForm.home_team.data, away_team_id=addGameForm.away_team.data,original_kickoff=addGameForm.kickoff.data, kickoff=addGameForm.kickoff.data, matchday=addGameForm.matchday.data)
             db.session.add(game)
             db.session.commit()
             return redirect(url_for('adminMatchesAdd'))
@@ -672,6 +672,9 @@ def adminMatchesEdit():
 
         if (editGameForm.status.data != "none"):
             gameToEdit.status = editGameForm.status.data
+
+            if (editGameForm.status.data == "postponed"):
+                gameToEdit.original_kickoff = gameToEdit.kickoff
            
         db.session.commit()
 
@@ -717,6 +720,7 @@ def adminResults():
 
                 g.home_score = field.home_score.data
                 g.away_score = field.away_score.data
+                g.status = "complete"
                 flash('registered result')
 
             db.session.commit()

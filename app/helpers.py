@@ -54,7 +54,6 @@ def getUserByID(userID) -> User:
 def getUserbyUsername(username) -> User:
     return db.first_or_404(sa.select(User).where(User.username == username))
 
-
 # might not work but until I use it we won't know 
 def getUserPredictions(userID) -> list[Prediction]:
     return db.first_or_404(sa.select(User).where(User.id == userID)).predictions

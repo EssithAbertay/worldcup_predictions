@@ -106,7 +106,7 @@ class AdminEditGameForm(FlaskForm):
     home_score = IntegerField('New Home Score', validators=[Optional(), NumberRange(min=0, max=99)])
     away_score = IntegerField('New Away Score', validators=[Optional(), NumberRange(min=0, max=99)])
     kickoff = DateTimeLocalField('New Kickoff DateTime',  format='%Y-%m-%dT%H:%M', validators=[Optional()])
-    status = SelectField('New Status', choices=[("none","None"),("scheduled","Scheduled"),("postponed","Postponed"),("completed","Completed")], validators=[Optional()])
+    status = SelectField('New Status', choices=[("none","None"),("scheduled","Scheduled"),("postponed","Postponed"),("complete","Complete")], validators=[Optional()])
     submitGameEdit = SubmitField('Edit Game')
 
 class AdminResultForm(FlaskForm):
