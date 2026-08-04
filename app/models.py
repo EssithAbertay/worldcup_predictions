@@ -223,7 +223,7 @@ class Game(db.Model):
     home_score: so.Mapped[Optional[int]] = so.mapped_column()
     away_score: so.Mapped[Optional[int]] = so.mapped_column()
     kickoff: so.Mapped[datetime] = so.mapped_column(index=True)
-    original_kickoff: so.Mapped[datetime] = so.mapped_column(index=True)
+    original_kickoff: so.Mapped[datetime] = so.mapped_column()
     matchday: so.Mapped[int] = so.mapped_column(index=True)
 
     status: so.Mapped[str] = so.mapped_column(default="scheduled")
