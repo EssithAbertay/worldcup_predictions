@@ -58,7 +58,6 @@
                     
                         <h5 class="m-0 mb-3 p-0 d-flex justify-content-start"><span class = "badge text-bg-secondary me-1"> From Matchday {{prediction.matchday}} </span><span class = "badge text-bg-secondary "> {{ns.curr_date.strftime("%d %B, %Y")}}  </span></h5>
                     
-
                         {% set postponed_section = true %}
                         {% include 'components/_to_predict.html' with context %}
                     {% endif %}

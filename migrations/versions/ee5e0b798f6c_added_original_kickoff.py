@@ -22,23 +22,6 @@ def upgrade():
         batch_op.add_column(sa.Column('original_kickoff', sa.DateTime(), nullable=True))
         batch_op.create_index(batch_op.f('ix_game_original_kickoff'), ['original_kickoff'], unique=False)
 
- # Backfill existing rows
-    op.execute("""
-        UPDATE game
-        SET original_kickoff = kickoff
-    """)
-
-    with op.batch_alter_table("game") as batch_op:
-        batch_op.alter_column(
-            "original_kickoff",
-            existing_type=sa.DateTime(),
-            nullable=False,
-        )
-        batch_op.create_index(
-            batch_op.f("ix_game_original_kickoff"),
-            ["original_kickoff"],
-            unique=False,
-        )
     # ### end Alembic commands ###
 
 

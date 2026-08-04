@@ -466,7 +466,7 @@ def matches(matchday=None):
 
     postponed = False
 
-    for game in games:
+    for game in games[:]:
         if game.status == "postponed":
             postponed = True
             games.remove(game)
