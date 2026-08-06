@@ -223,8 +223,8 @@ def login():
         if logging_in_user is None or not logging_in_user.check_password(form.password.data):
             flash('Invalid username and/or password!')
             return redirect(url_for('login'))
-        #login_user(logging_in_user, remember=form.remember_me.data)
-        login_user(logging_in_user, remember=False) # removed rememebr me for now
+        login_user(logging_in_user, remember=form.remember_me.data)
+        #login_user(logging_in_user, remember=False) # removed rememebr me for now
         next_page = request.args.get('next')
         if not next_page or urlsplit(next_page).netloc != '':
             next_page = url_for('index')
