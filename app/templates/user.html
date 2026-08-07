@@ -49,33 +49,30 @@
         <div class="tab-content">
             <div class="tab-pane show active text-center" id="predictions">
   
-               <div id="carouselExample" class="carousel slide">
+               <div id="predictionCarousel" class="carousel slide">
                 <div class="carousel-inner">
 
                     {% for x in predictedMatchdays %}
-
-                    {% if x == matchday %}
+                    {% if x == 1%}
                     <div class="carousel-item active">
-                    {% else %}
-                        <div class="carousel-item">
-                    {% endif %}
-                            {% for prediction in user.getMatchdayPredictions(x) %}
-                                <div class = "mt-2">
-                                    {% if prediction.match.status == "completed" or prediction.author.username == current_user.username %}
-                                        {% include 'components/_prediction.html' %} 
-                                    {% else %}
-                                        {% include 'components/_hidden_prediction.html'%}
-                                    {% endif %}
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% endfor%}
+                    {% else%}
+                      <div class="carousel-item">
+                    {% endif%}
 
+                    {% for prediction in user.getMatchdayPredictions(x) %}   
+                        {% if prediction.match.status == "completed" or current_user.id == user.id %}
+                        {% include 'components/_prediction.html'%}   
+                        {% else %}    
+                        {% include 'components/_hidden_prediction.html'%}         
+                        {% endif %}  
+                    {%endfor%}
+                    </div>
+                    {%endfor%}
                 </div>
-                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+                <button class="carousel-control-prev" type="button" data-bs-target="#predictionCarousel" data-bs-slide="prev">
                     <span class="visually-hidden">Previous</span>
                 </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+                <button class="carousel-control-next" type="button" data-bs-target="#predictionCarousel" data-bs-slide="next">
                     <span class="visually-hidden">Next</span>
                 </button>
                 </div>

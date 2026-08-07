@@ -293,7 +293,6 @@ def user(username, matchday=None):
     # super unsafe method of getting the machdays user has predicted, as ignores that user might've missed a matchday ...somehow also ignores that user might not have any predictions
     largestPredictedMatchday = user.predictions[-1].match.matchday + 1 or 0
 
-
     # this is so stupid
     query = sa.select(User)
     users = db.session.scalars(query).all()
@@ -321,7 +320,6 @@ def user(username, matchday=None):
         "l": 0,
         "d": 0,
     }
-
 
     for prediction in user.predictions:
         if(prediction.match.kickoff > getNowTime() and current_user.id != user.id):
@@ -353,7 +351,6 @@ def user(username, matchday=None):
             data[home_id]["d"] +=1
             data[away_id]["d"] +=1
 
-
     # TODO: Account for top 6 split .... somehow
     predictedTableData = []
 
@@ -362,7 +359,8 @@ def user(username, matchday=None):
         predictedTableData.append([team, data[team.id]])
 
     predictedTableData.sort(key=lambda x: (x[1]["pts"],x[1]["gd"],x[1]["gf"],), reverse=True)
-  
+
+
     return render_template('user.html', user=user, games_total=games_total, scores_total=scores_total, results_total=results_total, bonus_total=bonus_total, today=today, predictedMatchdays=range(1,largestPredictedMatchday), predictedTableData=predictedTableData)
 
 @app.route('/edit_profile', methods=['GET', 'POST'])

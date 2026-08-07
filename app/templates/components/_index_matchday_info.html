@@ -27,43 +27,54 @@
     <div class="card-body">
         {% for game in matchdayGames %}
             <div class="card  {{ 'mb-0' if loop.last else 'mb-3' }} p-1 pt-2" data-bs-toggle="collapse" data-bs-target="#collapse{{game.id}}" aria-expanded="false" aria-controls="collapse{{rank}}">                 
-                <div class="d-flex justify-content-center align-items-center gap-2 fs-4">
-                    <img class="align-self-center" src="{{game.home_team.logo()}}" alt="Home Logo" style="width: 64px; height: 64px;">
-
-                        <span class="badge bg-secondary-subtle text-dark m-0">
-                            {% if game.home_score is none or game.away_score is none %}
-                                {{ game.kickoff.strftime('%H:%M') }}
-                            {%else%}
-                                {{ game.home_score }} - {{ game.away_score }}
-                            {%endif%}
-                        </span>
-
-                    <img class="align-self-center" src="{{game.away_team.logo()}}" alt="Away Logo" style="width: 64px; height: 64px;">
-                </div>
-
+               
+                {% include 'components/_game.html'%}
+               
                 <!--{% set avg_home = game.get_average_home_score() %}
                 {% set avg_away = game.get_average_away_score() %}
 
                 <span>{{avg_home | float | round(2) if avg_home is not none else "?" }} - {{avg_away | float | round(2) if avg_away is not none else "?"}}</span>-->
 
                 <div class="container d-flex w-100 p-1 align-items-center" >
-                    <div class="bg-primary rounded-start text-light border border-end-0" style="width: {{matchdayPredictions[loop.index-1][0]}}%; min-height: 26px;">
+                    
+                    {% if matchdayPredictions[loop.index-1][0] > 0 %}
+                    <div class="bg-primary rounded-start text-light border border-end-0
+                    {% if (matchdayPredictions[loop.index-1][1] == 0 and matchdayPredictions[loop.index-1][2] == 0) %}
+                    rounded-end
+                    {% endif %}
+                    " style="width: {{matchdayPredictions[loop.index-1][0]}}%; min-height: 26px;">
                         {% if matchdayPredictions[loop.index-1][0] >= 12 %}
                         <span>  {{matchdayPredictions[loop.index-1][0]}}%</span>
                         {% endif %}
                     </div>
-                    
-                    <div class="bg-secondary text-light border border-start-0 border-end-0"  style="width: {{matchdayPredictions[loop.index-1][2]}}%; min-height: 26px;">
+                    {% endif %}
+
+                    {% if matchdayPredictions[loop.index-1][2] > 0 %}
+                    <div class="bg-secondary text-light border border-start-0 border-end-0
+                    {% if (matchdayPredictions[loop.index-1][0] == 0 ) %}
+                    rounded-start
+                    {% endif %}
+                    {% if (matchdayPredictions[loop.index-1][1] == 0)%}
+                    rounded-end
+                    {% endif %}
+                    "  style="width: {{matchdayPredictions[loop.index-1][2]}}%; min-height: 26px;">
                         {% if matchdayPredictions[loop.index-1][2] >= 12 %}
                         <span>  {{matchdayPredictions[loop.index-1][2]}}% </span>
                         {% endif %}
                     </div>
+                    {% endif %}
 
-                    <div class="bg-danger rounded-end text-light border border-start-0" style="width: {{matchdayPredictions[loop.index-1][1]}}%; min-height: 26px;">
+                    {% if matchdayPredictions[loop.index-1][1] > 0 %}
+                    <div class="bg-danger rounded-end text-light border border-start-0
+                    {% if (matchdayPredictions[loop.index-1][0] == 0 and matchdayPredictions[loop.index-1][2] == 0) %}
+                    rounded-start
+                    {% endif %}
+                    " style="width: {{matchdayPredictions[loop.index-1][1]}}%; min-height: 26px;">
                         {% if matchdayPredictions[loop.index-1][1] >= 12 %}
                         <span>  {{matchdayPredictions[loop.index-1][1]}}%</span>
                         {% endif %}
                     </div>
+                    {% endif %}
                 </div>
 
                 <div class="collapse" id="collapse{{game.id}}">

@@ -1,0 +1,34 @@
+<div class="mb-3">
+    <div class="d-flex justify-content-center align-items-center gap-2">
+
+
+        <div class="d-flex flex-column align-items-center" style="width: 100px;">
+            <img src="{{game.home_team.logo()}}" alt="Home Logo" style="width: 64px; height: 64px;">
+            <p class="d-flex align-items-center text-break text-muted mb-0 lh-1">{{game.home_team.name}}</p>
+        </div>
+
+          {% if game.status == "postponed"%}
+                     <div class="text-center">
+                    <span class="badge bg-warning text-dark">
+                        Postponed
+                    </span>
+                </div>
+            {%else%}
+                <span class="badge bg-secondary-subtle text-dark m-0 fs-6">
+             
+            {% if game.home_score is none or game.away_score is none %}
+                {{ game.kickoff.strftime('%H:%M') }}
+            {%else%}
+                {{ game.home_score }} - {{ game.away_score }}
+            {%endif%}
+            {% endif%}
+        </span>
+
+
+        <div class="d-flex flex-column align-items-center" style="width: 100px;">
+            <img class="align-self-center" src="{{game.away_team.logo()}}" alt="Away Logo" style="width: 64px; height: 64px;">
+            <p class="d-flex align-items-center text-break text-muted mb-0 lh-1">{{game.away_team.name}}</p> 
+        </div>
+
+    </div>
+</div>
