@@ -48,15 +48,20 @@
 
         <div class="tab-content">
             <div class="tab-pane show active text-center" id="predictions">
-  
-               <div id="predictionCarousel" class="carousel slide">
+                
+                <h3 class ="m-0"id="currentMatchday">
+                    Matchday 1
+                </h3>
+                <p class = "subtitle text-muted m-0">Tap to cycle!</p>
+          
+                <div id="predictionCarousel" class="carousel slide">
                 <div class="carousel-inner">
 
                     {% for x in predictedMatchdays %}
-                    {% if x == 1%}
-                    <div class="carousel-item active">
+                    {% if x == 1 %}
+                    <div class="carousel-item active" data-matchday="{{ x }}">
                     {% else%}
-                      <div class="carousel-item">
+                      <div class="carousel-item" data-matchday="{{ x }}">
                     {% endif%}
 
                     {% for prediction in user.getMatchdayPredictions(x) %}   
@@ -76,6 +81,7 @@
                     <span class="visually-hidden">Next</span>
                 </button>
                 </div>
+           
             </div>
 
             <div class="tab-pane" id="stats">
@@ -114,6 +120,18 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    const carousel = document.getElementById("predictionCarousel");
+    const matchdayDisplay = document.getElementById("currentMatchday");
+
+    carousel.addEventListener("slid.bs.carousel", function (event) {
+        const matchday = event.relatedTarget.dataset.matchday;
+        matchdayDisplay.textContent = `Matchday ${matchday}`;
+    });
+});
+</script>
 
 {% endblock %}
 
