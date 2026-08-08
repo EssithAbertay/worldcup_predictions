@@ -1,11 +1,11 @@
-from flask import render_template, flash, redirect, url_for, request, abort
+from flask import render_template, flash, redirect, url_for, request, abort, send_from_directory
 from urllib.parse import urlsplit
 from app import app
 from app.forms import LoginForm, RegistrationForm, AdminGameSubmission, EditUsernameForm, PredictionForm, AdminResultForm, AdminRecalculatePoints, AdminTeamSubmission, EditPicForm, AdminEditGameForm, EditDisplayNameForm, EditUserColourForm
 from flask_login import current_user, login_user, logout_user, login_required
 import sqlalchemy as sa
 from app import db
-from app.models import User, Game, Prediction, Team
+from app.models import User, Game, Prediction, Team, PushSubscription
 from datetime import datetime, date, timedelta, timezone
 from sqlalchemy import func
 from sqlalchemy.orm import selectinload
@@ -14,9 +14,13 @@ from uuid import uuid4
 from pathlib import Path
 from PIL import Image, ImageOps
 import json
-from app.helpers import getMatchday, getNowTime, getGamesForMatchday, getUsersByPointsDesc, getUsers, getGameFromID, getUserbyUsername
+from app.helpers import getMatchday, getNowTime, getGamesForMatchday, getUsersByPointsDesc, getUsers, getGameFromID, getUserbyUsername, sendPushNotification, sendPushToUser
 from collections import defaultdict
 from math import floor
+
+
+import os
+from pywebpush import webpush, WebPushException
 
 # TODO: make nowtime, matchday, matchday games, etc a seperate python file, as i keep writing the same fecking code
 
@@ -827,3 +831,88 @@ def adminUsers():
 
 
     return render_template('admin/admin_users.html', title='Admin Users', recalculate_points=recalculate_points)
+
+@app.route('/service-worker.js')
+def service_worker():
+    return send_from_directory('static', 'service-worker.js')
+
+@app.route('/vapid-public-key')
+def vapid_public_key():
+    return app.config['VAPID_PUBLIC_KEY']
+
+@app.route('/save-push-subscription', methods=['POST'])
+@login_required
+def save_push_subscription():
+    data = request.get_json()
+
+    endpoint = data['endpoint']
+    p256dh = data['keys']['p256dh']
+    auth = data['keys']['auth']
+
+    subscription = db.session.scalar(
+        sa.select(PushSubscription).where(
+            PushSubscription.endpoint == endpoint
+        )
+    )
+
+    if subscription:
+        subscription.user_id = current_user.id
+        subscription.p256dh = p256dh
+        subscription.auth = auth
+    else:
+        subscription = PushSubscription(
+            user_id=current_user.id,
+            endpoint=endpoint,
+            p256dh=p256dh,
+            auth=auth
+        )
+        db.session.add(subscription)
+
+    db.session.commit()
+
+    return {'success': True}
+
+@app.route('/test-push')
+@login_required
+def test_push():
+    success = sendPushToUser(
+        current_user.id,
+        "World Cup Predictions",
+        "This is a test notification!"
+    )
+
+    if success:
+        return {"success": True}
+
+    return {"error": "No valid push subscriptions found"}, 404
+
+@app.route('/test-user')
+@login_required
+def test_user():
+    print("TEST USER ROUTE REACHED")
+    print("USER:", current_user)
+    print("USER ID:", current_user.id)
+
+    return {
+        'user_id': current_user.id,
+        'username': current_user.username
+    }
+
+@app.route('/delete-push-subscription')
+@login_required
+def delete_push_subscription():
+    subscriptions = db.session.scalars(
+        sa.select(PushSubscription).where(
+            PushSubscription.user_id == current_user.id
+        )
+    ).all()
+
+    for subscription in subscriptions:
+        db.session.delete(subscription)
+
+    db.session.commit()
+
+    return {
+        'success': True,
+        'deleted': len(subscriptions)
+    }

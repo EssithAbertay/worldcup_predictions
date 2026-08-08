@@ -34,6 +34,8 @@ class User(UserMixin, db.Model):
     colour: so.Mapped[str] = so.mapped_column(sa.String(7),default="#e82a2a")
 
     predictions: so.Mapped[list['Prediction']] = so.relationship(back_populates='author')
+
+    push_subscriptions: so.Mapped[list['PushSubscription']] = so.relationship( back_populates='user',cascade='all, delete-orphan')
     
     def __repr__(self):
         return '<User {}>'.format(
@@ -294,6 +296,16 @@ class League(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
     #Join code
     #Array of users
+
+class PushSubscription(db.Model):
+    id: so.Mapped[int] = so.mapped_column(primary_key=True)
+
+    user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), nullable=False)
+    endpoint: so.Mapped[str] = so.mapped_column(sa.Text,unique=True,nullable=False)
+    p256dh: so.Mapped[str] = so.mapped_column( sa.Text,nullable=False)
+    auth: so.Mapped[str] = so.mapped_column(sa.Text,nullable=False)
+
+    user: so.Mapped['User'] = so.relationship(back_populates='push_subscriptions')
 
 @login.user_loader
 def load_user(id):

@@ -2,12 +2,16 @@ from app import app
 from datetime import datetime, date, timedelta, timezone
 from zoneinfo import ZoneInfo
 from app import db
-from app.models import Game, User, Prediction
+from app.models import Game, User, Prediction, PushSubscription
 import sqlalchemy as sa
 from app import db
 from sqlalchemy import func
 from flask import request
 from sqlalchemy.orm import selectinload
+
+import json
+import os
+from pywebpush import webpush, WebPushException
 
 def getMatchday(matchday=None) -> int:
     # if matchday is provided from route then just return that
@@ -60,3 +64,60 @@ def getUserPredictions(userID) -> list[Prediction]:
 
 def getGameFromID(gameID) -> Game:
     return db.first_or_404(sa.select(Game).where(Game.id == gameID))
+
+def sendPushNotification(subscription, title, message):
+    push_subscription = {
+        "endpoint": subscription.endpoint,
+        "keys": {
+            "p256dh": subscription.p256dh,
+            "auth": subscription.auth
+        }
+    }
+
+    try:
+        webpush(
+            subscription_info=push_subscription,
+            data=json.dumps({
+                "title": title,
+                "body": message
+            }),
+            vapid_private_key=os.environ["VAPID_PRIVATE_KEY"],
+            vapid_claims={
+                "sub": os.environ["VAPID_SUBJECT"]
+            }
+        )
+
+        return True
+
+    except WebPushException as e:
+        print("Push notification failed:", e)
+
+        if e.response is not None:
+            print("Status:", e.response.status_code)
+
+            # Subscription has expired / is no longer valid
+            if e.response.status_code == 410:
+                print("Removing expired push subscription")
+
+                db.session.delete(subscription)
+                db.session.commit()
+
+        return False
+
+def sendPushToUser(user_id, title, message):
+    subscriptions = db.session.scalars(
+        sa.select(PushSubscription).where(
+            PushSubscription.user_id == user_id
+        )
+    ).all()
+
+    if not subscriptions:
+        return False
+
+    success = False
+
+    for subscription in subscriptions:
+        if sendPushNotification(subscription, title, message):
+            success = True
+
+    return success
