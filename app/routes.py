@@ -486,12 +486,13 @@ def matches(matchday=None):
 
     missedGames= db.session.scalars(sa.select(Game).where(Game.status == "postponed")).all()
 
-    if (missedGames == ''):
+    if (missedGames != ''):
         postponed = True
 
 
     if request.method == 'GET':
         for game in games +  missedGames: # prepopulate all the games
+            flash(game)
             entry = form.predictions.append_entry()
 
             entry.game_id.data = game.id
@@ -717,7 +718,7 @@ def adminResults():
             for field in addResultsForm.results:
                 g = db.session.get(Game, field.game_id.data)
 
-                if field.home_score is None and field.away_score is None:
+                if field.home_score.data is None and field.away_score.data is None:
                     continue
 
                 g.home_score = field.home_score.data

@@ -10,8 +10,6 @@ from flask import url_for
 from sqlalchemy import func, JSON
 from sqlalchemy.ext.mutable import MutableList
 
-
-
 # TODO: Readd email support
 # TODO: Add display names
 # TODO: Add leagues, use ranking history in user for global ranks, store local ranking history within custom league
