@@ -51,7 +51,6 @@ def index(matchday=None):
         home = 0
         away = 0
         draw = 0
-
         for prediction in game.predictions:
             if(prediction.home_score_predicted > prediction.away_score_predicted):
                 home += 1
@@ -655,7 +654,6 @@ def adminMatchesAdd():
             return redirect(url_for('adminMatchesAdd'))
         else:
             print(addGameForm.errors)
-
 
     return render_template('admin/add_match.html', title='Add Matches', addGameForm=addGameForm)
 

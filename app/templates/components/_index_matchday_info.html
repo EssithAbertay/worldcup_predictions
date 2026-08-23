@@ -84,7 +84,7 @@
                                     
                             <img src="{{ prediction.author.avatar(48) }}" alt="User Avatar" class="m-0 border border-secondary rounded align-self-center" style="width: 48px; height: 48px;">
                             
-                            {% if prediction.match.kickoff <= nowTime or prediction.author.username == current_user.username %}
+                            {% if prediction.match.status == "completed" or prediction.author.username == current_user.username %}
                                 <div class="border rounded p-1">
                                     <img class="align-self-center" src="{{prediction.match.home_team.logo()}}" alt="Home Logo" style="width: 36px; height: 36px;">
 

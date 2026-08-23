@@ -65,7 +65,8 @@
                     {% endif%}
 
                     {% for prediction in user.getMatchdayPredictions(x) %}   
-                        {% if prediction.match.status == "completed" or current_user.id == user.id %}
+                    {{prediction.match.status}}
+                        {% if prediction.match.status == "complete" or current_user.id == user.id %}
                         {% include 'components/_prediction.html'%}   
                         {% else %}    
                         {% include 'components/_hidden_prediction.html'%}         
