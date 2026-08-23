@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect, url_for, request, abort, send_from_directory
+from flask import render_template, flash, redirect, url_for, request, abort, send_from_directory, session
 from urllib.parse import urlsplit
 from app import app
 from app.forms import LoginForm, RegistrationForm, AdminGameSubmission, EditUsernameForm, PredictionForm, AdminResultForm, AdminRecalculatePoints, AdminTeamSubmission, EditPicForm, AdminEditGameForm, EditDisplayNameForm, EditUserColourForm
@@ -632,12 +632,26 @@ def adminMatchesAdd():
     addGameForm.home_team.choices = [(t.id, t.name) for t in teams]
     addGameForm.away_team.choices = [(t.id, t.name) for t in teams]
 
+
+    if request.method == 'GET':
+        # Restore the previous matchday and kickoff
+        if 'previous_matchday' in session:
+            addGameForm.matchday.data = session['previous_matchday']
+
+        if 'previous_kickoff' in session:
+            addGameForm.kickoff.data = session['previous_kickoff']
+
+
     if request.method == 'POST':
 
         if addGameForm.submit_game.data and addGameForm.validate():
             game = Game(home_team_id=addGameForm.home_team.data, away_team_id=addGameForm.away_team.data,original_kickoff=addGameForm.kickoff.data, kickoff=addGameForm.kickoff.data, matchday=addGameForm.matchday.data)
             db.session.add(game)
             db.session.commit()
+            flash("Game Saved!")
+            session['previous_matchday'] = addGameForm.matchday.data
+            session['previous_kickoff'] = addGameForm.kickoff.data
+            
             return redirect(url_for('adminMatchesAdd'))
         else:
             print(addGameForm.errors)
