@@ -492,7 +492,6 @@ def matches(matchday=None):
 
     if request.method == 'GET':
         for game in games +  missedGames: # prepopulate all the games
-            flash(game)
             entry = form.predictions.append_entry()
 
             entry.game_id.data = game.id
