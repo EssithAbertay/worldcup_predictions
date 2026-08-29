@@ -1,13 +1,9 @@
-
-{% set rankInfo = namespace(current_rank = user.currentRank ) %}
-
-
 <div class="card bg-light mb-1">
     <div class="card-body">
         <div class="row justify-content-center align-items-center">
             
             <div class="col-1 fs-6 p-0 me-1">
-                {{ rankInfo.current_rank}}.
+                {{ user.ranking_history[-1]["new"]}}.
             </div>
 
             <div class="col-3 fs-6 p-0 ms-1">
@@ -16,7 +12,9 @@
             
             <div class="col fs-5 p-0 text-start text-truncate">
                 <img class="border border-secondary rounded" src="{{ user.avatar(48) }}" alt="User Avatar" style="width: 36px; height: 36px;">
-
+                
+                <div style="width: 10px; height:20px; background-color: {{user.colour}}"></div>
+                
                 <a href="{{ url_for('user', username=user.username) }}"> {{user.display_name}}</a>
             </div>
            
