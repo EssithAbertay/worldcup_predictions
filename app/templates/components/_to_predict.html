@@ -12,22 +12,6 @@
             </div>
             
             <div class="d-flex align-items-center gap-1  ">
-                {% if not postponed_section and prediction.status == "postponed" %}
-
-                <div class="text-center">
-                    <span class="badge bg-warning text-dark">
-                        Postponed
-                    </span>
-
-                    <div class="small text-muted mt-2">
-                        Prediction available in the
-                        <a href="#postponed_matches"><strong>Postponed/Rescheduled Matches</strong></a>
-                        section above
-                    </div>
-                </div>
-
-                {% else %}
-                
                 <div>
                     <button class="btn" type="button" onclick="changeScore(1, 'home', {{prediction.game_id.data}})">
                         <i class="fs-3 bi bi-plus-circle"></i>
@@ -55,8 +39,6 @@
                         <i class="fs-3 bi bi-dash-circle"></i>
                     </button>
                 </div>
-            
-                {%endif%}
             </div>
 
             <div class="d-flex flex-column align-items-center" style="width: 100px;">

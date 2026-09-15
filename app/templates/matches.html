@@ -34,7 +34,6 @@
     {% set ns = namespace(curr_date=None) %}
     
     {% for prediction in form.predictions %}       
-            {% set postponed_section = false %}
             {% include 'components/_to_predict.html' with context %}
     {% endfor %}
 
