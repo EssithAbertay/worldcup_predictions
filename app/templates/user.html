@@ -103,7 +103,7 @@
                 <hr>
                 {% for prediction in user.predictions %}
                 <div class = "mt-2">
-                    {% if prediction.match.status == "completed" or prediction.author.username == current_user.username %}
+                    {% if prediction.match.status == "complete" or prediction.author.username == current_user.username %}
                         {% include 'components/_prediction.html' %} 
                     {% else %}
                         {% include 'components/_hidden_prediction.html'%}
