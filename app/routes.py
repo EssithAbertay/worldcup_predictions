@@ -14,7 +14,7 @@ from uuid import uuid4
 from pathlib import Path
 from PIL import Image, ImageOps
 import json
-from app.helpers import getMatchday, getNowTime, getGamesForMatchday, getUsersByPointsDesc, getUsers, getGameFromID, getUserbyUsername, sendPushNotification, sendPushToUser
+from app.helpers import getMatchday, getNowTime, getGamesForMatchday, getUsersByPointsDesc, getUsers, getGameFromID, getUserbyUsername, sendPushNotification, sendPushToUser, getGamesForDate, getDate, getNextGameDate, getPreviousDate, getNextDate
 from collections import defaultdict
 from math import floor
 
@@ -456,21 +456,22 @@ def edit_profile():
     return render_template('edit_profile.html', title='Edit Profile', username_form=username_form, profile_form = profile_form, displayNameForm=displayNameForm,userColourForm=userColourForm)
 
 @app.route('/matches', methods=['GET','POST'])
-@app.route('/matches/matchday-<int:matchday>', methods=['GET','POST'])
+@app.route('/matches/<date>', methods=['GET','POST'])
 @login_required
-def matches(matchday=None):
-    nowTime = getNowTime()
-    matchday = getMatchday(matchday)
-    lastMatchday = db.session.scalar(sa.select(sa.func.max(Game.matchday))) # maybe make this a helper too?
-    
-    games = getGamesForMatchday(matchday) # Need to remove all entries that are postponed from this, as otherwise get double filed when missed games are added
+def matches(date=None):
 
-    postponed = False
+    if date is None:
+        date = getDate(date)
+        date = getNextGameDate(date)
+    else:
+        date = datetime.fromisoformat(date).date()
 
-    for game in games[:]:
-        if game.status == "postponed":
-            postponed = True
-            games.remove(game)
+    previous_date = getPreviousDate(date)
+    next_date = getNextDate(date)
+
+    # we want to get what today is and what games are next based on date!
+    games = getGamesForDate(date) # Need to remove all entries that are postponed from this, as otherwise get double filed when missed games are added
+
 
     predictions =  db.session.scalars(sa.select(Prediction).where(Prediction.user_id == current_user.id)).all()
 
@@ -481,16 +482,8 @@ def matches(matchday=None):
 
     form = PredictionForm()
 
-    # get games that were postponed in the past, or were missed for some reason, i.e. rescheduled due to cup games, could also just consider them postponed? might be easier
-
-    missedGames= db.session.scalars(sa.select(Game).where(Game.status == "postponed")).all()
-
-    if (missedGames != ''):
-        postponed = True
-
-
     if request.method == 'GET':
-        for game in games +  missedGames: # prepopulate all the games
+        for game in games: # prepopulate all the games
             entry = form.predictions.append_entry()
 
             entry.game_id.data = game.id
@@ -507,7 +500,7 @@ def matches(matchday=None):
             if existing_prediction:
                 entry.home_score.data = existing_prediction.home_score_predicted
                 entry.away_score.data = existing_prediction.away_score_predicted
-               
+
     if request.method == 'POST' and form.validate_on_submit():
 
         predictions = json.loads(
@@ -561,7 +554,17 @@ def matches(matchday=None):
     else:
         print(form.errors)
 
-    return render_template('matches.html', title='Upcoming Games', form = form, today=date.today(), matchday=matchday, postponed=postponed, lastMatchday = lastMatchday)
+
+    n = date.day
+
+    if 10 <= n % 100 <= 20:
+        suffix = "th"
+    else:
+        suffix = {1: "st", 2: "nd", 3: "rd"}.get(n % 10, "th")
+
+    display_date = f"{n}{suffix} of {date.strftime('%B')}"
+
+    return render_template('matches.html', title='Upcoming Games', form = form, date=display_date, previous_date = previous_date, next_date = next_date)
 
 @app.route('/leaderboard', methods=['GET'])
 def leaderboard():

@@ -46,6 +46,61 @@ def getGamesForMatchday(matchday=None) -> list[Game]:
 
     return db.session.scalars(sa.select(Game).options(selectinload(Game.predictions), selectinload(Game.home_team),selectinload(Game.away_team)).where(Game.matchday == matchday).order_by(Game.kickoff.asc())).all()
 
+def getDate(date=None) -> date:
+    if date is not None:
+        return date
+
+    return datetime.now(ZoneInfo("Europe/London")).replace(tzinfo=None).date()
+
+
+def getGamesForDate(date=None) -> list[Game]:
+    if date is None:
+        date = getDate()
+
+    return db.session.scalars(
+        sa.select(Game)
+        .options(selectinload(Game.predictions), 
+                selectinload(Game.home_team),
+                selectinload(Game.away_team))
+        .where(func.date(Game.kickoff) == date)
+        .order_by(Game.kickoff.asc())
+    ).all()
+
+# TODO: these need renamed
+def getNextGameDate(date=None)-> date:
+    if date is None:
+        date = getDate()
+
+    game = db.session.scalars(
+        sa.select(Game)
+        .where(Game.kickoff >= date)
+        .order_by(Game.kickoff.asc())
+    ).first()
+
+    return game.kickoff.date() if game else None
+
+# get the date of the games after the provided date, i.e if date given is 1/1, we want to get the date of the games after 1/1
+def getNextDate(date)-> date:
+    game = db.session.scalars(
+        sa.select(Game)
+        .where(func.date(Game.kickoff) > date)
+        .order_by(Game.kickoff.asc())
+    ).first()
+
+    return game.kickoff.date() if game else None
+
+# same as above but different
+def getPreviousDate(date)-> date:
+    game = db.session.scalars(
+        sa.select(Game)
+        .where(func.date(Game.kickoff) < date)
+        .order_by(Game.kickoff.desc())
+    ).first()
+
+    return game.kickoff.date() if game else None
+
+
+
 def getUsers() -> list[User]:
     return db.session.scalars(sa.select(User)).all()
 
